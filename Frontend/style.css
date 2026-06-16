@@ -1,0 +1,160 @@
+/* --- CSS Variables (Light Theme Default) --- */
+:root {
+    --bg-color: #f4f4f5;
+    --text-main: #18181b;
+    --text-muted: #71717a;
+    --card-bg: #ffffff;
+    --card-border: #e4e4e7;
+    --accent: #2563eb;
+    --shadow: 4px 4px 0px rgba(0,0,0,0.1);
+}
+
+/* --- Dark Theme Overrides --- */
+[data-theme="dark"] {
+    --bg-color: #09090b;
+    --text-main: #fafafa;
+    --text-muted: #a1a1aa;
+    --card-bg: #18181b;
+    --card-border: #27272a;
+    --accent: #3b82f6;
+    --shadow: 4px 4px 0px rgba(255,255,255,0.05);
+}
+
+/* --- Base Reset --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    transition: background-color 0.3s ease, color 0.3s ease;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    flex-grow: 1;
+}
+
+/* --- Typography & Nav --- */
+.top-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 2rem;
+    border-bottom: 2px solid var(--card-border);
+}
+
+.logo {
+    font-weight: 900;
+    letter-spacing: -1px;
+}
+
+.page-header {
+    margin: 3rem 0;
+}
+
+.page-header p {
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    margin-top: 0.5rem;
+}
+
+.btn-retro {
+    background: transparent;
+    color: var(--text-main);
+    border: 2px solid var(--text-main);
+    padding: 0.5rem 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: var(--shadow);
+    transition: transform 0.1s, box-shadow 0.1s;
+}
+
+.btn-retro:active {
+    transform: translate(2px, 2px);
+    box-shadow: none;
+}
+
+/* --- The Bento Grid (Mobile First) --- */
+.bento-grid {
+    display: grid;
+    grid-template-columns: 1fr; /* Phones: single column */
+    gap: 1.5rem;
+}
+
+.bento-card {
+    background-color: var(--card-bg);
+    border: 2px solid var(--card-border);
+    border-radius: 16px;
+    padding: 2rem;
+    text-decoration: none;
+    color: var(--text-main);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    min-height: 200px;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.bento-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--accent);
+}
+
+.bento-card h3 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.bento-card p {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+}
+
+/* --- Desktop Layout Setup --- */
+@media (min-width: 768px) {
+    .bento-grid {
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: repeat(2, 250px);
+    }
+    
+    /* CS gets a massive hero block */
+    .card-cs {
+        grid-column: span 2;
+        grid-row: span 2;
+        min-height: auto;
+    }
+    
+    /* Mech and Others stack on the right */
+    .card-mech {
+        grid-column: span 1;
+        grid-row: span 1;
+    }
+    
+    .card-others {
+        grid-column: span 1;
+        grid-row: span 1;
+    }
+
+    .card-cs h3 {
+        font-size: 2.5rem;
+    }
+}
+
+/* --- Dynamic Footer Styling --- */
+.site-footer {
+    text-align: center;
+    padding: 2rem;
+    border-top: 2px solid var(--card-border);
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
