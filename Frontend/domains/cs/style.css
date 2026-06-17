@@ -1,0 +1,96 @@
+/* --- Local Nav Tweak --- */
+.nav-left {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.back-btn {
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+/* --- Glass Environment Setup --- */
+/* This provides a subtle gradient so the glass actually has something to distort */
+.glass-environment {
+   flex-grow: 1;
+    /* The linear-gradient acts as a subtle readability overlay */
+    background-image: linear-gradient(rgba(244, 244, 245, 0.6), rgba(244, 244, 245, 0.6)), var(--cs-bg-image);
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+}
+
+/* --- The Glass Grid --- */
+.glass-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    padding-bottom: 3rem;
+}
+
+/* --- The Glass Card --- */
+.glass-card {
+    position: relative;
+    padding: 2.5rem 2rem;
+    border-radius: 20px;
+    text-decoration: none;
+    color: var(--text-main);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    min-height: 150px;
+    
+    /* The core glassmorphism effect */
+    background: rgba(255, 255, 255, 0.03); /* Extremely subtle white */
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.05);
+    
+    transition: transform 0.3s ease, border-color 0.3s ease, background 0.3s ease;
+}
+
+/* Dark mode adjustment for the glass */
+[data-theme="dark"] .glass-card {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.glass-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--accent);
+    background: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="dark"] .glass-card:hover {
+    background: rgba(0, 0, 0, 0.4);
+}
+
+.glass-card h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    z-index: 2;
+}
+/* --- Domain Background Adapters --- */
+/* Default: Mobile Images */
+:root {
+    --cs-bg-image: url('../../assets/images/cs-light-mobile.jpg');
+}
+
+[data-theme="dark"] {
+    --cs-bg-image: url('../../assets/images/cs-dark-mobile.jpg');
+}
+
+/* Override: Desktop Images */
+@media (min-width: 768px) {
+    :root {
+        --cs-bg-image: url('../../assets/images/cs-light-desktop.jpg');
+    }
+    
+    [data-theme="dark"] {
+        --cs-bg-image: url('../../assets/images/cs-dark-desktop.jpg');
+    }
+}

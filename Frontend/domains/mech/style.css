@@ -1,0 +1,73 @@
+/* --- Local Nav Tweak --- */
+.nav-left {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.back-btn {
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+/* --- Glass Environment Setup --- */
+/* Shifting to warm industrial gradients for Mechanical */
+.glass-environment {
+    flex-grow: 1;
+    background: radial-gradient(circle at 15% 50%, rgba(245, 158, 11, 0.06), transparent 50%),
+                radial-gradient(circle at 85% 30%, rgba(16, 185, 129, 0.06), transparent 50%);
+}
+
+/* --- The Glass Grid --- */
+.glass-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    padding-bottom: 3rem;
+}
+
+/* --- The Glass Card --- */
+.glass-card {
+    position: relative;
+    padding: 2rem 1.5rem;
+    border-radius: 20px;
+    text-decoration: none;
+    color: var(--text-main);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    min-height: 120px;
+    
+    /* Pure glassmorphism foundation */
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.04);
+    
+    transition: transform 0.3s ease, border-color 0.3s ease, background 0.3s ease;
+}
+
+/* Dark theme specific variables adjustment */
+[data-theme="dark"] .glass-card {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.glass-card:hover {
+    transform: translateY(-4px);
+    border-color: #f59e0b; /* Accent highlight matches the industrial theme */
+    background: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="dark"] .glass-card:hover {
+    background: rgba(0, 0, 0, 0.4);
+}
+
+.glass-card h3 {
+    font-size: 1.15rem;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    z-index: 2;
+}
