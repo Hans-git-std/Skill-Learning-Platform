@@ -131,8 +131,8 @@ body {
     
     /* CS gets a massive hero block */
     .card-cs {
-        grid-column: span 2;
-        grid-row: span 2;
+        grid-column: span 1;
+        grid-row: span 1;
         min-height: auto;
     }
     
@@ -147,9 +147,6 @@ body {
         grid-row: span 1;
     }
 
-    .card-cs h3 {
-        font-size: 2.5rem;
-    }
 }
 
 /* --- Dynamic Footer Styling --- */
