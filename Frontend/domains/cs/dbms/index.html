@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCME | DBMS Deep Dive</title>
+    <link rel="stylesheet" href="../../../style.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="top-nav">
+        <div class="nav-left">
+            <h1 class="logo">SCME.</h1>
+            <a href="../index.html" class="btn-retro back-btn">← CS Hub</a>
+        </div>
+        <button id="theme-toggle" class="btn-retro">Toggle Theme</button>
+    </nav>
+
+    <div class="learning-environment">
+        <aside class="chapter-sidebar">
+            <h3>DBMS Architecture</h3>
+            <ul class="chapter-list">
+                <li><a href="#ch1" class="active">1. The Storage Engine</a></li>
+                <li><a href="#ch2">2. B-Tree Indexing</a></li>
+                <li><a href="#ch3">3. ACID & Transaction Logs</a></li>
+                <li><a href="#ch4">4. Concurrency Control</a></li>
+                </ul>
+        </aside>
+
+        <main class="reading-core">
+            <header class="chapter-header">
+                <span class="chapter-badge">Chapter 1</span>
+                <h2>The Storage Engine & Disk Anatomy</h2>
+                <p class="chapter-subtitle">Understanding how data actually lives on the metal.</p>
+            </header>
+
+           <div class="interactive-container">
+                <div class="engine-controls">
+                    <input type="number" id="node-value" placeholder="Enter key (e.g. 15)" autocomplete="off">
+                    <button id="insert-btn" class="btn-retro">Insert to Page</button>
+                    <button id="reset-btn" class="btn-retro">Clear Memory</button>
+                </div>
+                
+                <div class="engine-display">
+                    <div class="tree-level" id="root-level"></div>
+                    <div class="tree-level" id="leaf-level"></div>
+                </div>
+                
+                <p class="engine-caption">Max keys per page: 3. Watch the page sort your keys, and then split/promote the median when it overflows.</p>
+            </div>
+
+           <article class="deep-dive-text">
+                <p>When you map an object in Spring Data JPA using <code>@Entity</code>, the framework abstracts away the brutal reality of the hardware. It makes you feel like data is just a floating collection of Java objects. But beneath the ORM, beneath the SQL parser, and beneath the query optimizer, lies the <strong>Storage Engine</strong>. This is where software hits the metal.</p>
+                
+                <h3>1. The Illusion of the Table</h3>
+                <p>A "table" does not exist on a hard drive. The hard drive only understands magnetic polarity (HDD) or trapped electrons (SSD) arranged in massive, linear arrays of blocks. The database storage engine's entire job is to take your beautifully structured 2D table relationships and serialize them into a 1D stream of bytes that can be written to, and read from, physical disk sectors.</p>
+
+                <h3>2. The Fundamental Unit of I/O: The Page</h3>
+                <p>Databases do not read or write individual rows. If you run <code>SELECT name FROM users WHERE id = 5;</code>, the database does not pluck exactly 15 bytes off the disk. It reads a <strong>Page</strong> (or Block).</p>
+                <p>A Page is a fixed-size chunk of memory, typically <strong>8KB (PostgreSQL)</strong> or <strong>16KB (InnoDB/MySQL)</strong>. When you request a single row, the disk controller fetches the entire 16KB page that contains your row, along with dozens of other rows sitting adjacent to it, and loads that entire page into RAM.</p>
+
+                <blockquote>
+                    <strong>Senior Architect Insight:</strong> This is the root cause of 90% of backend performance bottlenecks. If your query requires scanning 10,000 unindexed rows spread across 500 different pages, your system will suffer massive <em>I/O latency</em>. Disk I/O is orders of magnitude slower than CPU cache or RAM operations.
+                </blockquote>
+
+                <h3>3. Extents and Segments</h3>
+                <p>To prevent file fragmentation, the storage engine doesn't just ask the operating system for one page at a time. It allocates memory in <strong>Extents</strong>. An extent is usually a collection of contiguous pages (e.g., 64 pages of 16KB = 1MB extent). Grouping extents together forms a <strong>Segment</strong>, which correlates to a specific table or index.</p>
+                <p>By keeping data physically contiguous on the disk, the storage engine optimizes for <em>Sequential I/O</em>, which is incredibly fast even on older spinning hard drives, because the read head doesn't have to physically move to different tracks.</p>
+
+                <h3>4. The Buffer Pool: Hiding the Latency</h3>
+                <p>Because disk reads are slow, every major DBMS uses a <strong>Buffer Pool</strong> (RAM). When a page is read from the disk, it is cached in the Buffer Pool. The next time you request that data, it is served directly from RAM (a logical read) rather than the disk (a physical read).</p>
+                <p>When you update an entity in Spring Boot, you aren't writing to the disk immediately. You are updating the page in the Buffer Pool, marking it as a <strong>"Dirty Page"</strong>. A background thread (like InnoDB's <em>page cleaner</em>) will asynchronously flush these dirty pages back to the physical disk later to ensure durability.</p>
+
+                <h3>5. The B-Tree: Taming the Chaos</h3>
+                <p>If data is just written to random pages as it arrives, finding a specific record requires a <em>Full Table Scan</em>—reading every single page into the Buffer Pool until the record is found. To solve this, we use the <strong>B-Tree (Balanced Tree) Index</strong>.</p>
+                <p>A B-Tree structures data in a hierarchical tree where each node maps to a physical database page. Instead of scanning millions of rows, the database traverses the tree, jumping from the Root Page to Branch Pages, and finally to the Leaf Page containing the exact physical address of your data. This reduces search time from $O(N)$ to $O(\log N)$.</p>
+                
+                <p><em>Interact with the engine below to see exactly how data pages split and balance when writing to a B-Tree index.</em></p>
+            </article>
+        </main>
+    </div>
+
+    <div id="global-footer"></div>
+    <script src="../../../core.js"></script>
+    <script src="engine.js"></script>
+    </body>
+</html>
