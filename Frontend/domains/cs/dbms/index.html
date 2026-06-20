@@ -21,7 +21,7 @@
             <h3>DBMS Architecture</h3>
             <ul class="chapter-list">
                 <li><a href="#ch1" class="active">1. The Storage Engine</a></li>
-                <li><a href="#ch2">2. B-Tree Indexing</a></li>
+                <li><a href="#ch2">2. ACID & Write-Ahead Logs (WAL)</a></li>
                 <li><a href="#ch3">3. ACID & Transaction Logs</a></li>
                 <li><a href="#ch4">4. Concurrency Control</a></li>
                 </ul>
@@ -77,11 +77,89 @@
                 
                 <p><em>Interact with the engine below to see exactly how data pages split and balance when writing to a B-Tree index.</em></p>
             </article>
+            <hr class="chapter-divider" id="ch2">
+
+            <header class="chapter-header">
+                <span class="chapter-badge">Chapter 2</span>
+                <h2>ACID & Write-Ahead Logging (WAL)</h2>
+                <p class="chapter-subtitle">How databases survive power failures and system crashes.</p>
+            </header>
+
+           <article class="deep-dive-text">
+                <p>When a backend application sends a <code>COMMIT</code> command to a database, the developer expects an absolute guarantee: the data is saved, and no power outage, kernel panic, or hardware failure will ever cause it to disappear. But achieving this guarantee in a high-throughput system is one of the hardest problems in computer science.</p>
+                
+                <p>To understand how modern databases handle this chaos, we must look at the <strong>ACID</strong> properties not just as definitions, but as physical mechanisms executed by the storage engine.</p>
+
+                <h3>1. The Reality of the Buffer Pool</h3>
+                <p>Recall from Chapter 1 that databases do not read and write directly to the hard drive for every query. Disk I/O is far too slow. Instead, the database loads data pages into RAM (the Buffer Pool). When a client updates a row, the database updates the page in RAM. This page is now <strong>"dirty"</strong>—it holds new data that has not yet been saved to the physical disk.</p>
+                
+                <p>If the server loses power right at this exact microsecond, everything in RAM is wiped. How does the database survive this without losing the user's committed data?</p>
+
+                <h3>2. Write-Ahead Logging (WAL)</h3>
+                <p>The solution to surviving a crash without crippling performance is the <strong>Write-Ahead Log (WAL)</strong>. The absolute golden rule of relational databases is this: <em>A transaction is not considered committed until its log record is safely written to disk.</em></p>
+
+                <p>Instead of flushing the heavy, 16KB dirty data page to random locations on the disk, the database takes a tiny, highly compressed string of bytes representing the <em>change itself</em> (e.g., "Update Row 5 on Page 12: Change Balance from $100 to $50") and appends it to the end of the WAL file.</p>
+
+                <blockquote>
+                    <strong>Industry Insight:</strong> Why is the WAL so fast? Because appending data to the end of a single file is a <strong>Sequential I/O</strong> operation. The hard drive's read/write head doesn't have to seek across the platter. It just streams bytes continuously. This allows the database to guarantee Durability while delaying the expensive Random I/O required to actually update the data files.
+                </blockquote>
+
+                <h3>3. Demystifying A.C.I.D. Mechanisms</h3>
+                
+                <h4>A - Atomicity (The Undo Log)</h4>
+                <p>Atomicity means "all or nothing." If a transaction involves transferring money between two accounts, and the server crashes after the first account is debited but before the second is credited, the database is in a corrupted state.</p>
+                <p>To enforce Atomicity, the storage engine uses an <strong>Undo Log</strong>. Before any data is modified in the Buffer Pool, the database writes the <em>old</em> values to the Undo Log. If a crash occurs or the client issues a <code>ROLLBACK</code>, the database reads the Undo Log and physically reverses the changes in the Buffer Pool, returning the data to its exact previous state.</p>
+
+                <h4>C - Consistency</h4>
+                <p>Consistency guarantees that a transaction will never leave the database in a state that violates its rules (like Foreign Keys, Unique Constraints, or Check Constraints). If a query attempts to insert a duplicate primary key, the engine immediately halts the operation, triggers the Undo Log to reverse any partial changes, and throws an error to the client application.</p>
+
+                <h4>I - Isolation</h4>
+                <p>In a production environment, thousands of clients are reading and writing to the exact same pages simultaneously. Isolation dictates how these concurrent transactions interact. If Transaction A is modifying a row, can Transaction B see that uncommitted change? The database uses a complex system of <strong>Locks</strong> and <strong>Multi-Version Concurrency Control (MVCC)</strong> to manage this traffic, ensuring transactions do not trample over each other's memory blocks. (We will dedicate an entire future chapter to Isolation Levels).</p>
+
+                <h4>D - Durability (The Redo Log)</h4>
+                <p>Durability is the promise that committed data is permanent. This is powered entirely by the WAL's <strong>Redo Log</strong>. When the database boots up after a sudden power failure, it realizes that the dirty pages in RAM were lost. It immediately goes to the physical disk, opens the Redo Log, and systematically "replays" every single committed change back into the RAM Buffer Pool, reconstructing the exact state of the database at the millisecond the power was cut.</p>
+
+                <h3>4. The Checkpoint</h3>
+                <p>If the database only relied on the WAL, the log file would eventually grow to be terabytes in size, and rebooting the server would take weeks as it replayed years of history. To solve this, the engine periodically performs a <strong>Checkpoint</strong>.</p>
+                <p>During a checkpoint, the background threads finally take all those "dirty pages" sitting in RAM and forcefully flush them to the physical data files on the disk. Once the data is safely on disk, the database marks a Checkpoint Log Sequence Number (LSN) in the WAL, effectively saying: <em>"Everything before this point is safe on the hard drive. If we crash, you only need to replay the logs generated after this line."</em></p>
+            </article>
+
+            <div class="interactive-container wal-container">
+                <div class="engine-controls">
+                    <input type="text" id="tx-input" placeholder="e.g., UPDATE users SET balance=50;" autocomplete="off" style="width: 250px;">
+                    <button id="btn-execute" class="btn-retro">Execute</button>
+                    <button id="btn-checkpoint" class="btn-retro success-btn">Checkpoint (Flush)</button>
+                    <button id="btn-crash" class="btn-retro danger-btn">⚡ Crash Server</button>
+                    <button id="btn-reboot" class="btn-retro hidden">🔄 Reboot & Recover</button>
+                </div>
+                
+                <div class="architecture-layout">
+                    <div class="sys-component ram-tier">
+                        <h4>RAM: Buffer Pool (Dirty Pages)</h4>
+                        <div id="ram-display" class="log-box volatile-box"></div>
+                    </div>
+                    
+                    <div class="sys-component disk-tier">
+                        <h4>DISK: Write-Ahead Log (WAL)</h4>
+                        <div id="wal-display" class="log-box append-box"></div>
+                    </div>
+                    
+                    <div class="sys-component disk-tier">
+                        <h4>DISK: Physical Data Files</h4>
+                        <div id="data-display" class="log-box permanent-box"></div>
+                    </div>
+                </div>
+                
+                <p id="wal-status" class="engine-caption">System Online. Storage Engine ready for transactions...</p>
+            </div>
+                <p class="engine-caption">WAL Simulator Adapter: Memory vs Disk synchronization goes here.</p>
+            </div>
         </main>
     </div>
 
     <div id="global-footer"></div>
     <script src="../../../core.js"></script>
     <script src="engine.js"></script>
+    <script src="wal-engine.js"></script>
     </body>
 </html>
