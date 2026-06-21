@@ -62,12 +62,18 @@
     font-weight: 600;
     margin-bottom: 1rem;
     color: var(--accent);
+    margin-left: 0;
 }
 
 .chapter-header h2 {
     font-size: 2.5rem;
     margin-bottom: 0.5rem;
     line-height: 1.2;
+    margin-left: 0;
+}
+
+.chapter-header {
+    padding-left: 2rem;
 }
 
 .chapter-subtitle {
@@ -105,9 +111,29 @@
     max-width: 70ch; /* Optimal reading width */
 }
 
+.deep-dive-text {
+    padding-left: 2rem;
+}
+
 .deep-dive-text h3 {
     font-size: 1.8rem;
     margin: 2.5rem 0 1rem 0;
+}
+.deep-dive-text h4 {
+    font-size: 1.35rem;
+    margin: 2.5rem 0 0.5rem 0; /* Huge top margin to separate it from the previous paragraph */
+    color: var(--text-main);
+}
+
+.deep-dive-text ul {
+    margin: 1rem 0 2rem 2rem;
+    line-height: 1.8;
+    font-size: 1.15rem;
+    color: var(--text-main);
+}
+
+.deep-dive-text li {
+    margin-bottom: 0.75rem;
 }
 
 .deep-dive-text blockquote {
@@ -141,6 +167,7 @@
     border-radius: 12px;
     padding: 2rem;
     margin: 2rem 0;
+    margin-left: 2rem;
     box-shadow: var(--shadow);
 }
 
@@ -256,6 +283,21 @@
 
 @media (max-width: 768px) {
     .architecture-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Center two-column layouts inside the isolation interactive section
+   without affecting the WAL three-column grid. */
+.isolation-container .architecture-layout {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+}
+
+@media (max-width: 768px) {
+    .isolation-container .architecture-layout {
+        display: grid;
         grid-template-columns: 1fr;
     }
 }

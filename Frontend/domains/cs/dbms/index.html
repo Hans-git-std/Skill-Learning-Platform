@@ -22,7 +22,7 @@
             <ul class="chapter-list">
                 <li><a href="#ch1" class="active">1. The Storage Engine</a></li>
                 <li><a href="#ch2">2. ACID & Write-Ahead Logs (WAL)</a></li>
-                <li><a href="#ch3">3. ACID & Transaction Logs</a></li>
+                <li><a href="#ch3">3. Concurrency & Isolation Levels</a></li>
                 <li><a href="#ch4">4. Concurrency Control</a></li>
                 </ul>
         </aside>
@@ -154,6 +154,68 @@
             </div>
                 <p class="engine-caption">WAL Simulator Adapter: Memory vs Disk synchronization goes here.</p>
             </div>
+            <hr class="chapter-divider" id="ch3">
+
+            <header class="chapter-header">
+                <span class="chapter-badge">Chapter 3</span>
+                <h2>Concurrency & Isolation Levels</h2>
+                <p class="chapter-subtitle">Managing chaos when thousands of users hit the same memory block.</p>
+            </header>
+
+            <article class="deep-dive-text">
+                <p>A database running a single transaction at a time is perfectly safe, but completely useless for a modern application. To handle scale, the engine must execute thousands of transactions concurrently. But when Transaction A and Transaction B try to read and write to the exact same database page simultaneously, data corruption is imminent.</p>
+                
+                <h3>The Three Read Phenomena</h3>
+                <p>The SQL Standard defines three specific anomalies that occur when concurrent transactions step on each other's toes:</p>
+
+                <h4>1. The Dirty Read</h4>
+                <p>Transaction A updates a row but hasn't committed yet. Transaction B reads that row and sees the uncommitted data. Then, Transaction A hits a fatal error and rolls back. Transaction B just made a business decision based on data that technically never existed.</p>
+
+                <h4>2. The Non-Repeatable Read</h4>
+                <p>Transaction A reads a row. Before Transaction A finishes, Transaction B updates that exact row and commits. Transaction A reads the row a second time and sees a completely different value. The read is not "repeatable."</p>
+
+                <h4>3. The Phantom Read</h4>
+                <p>Transaction A runs a query searching for multiple rows (e.g., <code>SELECT * FROM users WHERE age > 21</code>). Transaction B inserts a brand new user who is 25 and commits. If Transaction A runs the exact same query again, a "phantom" row suddenly appears in the results.</p>
+
+                <h3>The ANSI Isolation Levels</h3>
+                <p>To prevent these anomalies, databases use <strong>Locks</strong> (physically locking the memory address) and <strong>MVCC (Multi-Version Concurrency Control)</strong> (keeping multiple historical snapshots of the data in RAM). You can configure the strictness of these defenses using the four Isolation Levels.</p>
+
+                <blockquote>
+                    <strong>Architect's Rule of Performance:</strong> Isolation is a direct trade-off with performance. The stricter the isolation, the more transactions have to wait in line (lock contention), slowing down the entire system.
+                </blockquote>
+
+                <ul>
+                    <li><strong>Read Uncommitted:</strong> The wild west. No locks. Dirty reads, non-repeatable reads, and phantoms are all possible. Blazing fast, but highly dangerous.</li>
+                    <li><strong>Read Committed:</strong> The default for PostgreSQL and SQL Server. A transaction can only read data that has been fully committed. Prevents Dirty Reads, but Non-Repeatable and Phantom reads can still happen.</li>
+                    <li><strong>Repeatable Read:</strong> The default for MySQL/InnoDB. The database takes a snapshot of the data the moment your transaction begins. Even if other people change the data and commit, you will only see your isolated snapshot. Prevents Dirty and Non-Repeatable reads.</li>
+                    <li><strong>Serializable:</strong> The ultimate lockdown. The database effectively forces transactions to execute sequentially. Prevents all anomalies, but crushes system throughput. Rarely used in high-traffic applications.</li>
+                </ul>
+            </article>
+
+            <div class="interactive-container isolation-container">
+                <div class="engine-controls">
+                    <label style="color: var(--text-muted); font-weight: bold;">Set Database Isolation Level: </label>
+                    <select id="iso-level" style="background: var(--bg-color); color: var(--text-main); border: 2px solid var(--card-border); padding: 0.5rem; border-radius: 4px; font-weight: bold;">
+                        <option value="RU">Read Uncommitted</option>
+                        <option value="RC" selected>Read Committed</option>
+                        <option value="RR">Repeatable Read</option>
+                    </select>
+                    <button id="btn-run-race" class="btn-retro">▶ Run Race Condition</button>
+                    <button id="btn-reset-race" class="btn-retro">Reset</button>
+                </div>
+                
+                <div class="architecture-layout">
+                    <div class="sys-component ram-tier">
+                        <h4>Transaction A (Writer)</h4>
+                        <div id="tx-a-log" class="log-box"></div>
+                    </div>
+                    <div class="sys-component disk-tier">
+                        <h4>Transaction B (Reader)</h4>
+                        <div id="tx-b-log" class="log-box"></div>
+                    </div>
+                </div>
+                <p id="iso-status" class="engine-caption">Initial State: User Balance = $100</p>
+            </div>
         </main>
     </div>
 
@@ -161,5 +223,6 @@
     <script src="../../../core.js"></script>
     <script src="engine.js"></script>
     <script src="wal-engine.js"></script>
+    <script src="isolation-engine.js"></script>
     </body>
 </html>
