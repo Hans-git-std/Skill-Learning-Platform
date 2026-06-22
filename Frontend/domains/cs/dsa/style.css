@@ -209,3 +209,14 @@
         padding-bottom: 2rem;
     }
 }
+/* --- Fix Nav Overlap --- */
+.nav-left {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.back-btn {
+    text-decoration: none;
+    font-size: 0.9rem;
+}

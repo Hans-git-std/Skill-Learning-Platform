@@ -359,3 +359,15 @@
 .success-btn { border-color: #10b981; color: #10b981; }
 .success-btn:hover { background: rgba(16, 185, 129, 0.1); }
 .hidden { display: none !important; }
+
+/* --- Fix Nav Overlap --- */
+.nav-left {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.back-btn {
+    text-decoration: none;
+    font-size: 0.9rem;
+}
