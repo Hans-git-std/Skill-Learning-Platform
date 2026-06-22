@@ -23,7 +23,7 @@
                 <li><a href="#ch1" class="active">1. The Storage Engine</a></li>
                 <li><a href="#ch2">2. ACID & Write-Ahead Logs (WAL)</a></li>
                 <li><a href="#ch3">3. Concurrency & Isolation Levels</a></li>
-                <li><a href="#ch4">4. Concurrency Control</a></li>
+                <li><a href="#ch4">4. The Query Optimizer</a></li>
                 <li><a href="#ch5">5. Scaling & Replication</a></li>
                 </ul>
         </aside>
@@ -217,6 +217,49 @@
                 </div>
                 <p id="iso-status" class="engine-caption">Initial State: User Balance = $100</p>
             </div>
+            <hr class="chapter-divider" id="ch4">
+
+            <header class="chapter-header">
+                <span class="chapter-badge">Chapter 4</span>
+                <h2>The Query Optimizer & Execution Plans</h2>
+                <p class="chapter-subtitle">How the database decides exactly how to fetch your data.</p>
+            </header>
+
+            <article class="deep-dive-text">
+                <p>SQL is a <strong>declarative</strong> language. When you write a query, you are telling the database <em>what</em> data you want, not <em>how</em> to retrieve it. It is up to the Database Management System to calculate the most efficient path to the disk.</p>
+                
+                <h3>The Cost-Based Optimizer (CBO)</h3>
+                <p>Before a query ever touches the storage engine, it passes through the Query Optimizer. The optimizer evaluates dozens of potential execution paths (like different join orders or index usages) and assigns a "Cost" to each one, usually based on the projected number of disk I/O operations and CPU cycles.</p>
+                
+                <p>To do this accurately, the database maintains internal <strong>Statistics</strong> about your tables: how many rows exist, the distribution of values (histograms), and which columns currently have indexes.</p>
+
+                <h4>Joins & Access Methods</h4>
+                <p>Depending on these statistics, the optimizer might choose entirely different algorithms for the exact same query:</p>
+                <ul>
+                    <li><strong>Nested Loop Join:</strong> Good for joining small tables. It loops through every row in Table A and looks for a match in Table B.</li>
+                    <li><strong>Hash Join:</strong> Excellent for large, unindexed tables. It builds an in-memory hash map of the smaller table, then scans the larger table to find matches in $O(1)$ time.</li>
+                    <li><strong>Index Seek vs. Table Scan:</strong> If you ask for 5% of a table, the optimizer will use the B-Tree index (Index Seek). But if you ask for 90% of a table, the optimizer will ignore the index and read the entire disk sequentially (Full Table Scan) because sequential I/O is faster than jumping around the disk for individual records.</li>
+                </ul>
+
+                <blockquote>
+                    <strong>Senior Developer Protocol:</strong> You should never guess why a query is slow. Every major database has an <code>EXPLAIN</code> or <code>EXPLAIN ANALYZE</code> command that outputs the exact execution tree the optimizer chose. 
+                </blockquote>
+            </article>
+
+            <div class="interactive-container">
+                <div class="engine-controls">
+                    <input type="text" id="sql-input" value="SELECT * FROM orders JOIN users ON orders.user_id = users.id;" style="width: 400px; font-family: monospace;">
+                    <select id="index-toggle" style="background: var(--bg-color); color: var(--text-main); border: 2px solid var(--card-border); padding: 0.5rem; border-radius: 4px; font-weight: bold;">
+                        <option value="no-index">No Indexes</option>
+                        <option value="indexed">Foreign Key Indexed</option>
+                    </select>
+                    <button id="btn-explain" class="btn-retro success-btn">Run EXPLAIN</button>
+                </div>
+                
+                <div id="plan-display" class="engine-display" style="align-items: flex-start; padding: 2rem; background: var(--bg-color); flex-direction: column; gap: 0.5rem;">
+                    <p class="engine-caption">Click 'Run EXPLAIN' to generate the execution tree.</p>
+                </div>
+            </div>
             <hr class="chapter-divider" id="ch5">
 
             <header class="chapter-header">
@@ -265,5 +308,6 @@
     <script src="engine.js"></script>
     <script src="wal-engine.js"></script>
     <script src="isolation-engine.js"></script>
+    <script src="optimizer-engine.js"></script>
     </body>
 </html>
