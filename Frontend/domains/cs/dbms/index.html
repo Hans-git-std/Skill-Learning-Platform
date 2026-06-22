@@ -24,6 +24,7 @@
                 <li><a href="#ch2">2. ACID & Write-Ahead Logs (WAL)</a></li>
                 <li><a href="#ch3">3. Concurrency & Isolation Levels</a></li>
                 <li><a href="#ch4">4. Concurrency Control</a></li>
+                <li><a href="#ch5">5. Scaling & Replication</a></li>
                 </ul>
         </aside>
 
@@ -216,6 +217,46 @@
                 </div>
                 <p id="iso-status" class="engine-caption">Initial State: User Balance = $100</p>
             </div>
+            <hr class="chapter-divider" id="ch5">
+
+            <header class="chapter-header">
+                <span class="chapter-badge">Chapter 5</span>
+                <h2>Database Scaling & Replication</h2>
+                <p class="chapter-subtitle">Breaking beyond the physical limits of a single server.</p>
+            </header>
+
+            <article class="deep-dive-text">
+                <p>When your application hits massive traffic, the database becomes the ultimate bottleneck. Compute servers (like your backend API) are stateless and can be cloned infinitely. But databases hold state. You cannot just clone a database without figuring out how to keep the data perfectly synchronized across all machines.</p>
+                
+                <h3>Vertical vs. Horizontal Scaling</h3>
+                <p><strong>Vertical Scaling (Scaling Up):</strong> Buying a bigger, more expensive server. More RAM, more CPU cores, faster NVMe drives. It is the easiest solution because your architecture doesn't change, but it has a hard physical and financial ceiling.</p>
+                <p><strong>Horizontal Scaling (Scaling Out):</strong> Adding more standard servers to a cluster. This provides infinite scalability but introduces immense architectural complexity.</p>
+
+                <h3>Leader-Follower Replication (Read Replicas)</h3>
+                <p>Most applications have a 10-to-1 ratio of Reads to Writes. Instead of forcing one server to handle everything, we use Replication.</p>
+                <ul>
+                    <li><strong>The Leader (Master):</strong> Handles 100% of the <code>INSERT</code>, <code>UPDATE</code>, and <code>DELETE</code> traffic. It is the absolute source of truth.</li>
+                    <li><strong>The Followers (Read Replicas):</strong> Receive a continuous stream of the Leader's Write-Ahead Log (WAL) and apply the changes to their own disks. They handle all the <code>SELECT</code> queries.</li>
+                </ul>
+
+                <blockquote>
+                    <strong>Architect's Warning (Replication Lag):</strong> Because the WAL is sent over the network, a Follower is always slightly behind the Leader. If a user updates their profile picture (Write to Leader) and immediately refreshes the page (Read from Follower), they might see their old picture for a few milliseconds. This is called <em>Eventual Consistency</em>.
+                </blockquote>
+
+                <h3>Sharding (Data Partitioning)</h3>
+                <p>If your application has so much data that it physically cannot fit on one hard drive, or if your Write traffic is too heavy for a single Leader, you must <strong>Shard</strong> the database. Sharding splits your tables horizontally across multiple separate databases based on a Shard Key (e.g., Users A-M go to Server 1, Users N-Z go to Server 2). It is incredibly complex and usually a last resort.</p>
+            </article>
+
+            <div class="interactive-container replication-container">
+                <div class="engine-controls">
+                    <button id="btn-write" class="btn-retro danger-btn">Execute Write (INSERT/UPDATE)</button>
+                    <button id="btn-read" class="btn-retro success-btn">Execute Read (SELECT)</button>
+                </div>
+                
+                <div class="architecture-layout" style="margin-top: 2rem;">
+                    <div class="sys-component ram-tier" id="leader-node">
+                        <h4>LEADER NODE (Writes & WAL Sync)</h4>
+                        <div id="leader-log" class="log-box volatile-box"></div>
         </main>
     </div>
 
