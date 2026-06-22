@@ -290,16 +290,31 @@
                 <p>If your application has so much data that it physically cannot fit on one hard drive, or if your Write traffic is too heavy for a single Leader, you must <strong>Shard</strong> the database. Sharding splits your tables horizontally across multiple separate databases based on a Shard Key (e.g., Users A-M go to Server 1, Users N-Z go to Server 2). It is incredibly complex and usually a last resort.</p>
             </article>
 
-            <div class="interactive-container replication-container">
+           <div class="interactive-container replication-container">
                 <div class="engine-controls">
-                    <button id="btn-write" class="btn-retro danger-btn">Execute Write (INSERT/UPDATE)</button>
-                    <button id="btn-read" class="btn-retro success-btn">Execute Read (SELECT)</button>
+                    <button id="btn-write" class="btn-retro danger-btn">Execute Write</button>
+                    <button id="btn-read" class="btn-retro success-btn">Execute Read</button>
                 </div>
                 
                 <div class="architecture-layout" style="margin-top: 2rem;">
                     <div class="sys-component ram-tier" id="leader-node">
-                        <h4>LEADER NODE (Writes & WAL Sync)</h4>
+                        <h4>LEADER NODE (Writes)</h4>
                         <div id="leader-log" class="log-box volatile-box"></div>
+                    </div>
+                    
+                    <div class="sys-component disk-tier" id="follower-1">
+                        <h4>FOLLOWER 1 (Reads)</h4>
+                        <div id="follower-1-log" class="log-box permanent-box"></div>
+                    </div>
+
+                    <div class="sys-component disk-tier" id="follower-2">
+                        <h4>FOLLOWER 2 (Reads)</h4>
+                        <div id="follower-2-log" class="log-box permanent-box"></div>
+                    </div>
+                </div>
+                
+                <p id="replication-status" class="engine-caption">System Online. Click Write, then quickly click Read to catch the replication lag.</p>
+            </div>
         </main>
     </div>
 
@@ -309,5 +324,6 @@
     <script src="wal-engine.js"></script>
     <script src="isolation-engine.js"></script>
     <script src="optimizer-engine.js"></script>
+    <script src="replication-engine.js"></script>
     </body>
 </html>
