@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCME | DSA Deep Dive</title>
+    <link rel="stylesheet" href="../../../style.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="top-nav">
+        <div class="nav-left">
+            <h1 class="logo">SCME.</h1>
+            <a href="../../../domains/cs/index.html" class="btn-retro back-btn">← CS</a>
+        </div>
+        <button id="theme-toggle" class="btn-retro">Toggle Theme</button>
+    </nav>
+
+    <div class="learning-environment">
+        <aside class="chapter-sidebar">
+            <h3>Algorithms & Memory</h3>
+            <ul class="chapter-list">
+                <li><a href="#ch1" class="active">1. Big O & Memory Reality</a></li>
+                <li><a href="#ch2">2. Pointers & Contiguous Memory</a></li>
+                <li><a href="#ch3">3. Trees, Tries & Graphs</a></li>
+                <li><a href="#ch4">4. Dynamic Programming</a></li>
+            </ul>
+        </aside>
+
+        <main class="reading-core">
+            <header class="chapter-header">
+                <span class="chapter-badge">Chapter 1</span>
+                <h2>Big O Notation & The Reality of Memory</h2>
+                <p class="chapter-subtitle">Space-Time tradeoffs at the bare-metal hardware level.</p>
+            </header>
+
+            <article class="deep-dive-text">
+                <p>Most university students learn Big O notation purely as a mathematical concept. They memorize that O(n&sup2;) is terrible and O(log n) is excellent. They treat variables as abstract mathematical entities. But as a backend architect, you cannot afford to live in abstractions. You must understand that Big O is a direct measurement of <strong>Physical CPU Clock Cycles</strong> and <strong>RAM Allocation</strong>.</p>
+                
+                <h3>1. The Great Abstraction Lie</h3>
+                <p>When you write <code>int x = array[5];</code> in your IDE, the software makes it look instantaneous. It is not. In modern computing, the CPU is orders of magnitude faster than the RAM. If your CPU operates at 4GHz, it executes an instruction every ~0.25 nanoseconds. But fetching a piece of data from main memory (RAM) takes about 100 nanoseconds. In CPU time, <strong>RAM is agonizingly slow</strong>.</p>
+                
+                <p>If the CPU had to wait for RAM every time it needed a variable, your system would constantly freeze. To solve this, chip designers introduced the <strong>Memory Hierarchy</strong>: L1, L2, and L3 caches physically built directly onto the CPU die.</p>
+
+                <h3>2. Cache Lines & Spatial Locality</h3>
+                <p>When an algorithm requires an O(n) scan of an array, it does not just read one element at a time from RAM. When the CPU requests <code>array[0]</code>, the memory controller grabs a massive chunk of contiguous memory—usually a <strong>64-byte Cache Line</strong>—and loads it directly into the blistering fast L1 Cache.</p>
+                <p>Because arrays are stored in contiguous (touching) memory addresses, grabbing <code>array[0]</code> accidentally brings <code>array[1]</code> through <code>array[15]</code> into the L1 cache for free. The next 15 loop iterations take almost 0 nanoseconds.</p>
+                
+                <blockquote>
+                    <strong>Architect's Reality Check:</strong> This hardware mechanic is called <em>Spatial Locality</em>. It is the reason why an O(n) scan of an Array is physically faster in the real world than an O(n) traversal of a Linked List, even though they have the exact same mathematical time complexity. Linked List nodes are scattered randomly across the RAM, causing expensive "Cache Misses" where the CPU sits idle for hundreds of cycles waiting for the data to arrive.
+                </blockquote>
+
+                <h3>3. Branch Prediction (The Invisible Optimization)</h3>
+                <p>Algorithms don't just rely on how data is laid out; they rely on how predictable the data is. Inside your CPU is a component called the <strong>Branch Predictor</strong>. When it sees an <code>if/else</code> statement inside a loop, it tries to guess which path will be taken to keep the execution pipeline full.</p>
+                <p>If you run an algorithm on a <em>sorted</em> array, the Branch Predictor learns the pattern immediately, and your code executes flawlessly. If you run the exact same algorithm on an <em>unsorted</em> array, the Branch Predictor guesses wrong, the CPU has to flush its pipeline, and your execution time can silently double.</p>
+
+                <h3>4. The Ultimate Trade-off: Space vs. Time</h3>
+                <p>In system design, you rarely get to optimize both. Every architectural decision is a negotiation. If you want an algorithm to run faster (saving Time), you almost always have to pay for it by consuming more RAM (spending Space).</p>
+                <p>If you need to look up a user by their ID, scanning the whole table takes O(n) Time. To drop that to O(1) Time, you must build a Hash Map or a B-Tree index. You just bought incredible speed, but you paid for it by permanently sacrificing megabytes of precious RAM to store that index. <strong>Speed is never free.</strong></p>
+            </article>
+
+            <div id="algo-engine" class="interactive-container algo-container">
+               <div class="engine-controls">
+                    <button id="btn-generate" class="btn-retro">Generate Chaos (New Array)</button>
+                    <button id="btn-bubble" class="btn-retro danger-btn">Run O(n²) - Bubble Sort</button>
+                    <button id="btn-quick" class="btn-retro success-btn">Run O(n log n) - Quick Sort</button>
+                    <button id="btn-radix" class="btn-retro" style="border-color: #a855f7; color: #a855f7;">Run O(n) - Radix Sort</button>
+                </div>
+                <div class="architecture-layout" style="display: block; margin-top: 2rem;">
+                    <div class="sys-component ram-tier" style="min-height: 350px; justify-content: flex-end; padding: 1rem;">
+                        <h4 id="sort-status">Memory Block: Awaiting Execution</h4>
+                        <div id="array-visualizer" class="array-container"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="global-footer"></div>
+    <script src="../../../core.js"></script>
+    <script src="dsa-engine.js"></script>
+</body>
+</html>
