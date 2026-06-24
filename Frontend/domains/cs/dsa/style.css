@@ -220,3 +220,68 @@
     text-decoration: none;
     font-size: 0.9rem;
 }
+/* --- Chapter 2: Memory Address Grid Styles --- */
+.memory-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    background: rgba(0,0,0,0.2);
+    padding: 1rem;
+    border-radius: 6px;
+    min-height: 400px;
+}
+
+[data-theme="light"] .memory-grid {
+    background: rgba(0,0,0,0.03);
+}
+
+.memory-cell {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    transition: all 0.2s ease;
+}
+
+/* Active states for simulation */
+.memory-cell.array-active {
+    background: rgba(16, 185, 129, 0.2);
+    border-color: #10b981;
+    color: #10b981;
+    transform: scale(1.02);
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.2);
+}
+
+.memory-cell.ll-active {
+    background: rgba(168, 85, 247, 0.2);
+    border-color: #a855f7;
+    color: #a855f7;
+    transform: scale(1.02);
+}
+
+.memory-cell.ll-visited {
+    border-color: rgba(168, 85, 247, 0.5);
+    color: var(--text-main);
+}
+
+.mem-address {
+    font-weight: bold;
+    opacity: 0.7;
+}
+
+.mem-data {
+    color: var(--text-main);
+    font-weight: bold;
+}
+
+.mem-pointer {
+    font-size: 0.8rem;
+    opacity: 0.6;
+    color: #a855f7;
+}

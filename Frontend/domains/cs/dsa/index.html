@@ -73,11 +73,69 @@
                     </div>
                 </div>
             </div>
+            <hr class="chapter-divider" id="ch2">
+
+            <header class="chapter-header">
+                <span class="chapter-badge">Chapter 2</span>
+                <h2>Pointers & Contiguous Memory</h2>
+                <p class="chapter-subtitle">The physical reality of Arrays vs. Linked Lists.</p>
+            </header>
+
+            <article class="deep-dive-text">
+                <p>When you declare an array or an object in a high-level language, the runtime hides the ugly truth of the hardware from you. But beneath the ORMs, JVMs, and garbage collectors, your data is just a sequence of electrical charges sitting in physical memory chips. To manipulate that data efficiently, you must understand how to navigate it.</p>
+                
+                <h3>1. The Reality of the Memory Address</h3>
+                <p>Think of your computer's RAM as a massive, linear street of houses. Every single byte of memory has a unique, sequential house number—a <strong>Memory Address</strong> (usually represented in Hexadecimal, like <code>0x7FFF04</code>). A <strong>Pointer</strong> is literally just a variable that stores one of these house numbers instead of actual data.</p>
+
+                <h3>2. Why Array Lookups are O(1) Math</h3>
+                <p>When you ask a Python list or a Java array for <code>array[5]</code>, the CPU does not "search" for the 5th element. It calculates the exact physical location in a fraction of a nanosecond using raw arithmetic.</p>
+                <p>Because arrays are <strong>Contiguous</strong> (every element sits perfectly side-by-side in RAM), the operating system only needs to remember the memory address of the very first element (the <em>Base Address</em>). The lookup is a mathematical formula:</p>
+                
+                <blockquote>
+                    <strong>The Array Formula:</strong><br>
+                    <code>Target Address = Base_Address + (Index * Size_of_Data_Type)</code><br><br>
+                    If your array starts at <code>0x1000</code> and holds 4-byte Integers, asking for <code>array[5]</code> means the CPU instantly calculates: <code>0x1000 + (5 * 4) = 0x1020</code>. It jumps directly to <code>0x1020</code>. Boom. $O(1)$ Time.
+                </blockquote>
+
+                <h3>3. Linked Lists & Heap Fragmentation</h3>
+                <p>Arrays are brutally fast, but they are rigid. If you want to expand an array that is trapped between two other variables in RAM, you have to copy the entire array to a new, larger open space. This is an expensive $O(n)$ operation.</p>
+                
+                <p><strong>Linked Lists</strong> solve this by abandoning contiguous memory. A Linked List node can sit anywhere on the heap. But because the nodes are scattered randomly, the CPU cannot use math to find the 5th node. It must start at the 1st node, read the Pointer (the memory address) to the 2nd node, jump across the RAM to find it, read the next pointer, and jump again.</p>
+
+                <h4>Pointer Chasing (The Cache Killer)</h4>
+                <p>This process is called "Pointer Chasing." While it gives you the flexibility to easily insert and delete nodes without copying entire arrays, it completely destroys your CPU's L1 Cache performance (as we learned in Chapter 1). The CPU is constantly waiting for the RAM to fetch random addresses.</p>
+            </article>
+
+            <div id="memory-engine" class="interactive-container memory-container">
+                <div class="engine-controls">
+                    <button id="btn-array-lookup" class="btn-retro success-btn">Execute O(1) Array Math (Index 4)</button>
+                    <button id="btn-ll-traverse" class="btn-retro danger-btn">Execute O(n) Linked Traversal (Node 4)</button>
+                    <button id="btn-reset-mem" class="btn-retro">Reset Memory</button>
+                </div>
+                
+                <div class="architecture-layout" style="display: flex; gap: 2rem; margin-top: 2rem;">
+                    <div class="sys-component ram-tier" style="flex: 1;">
+                        <h4>CONTIGUOUS MEMORY (Array)</h4>
+                        <div class="memory-grid" id="array-grid">
+                            </div>
+                        <p class="engine-caption">Base Address: 0x1000 | Math: 0x1000 + (Index * 4)</p>
+                    </div>
+                    
+                    <div class="sys-component ram-tier" style="flex: 1; border-color: #a855f7;">
+                        <h4>SCATTERED HEAP (Linked List)</h4>
+                        <div class="memory-grid" id="heap-grid">
+                            </div>
+                        <p class="engine-caption">Base Address: 0x2A40 | Must follow pointers sequentially.</p>
+                    </div>
+                </div>
+                <h4 id="memory-status" style="text-align: center; margin-top: 1.5rem; color: var(--text-muted);">System Ready. Awaiting execution command.</h4>
+            </div>
         </main>
     </div>
 
     <div id="global-footer"></div>
     <script src="../../../core.js"></script>
     <script src="dsa-engine.js"></script>
+    <script src="memory-engine.js"></script>
 </body>
 </html>
