@@ -130,6 +130,57 @@
                 </div>
                 <h4 id="memory-status" style="text-align: center; margin-top: 1.5rem; color: var(--text-muted);">System Ready. Awaiting execution command.</h4>
             </div>
+            <hr class="chapter-divider" id="ch3">
+
+            <header class="chapter-header">
+                <span class="chapter-badge">Chapter 3</span>
+                <h2>Trees, Tries & Graphs</h2>
+                <p class="chapter-subtitle">Mapping the chaos of non-linear data networks.</p>
+            </header>
+
+            <article class="deep-dive-text">
+                <p>Arrays and Linked Lists are one-dimensional. Data flows from left to right. But the real world is not one-dimensional. A roadmap is a web of intersections. A corporate hierarchy is a branching tree. To represent these systems in RAM, we must build <strong>Non-Linear Data Structures</strong>.</p>
+                
+                <h3>1. The Anatomy of a Tree</h3>
+                <p>A Tree is just a Linked List where a node is allowed to have more than one pointer pointing forward. It consists of a <strong>Root</strong> (the starting memory address), <strong>Branches</strong> (the pointers), and <strong>Leaves</strong> (nodes with null pointers).</p>
+                <p>You interact with Trees every single day. The HTML DOM of this exact webpage is a Tree structure. Your computer's file system is a Tree. The beauty of a Tree—specifically a Binary Search Tree (BST)—is that every time you make a decision and follow a pointer, you eliminate half of the remaining data, reducing search time from $O(n)$ to $O(\log n)$.</p>
+
+                <h3>2. The Trie (Prefix Tree)</h3>
+                <p>Imagine you are building the auto-complete feature for a search engine. If you store 10 million English words in an Array, finding words that start with "App..." requires a brutal $O(n)$ scan or a Binary Search that struggles with string matching. This is where the <strong>Trie</strong> comes in.</p>
+                <p>In a Trie, the nodes do not store entire words. They store individual characters. The path from the Root to a Leaf spells the word. Searching for a word in a Trie takes $O(L)$ time, where $L$ is the length of the word. <strong>The search time is completely independent of how many millions of words are in the database.</strong> This is a massive architectural cheat code.</p>
+
+                <h3>3. Graphs: The Ultimate Network</h3>
+                <p>A Tree is just a strict subset of a Graph. A Graph removes all the rules: nodes (called <strong>Vertices</strong>) can point to any other node via <strong>Edges</strong>. They can form cycles, loop back on themselves, and represent bidirectional relationships (like a mutual friendship on a social network).</p>
+                
+                <h4>Adjacency Matrix vs. Adjacency List</h4>
+                <p>When representing a Graph in memory, you face the ultimate Space-Time tradeoff:</p>
+                <ul>
+                    <li><strong>Adjacency Matrix:</strong> A massive 2D array (Grid). If Node A connects to Node B, you put a `1` at `matrix[A][B]`.<br> 
+                    <em>The Tradeoff:</em> Checking if a connection exists is lightning fast $O(1)$ math. But a network of 10,000 users requires an array of 100,000,000 slots, mostly filled with zeroes. It wastes huge amounts of RAM ($O(V^2)$ Space).</li>
+                    <li><strong>Adjacency List:</strong> An array of Linked Lists. Node A simply holds a Linked List of the 5 specific people it is connected to.<br>
+                    <em>The Tradeoff:</em> Highly memory efficient ($O(V + E)$ Space), but finding out if A connects to B requires scanning A's linked list ($O(V)$ Time).</li>
+                </ul>
+
+                <blockquote>
+                    <strong>Algorithm Selection (BFS vs DFS):</strong> To search a Graph, you use Breadth-First Search (BFS) or Depth-First Search (DFS). BFS explores the network outward in concentric rings, making it perfect for finding the "Shortest Path" (like GPS routing). DFS plunges as deep down a single path as possible before backtracking, making it ideal for solving mazes or analyzing network topologies.
+                </blockquote>
+            </article>
+
+            <div id="graph-engine" class="interactive-container graph-container">
+                <div class="engine-controls">
+                    <button id="btn-dfs" class="btn-retro danger-btn">Run Depth-First Search (DFS)</button>
+                    <button id="btn-bfs" class="btn-retro success-btn">Run Breadth-First Search (BFS)</button>
+                    <button id="btn-reset-graph" class="btn-retro">Reset Network</button>
+                </div>
+                
+                <div class="architecture-layout" style="display: block; margin-top: 2rem;">
+                    <div class="sys-component ram-tier" style="min-height: 400px; position: relative; overflow: hidden; background: rgba(0,0,0,0.2);">
+                        <h4 id="graph-status" style="position: absolute; top: 1rem; width: 100%; z-index: 10;">Network Topology: Idle</h4>
+                        
+                        <div id="network-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></div>
+                    </div>
+                </div>
+            </div>
         </main>
     </div>
 
