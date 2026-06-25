@@ -181,6 +181,52 @@
                     </div>
                 </div>
             </div>
+            <hr class="chapter-divider" id="ch4">
+
+            <header class="chapter-header">
+                <span class="chapter-badge">Chapter 4</span>
+                <h2>Dynamic Programming (DP)</h2>
+                <p class="chapter-subtitle">Trading memory for exponential time savings.</p>
+            </header>
+
+            <article class="deep-dive-text">
+                <p>Dynamic Programming sounds like terrifying mathematical black magic, but it is actually one of the most practical architectural concepts in software engineering. In the backend world, we call it <strong>Caching</strong>. DP is simply the act of breaking a massive problem down into smaller subproblems, solving them once, and storing the answer in RAM so you never have to compute it again.</p>
+                
+                <h3>1. The Recursive Nightmare (Overlapping Subproblems)</h3>
+                <p>Imagine calculating the Fibonacci sequence, or trying to find every possible path through a 2D grid. A naive Recursive approach will branch out, exploring every single possibility. But it has a fatal flaw: it suffers from amnesia.</p>
+                <p>It will calculate the exact same path hundreds, thousands, or millions of times. This redundant calculation causes the CPU time to explode into exponential $O(2^n)$ complexity. A grid path problem that takes 1 millisecond for a 3x3 grid might take 50 years for a 20x20 grid.</p>
+
+                <h3>2. Top-Down: Memoization</h3>
+                <p>Memoization is the easiest way to fix a recursive nightmare. You create a Hash Map (the "Memo"). Every time your recursive function calculates an answer for a specific state (e.g., <code>grid[2][3]</code>), you save it in the Memo. The next time the function asks for <code>grid[2][3]</code>, you instantly return the cached $O(1)$ answer instead of recalculating it.</p>
+
+                <blockquote>
+                    <strong>Senior Architect Insight:</strong> Memoization is incredibly fast to implement, but it relies on the Call Stack. If your recursion goes 10,000 levels deep, you will trigger a <code>StackOverflowError</code> and crash the server, regardless of how much RAM you have.
+                </blockquote>
+
+                <h3>3. Bottom-Up: Tabulation (The True DP)</h3>
+                <p>To avoid crashing the Call Stack, we use <strong>Tabulation</strong>. Instead of starting at the complex end goal and recursively breaking it down, we start at the absolute easiest base cases and build our way up iteratively using a 1D Array or 2D Matrix (a Table).</p>
+                
+                <p>Take the <strong>Grid Traveler Problem</strong>. You need to get from the top-left of a grid to the bottom-right, only moving down or right. The mathematical rule is simple: <em>The number of ways to reach any cell is exactly the sum of the ways to reach the cell above it + the cell to its left.</em></p>
+                
+                <p>By filling out a 2D array row by row using this simple addition rule, we completely eliminate recursion. We transform an impossible $O(2^{n+m})$ time complexity into a trivial $O(n \cdot m)$ time complexity, simply by sacrificing a tiny bit of RAM for the table.</p>
+            </article>
+
+            <div id="dp-engine" class="interactive-container dp-container">
+                <div class="engine-controls">
+                    <button id="btn-dp-run" class="btn-retro success-btn">Run O(n*m) Tabulation</button>
+                    <button id="btn-dp-reset" class="btn-retro">Reset Grid</button>
+                </div>
+                
+                <div class="architecture-layout" style="display: block; margin-top: 2rem;">
+                    <div class="sys-component ram-tier" style="min-height: 350px; display: flex; flex-direction: column; align-items: center; background: rgba(0,0,0,0.2);">
+                        <h4 id="dp-status">DP Table: Uninitialized (0s)</h4>
+                        
+                        <div id="dp-grid" class="dp-grid-layout">
+                            </div>
+                    </div>
+                </div>
+                <p class="engine-caption" style="margin-top: 1.5rem;">Formula: grid[row][col] = grid[row-1][col] + grid[row][col-1]</p>
+            </div>
         </main>
     </div>
 
