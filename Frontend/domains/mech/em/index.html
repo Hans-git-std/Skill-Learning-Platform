@@ -80,11 +80,77 @@
                 </div>
                 <p class="engine-caption" style="margin-top: 1.5rem;">Adjust the angle of the applied force to see how the X and Y components dynamically shift.</p>
             </div>
+<hr class="chapter-divider" id="ch2">
+
+            <header class="chapter-header">
+                <span class="chapter-badge">Chapter 2</span>
+                <h2>Trusses & Structural Frameworks</h2>
+                <p class="chapter-subtitle">Distributing massive loads through geometric rigidity.</p>
+            </header>
+
+            <article class="deep-dive-text">
+                <p>A single steel beam can only span so far before its own weight causes it to sag and eventually fail under bending stress. To cross massive gaps—like rivers or railway ravines—mechanical and civil engineers abandon solid beams and construct <strong>Trusses</strong>. A truss is a framework composed of slender members joined together at their endpoints to form a rigid, load-bearing structure.</p>
+                
+                <h3>1. The Two-Force Member Assumption</h3>
+                <p>To analyze a truss mathematically without a supercomputer, engineers make a critical set of foundational assumptions. We assume that all members are connected by perfectly frictionless pins, and that all external loads (like the weight of a train) are applied strictly at these joints, never in the middle of a beam.</p>
+                
+                <p>Because of these rules, every single piece of steel in a truss is a <strong>Two-Force Member</strong>. This is a massive mathematical simplification. It means that the beam is completely incapable of experiencing bending or shear forces. The internal force can only travel perfectly parallel to the axis of the beam. The beam can only do one of two things:</p>
+                <ul>
+                    <li><strong>Tension (Pulling apart):</strong> The beam is being stretched. Steel is incredibly strong in tension. A thin steel cable can hold thousands of pounds.</li>
+                    <li><strong>Compression (Pushing together):</strong> The beam is being crushed. Compression is incredibly dangerous because slender members will <em>Buckle</em> (snap sideways) long before the steel actually yields to the crushing weight.</li>
+                </ul>
+
+                <h3>2. Analytical Method I: The Method of Joints</h3>
+                <p>If you need to calculate the exact force inside every single beam of a bridge, you use the Method of Joints. Because the entire bridge is not moving (Static Equilibrium), it stands to reason that every single individual pin (joint) in the bridge must also be perfectly stationary.</p>
+                
+                <p>You start at a joint where you know an external force (like the ground reaction force), and you draw a 2D Free Body Diagram of just that pin. Because the pin cannot rotate, the moment equation $\sum M = 0$ is useless. You only have two equations to work with:</p>
+                
+                $$ \sum F_x = 0 \quad \text{and} \quad \sum F_y = 0 $$
+                
+                <p>This means you can only solve a joint if it has <strong>two or fewer unknown forces</strong>. You solve for those two beams, and then you "carry" those known forces to the next adjacent joint, slowly working your way across the entire bridge, joint by joint. It is a slow, methodical algorithmic process.</p>
+
+                <blockquote>
+                    <strong>Chief Engineer's Insight: Zero-Force Members.</strong><br>
+                    While solving joint by joint, you will frequently find beams that carry exactly 0 Newtons of force. Beginners think this is a math error and try to remove the beam. Do not do this. Zero-force members are placed intentionally to provide geometric stability, preventing the truss from collapsing if the load suddenly shifts direction (like heavy crosswinds or an earthquake).
+                </blockquote>
+
+                <h3>3. Analytical Method II: The Method of Sections</h3>
+                <p>What if you are an inspector, and you only care about the stress on three specific beams in the dead center of a massive 50-beam bridge? Using the Method of Joints would take hours. Instead, we use the <strong>Method of Sections</strong>.</p>
+                
+                <p>You draw an imaginary line cutting completely through the bridge, slicing the three beams you care about. You throw away half the bridge. To keep the remaining half of the bridge from instantly collapsing in your diagram, you must replace the cut beams with their internal force vectors. Because you cut the bridge, you now have distance, which means you can use the Moment equation:</p>
+                
+                $$ \sum M_{\text{pivot}} = 0 $$
+                
+                <p>By picking a clever pivot point (usually where two of your unknown forces intersect), their moment arms become zero, eliminating them from the algebra and allowing you to instantly solve for the third unknown force in a single line of math.</p>
+            </article>
+
+            <div id="truss-engine" class="interactive-container truss-container">
+                <div class="engine-controls">
+                    <button id="btn-load-center" class="btn-retro danger-btn">Apply Center Load (10kN)</button>
+                    <button id="btn-load-side" class="btn-retro">Apply Side Load (10kN)</button>
+                    <button id="btn-reset-truss" class="btn-retro success-btn">Remove Loads</button>
+                </div>
+                
+                <div class="architecture-layout" style="display: block; margin-top: 2rem;">
+                    <div class="sys-component ram-tier" style="min-height: 350px; position: relative; background: rgba(0,0,0,0.2);">
+                        <h4 id="truss-status">Truss Status: Unloaded. All members at 0kN.</h4>
+                        
+                        <div id="bridge-canvas" style="position: absolute; top: 3rem; left: 0; width: 100%; height: calc(100% - 3rem);"></div>
+                    </div>
+                </div>
+                
+                <div style="display: flex; justify-content: center; gap: 2rem; margin-top: 1rem; font-size: 0.9rem; font-weight: bold;">
+                    <span style="color: #ef4444;">▬ Compression (Pushing)</span>
+                    <span style="color: #3b82f6;">▬ Tension (Pulling)</span>
+                    <span style="color: var(--text-muted);">▬ Zero-Force Member</span>
+                </div>
+            </div>
         </main>
     </div>
 
     <div id="global-footer"></div>
     <script src="../../../core.js"></script>
     <script src="statics-engine.js"></script>
+    <script src="truss-engine.js"></script>
 </body>
 </html>
