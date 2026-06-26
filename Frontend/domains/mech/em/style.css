@@ -263,3 +263,70 @@ input[type=range]::-webkit-slider-thumb {
     border-right: 8px solid transparent;
     border-top: 12px solid #f59e0b;
 }
+/* --- Chapter 3: Friction Simulator Styles --- */
+.ramp-base {
+    width: 80%;
+    height: 12px;
+    background: var(--card-border);
+    border-radius: 6px;
+    transform-origin: bottom left;
+    transition: transform 0.1s linear;
+    position: relative;
+    border-top: 4px solid #3b82f6; /* Blue surface denoting mu */
+    margin-bottom: 2rem;
+}
+
+.physics-block {
+    position: absolute;
+    width: 60px;
+    height: 40px;
+    background: #f59e0b; /* Amber */
+    bottom: 12px; /* Sits on top of the ramp */
+    left: 80%; /* Starts at the top of the ramp */
+    border-radius: 4px;
+    transition: left 0.1s linear; /* We will override this duration with JS when it slides */
+    z-index: 5;
+    box-shadow: 0 -4px 10px rgba(245, 158, 11, 0.3);
+}
+
+/* Force Vectors for the Block */
+.vector-arrow {
+    position: absolute;
+    font-size: 0.75rem;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+}
+
+.gravity-arrow {
+    width: 2px;
+    height: 60px;
+    background: #ef4444; /* Red gravity */
+    left: 29px;
+    top: 20px;
+    z-index: 4;
+}
+.gravity-arrow::after { content: 'W'; position: absolute; bottom: -15px; color: #ef4444; }
+
+.normal-arrow {
+    width: 2px;
+    height: 50px;
+    background: #10b981; /* Green normal force */
+    left: 29px;
+    bottom: 40px;
+    z-index: 4;
+}
+.normal-arrow::after { content: 'N'; position: absolute; top: -15px; color: #10b981; }
+
+.friction-arrow {
+    height: 4px;
+    background: #a855f7; /* Purple friction holding it back */
+    top: 36px; /* Bottom of the block */
+    right: 30px; /* Pulls up the ramp */
+    transform-origin: right center;
+    z-index: 6;
+    transition: width 0.1s linear;
+}
+.friction-arrow::after { content: 'F'; position: absolute; left: -15px; top: -10px; color: #a855f7; }
