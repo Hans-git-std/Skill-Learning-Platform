@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCME | Engineering Mechanics Deep Dive</title>
+    <link rel="stylesheet" href="../../../style.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="top-nav">
+        <div class="nav-left">
+            <h1 class="logo">SCME.</h1>
+            <a href="../index.html" class="btn-retro back-btn">← Mech Hub</a>
+        </div>
+        <button id="theme-toggle" class="btn-retro">Toggle Theme</button>
+    </nav>
+
+    <div class="learning-environment">
+        <aside class="chapter-sidebar">
+            <h3>Engineering Mechanics</h3>
+            <ul class="chapter-list">
+                <li><a href="#ch1" class="active">1. Statics & Equilibrium</a></li>
+                <li><a href="#ch2">2. Trusses & Frameworks</a></li>
+                <li><a href="#ch3">3. Friction & Wedges</a></li>
+                <li><a href="#ch4">4. Kinematics (Motion)</a></li>
+                <li><a href="#ch5">5. Kinetics (Work & Energy)</a></li>
+            </ul>
+        </aside>
+
+        <main class="reading-core">
+            <header class="chapter-header">
+                <span class="chapter-badge">Chapter 1</span>
+                <h2>Statics, Vectors & Equilibrium</h2>
+                <p class="chapter-subtitle">The architecture of objects at rest.</p>
+            </header>
+
+            <article class="deep-dive-text">
+                <p>In software, an unhandled exception crashes the server. In mechanical engineering, an unhandled force collapses a bridge. <strong>Engineering Mechanics</strong> is the study of how physical bodies react to external forces. We begin with <em>Statics</em>: the mechanics of bodies that are either completely at rest or moving at a constant velocity.</p>
+                
+                <h3>1. The Reality of Vectors</h3>
+                <p>A scalar is just a number (like mass or temperature). A <strong>Vector</strong> is a force with both magnitude and direction. You cannot just add them mathematically like normal numbers. If two engines push a bracket with 500 Newtons of force each, the total force is rarely 1000N. It depends entirely on their 3D spatial alignment.</p>
+                
+                <p>To survive mechanical design, you must decompose every force into its Cartesian components ($x$, $y$, and $z$ axes) using trigonometry. Only then can you compute the Resultant Force vector.</p>
+
+                <h3>2. The Free Body Diagram (FBD)</h3>
+                <p>The FBD is the most critical analytical tool in an engineer's arsenal. To analyze a complex machine, you must isolate the specific component you care about. You mentally "cut" it out of the assembly and replace every physical connection (bolts, cables, ground contact) with the <em>Reaction Forces</em> those connections were applying.</p>
+                
+                <blockquote>
+                    <strong>Architect's Rule:</strong> If your Free Body Diagram is drawn incorrectly, every single mathematical calculation that follows it will be dangerously wrong. The FBD strips away the visual noise of the CAD model and leaves only the pure physics.
+                </blockquote>
+
+                <h3>3. The Laws of Static Equilibrium</h3>
+                <p>For a rigid body to remain perfectly static (not translating and not spinning), it must satisfy Newton's First Law across all dimensions. Mathematically, this means the vector sum of all forces, and the vector sum of all moments (rotational forces), must equal absolutely zero.</p>
+
+                <p><strong>Translation (No sliding):</strong></p>
+                $$ \sum \vec{F}_x = 0 \quad \text{and} \quad \sum \vec{F}_y = 0 $$
+                
+                <p><strong>Rotation (No spinning):</strong></p>
+                $$ \sum \vec{M}_O = 0 $$
+                <p>A <strong>Moment</strong> is created when a force is applied at a distance from a pivot point. If you push on the end of a 1-meter wrench with 100N of force, you generate 100 N·m of Moment. If the bolt is rusted and requires 150 N·m to turn, the system remains in static equilibrium (and you need a longer wrench).</p>
+            </article>
+
+            <div id="statics-engine" class="interactive-container statics-container">
+                <div class="engine-controls">
+                    <label style="color: var(--text-muted); font-weight: bold;">Force A Angle: </label>
+                    <input type="range" id="angle-slider" min="0" max="180" value="45" style="width: 150px;">
+                    <span id="angle-display" style="font-family: monospace; font-weight: bold; width: 40px;">45°</span>
+                    
+                    <button id="btn-resolve" class="btn-retro success-btn">Resolve Vectors</button>
+                    <button id="btn-equilibrium" class="btn-retro danger-btn">Apply Reaction Force</button>
+                </div>
+                
+                <div class="architecture-layout" style="display: block; margin-top: 2rem;">
+                    <div class="sys-component ram-tier" style="min-height: 400px; position: relative; border-color: #f59e0b; background: rgba(0,0,0,0.2);">
+                        <h4 id="statics-status" style="border-bottom-color: #f59e0b; color: #f59e0b;">Vector Engine: Awaiting Input</h4>
+                        
+                        <div id="vector-canvas" style="position: absolute; top: 3rem; left: 0; width: 100%; height: calc(100% - 3rem);"></div>
+                    </div>
+                </div>
+                <p class="engine-caption" style="margin-top: 1.5rem;">Adjust the angle of the applied force to see how the X and Y components dynamically shift.</p>
+            </div>
+        </main>
+    </div>
+
+    <div id="global-footer"></div>
+    <script src="../../../core.js"></script>
+    <script src="statics-engine.js"></script>
+</body>
+</html>
