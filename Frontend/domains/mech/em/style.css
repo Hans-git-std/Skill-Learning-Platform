@@ -263,33 +263,50 @@ input[type=range]::-webkit-slider-thumb {
     border-right: 8px solid transparent;
     border-top: 12px solid #f59e0b;
 }
-/* --- Chapter 3: Friction Simulator Styles --- */
+/* --- Chapter 3: Friction Simulator Styles (Completely Rebuilt) --- */
+.friction-container .ram-tier {
+    min-height: 450px; /* Massive overhead space for the ramp to swing up */
+    position: relative;
+    overflow: hidden; 
+}
+
+#friction-status {
+    position: absolute;
+    top: 1.5rem;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    z-index: 10;
+    padding: 0 1rem;
+}
+
 .ramp-base {
-    width: 80%;
+    width: 75%;
     height: 12px;
     background: var(--card-border);
     border-radius: 6px;
-    transform-origin: bottom left;
+    transform-origin: 0% 100%; /* Pivot locked to the exact bottom-left corner */
     transition: transform 0.1s linear;
-    position: relative;
-    border-top: 4px solid #3b82f6; /* Blue surface denoting mu */
-    margin-bottom: 2rem;
+    position: absolute;
+    bottom: 3rem; /* Bolted firmly to the floor of the container */
+    left: 10%;
+    border-top: 4px solid #3b82f6; 
 }
 
 .physics-block {
     position: absolute;
     width: 60px;
     height: 40px;
-    background: #f59e0b; /* Amber */
-    bottom: 12px; /* Sits on top of the ramp */
-    left: 80%; /* Starts at the top of the ramp */
+    background: #f59e0b; 
+    bottom: 12px; /* Sits perfectly on the ramp */
+    left: 70%; /* Top of the incline */
     border-radius: 4px;
-    transition: left 0.1s linear; /* We will override this duration with JS when it slides */
+    transition: left 0.1s linear; 
     z-index: 5;
-    box-shadow: 0 -4px 10px rgba(245, 158, 11, 0.3);
+    box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.4);
 }
 
-/* Force Vectors for the Block */
+/* Force Vectors */
 .vector-arrow {
     position: absolute;
     font-size: 0.75rem;
@@ -300,31 +317,32 @@ input[type=range]::-webkit-slider-thumb {
     color: white;
 }
 
-.gravity-arrow {
+#gravity-vector {
     width: 2px;
-    height: 60px;
-    background: #ef4444; /* Red gravity */
+    height: 70px;
+    background: #ef4444; 
     left: 29px;
     top: 20px;
     z-index: 4;
+    transform-origin: top center; /* Allows JS to counter-rotate it */
 }
-.gravity-arrow::after { content: 'W'; position: absolute; bottom: -15px; color: #ef4444; }
+#gravity-vector::after { content: 'W'; position: absolute; bottom: -18px; color: #ef4444; }
 
 .normal-arrow {
     width: 2px;
     height: 50px;
-    background: #10b981; /* Green normal force */
+    background: #10b981; 
     left: 29px;
     bottom: 40px;
     z-index: 4;
 }
-.normal-arrow::after { content: 'N'; position: absolute; top: -15px; color: #10b981; }
+.normal-arrow::after { content: 'N'; position: absolute; top: -18px; color: #10b981; }
 
 .friction-arrow {
     height: 4px;
-    background: #a855f7; /* Purple friction holding it back */
-    top: 36px; /* Bottom of the block */
-    right: 30px; /* Pulls up the ramp */
+    background: #a855f7; 
+    top: 36px; 
+    right: 30px; 
     transform-origin: right center;
     z-index: 6;
     transition: width 0.1s linear;
