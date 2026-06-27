@@ -222,6 +222,77 @@
                     </div>
                 </div>
             </div>
+            <!-- ==========================================
+                 CHAPTER 4: KINEMATICS
+            =========================================== -->
+            <hr class="chapter-divider" id="ch4">
+
+            <header class="chapter-header">
+                <span class="chapter-badge">Chapter 4</span>
+                <h2>Kinematics (The Geometry of Motion)</h2>
+                <p class="chapter-subtitle">Mapping trajectories without worrying about the forces that caused them.</p>
+            </header>
+
+            <article class="deep-dive-text">
+                <p>If Statics is the study of objects at rest, Dynamics is the study of objects in motion. Dynamics is split into two halves: Kinematics and Kinetics. <strong>Kinematics</strong> is purely the geometry of motion. We do not care about mass, gravity, or force. We only care about position, velocity, acceleration, and time.</p>
+                
+                <h3>1. Rectilinear (Straight-Line) Motion</h3>
+                <p>When an object moves in a perfectly straight line, its velocity $v$ is the mathematical derivative of its position $s$ with respect to time, and its acceleration $a$ is the derivative of its velocity. If the acceleration is absolutely constant (like a car pushing a steady 0.5g), we can use the three golden kinematic equations:</p>
+                
+                $$ v = v_0 + a_c t $$
+                $$ s = s_0 + v_0 t + \frac{1}{2} a_c t^2 $$
+                $$ v^2 = v_0^2 + 2a_c(s - s_0) $$
+
+                <h3>2. Curvilinear Motion & Projectiles</h3>
+                <p>When an object moves in an arc (like a fired artillery shell), we must break its motion into $x$ and $y$ components. Because gravity only pulls down, the $x$-velocity is perfectly constant ($a_x = 0$), while the $y$-velocity is constantly degrading due to gravity ($a_y = -9.81 \text{ m/s}^2$).</p>
+                <p>By treating the horizontal and vertical motions as completely independent equations tied together only by the variable of <em>Time</em> ($t$), engineers can calculate the exact impact crater of a projectile from miles away.</p>
+
+                <h3>3. Rigid Body Rotation</h3>
+                <p>When a wheel spins, the center doesn't move, but the outer rim moves incredibly fast. We use angular kinematics to map this. Angular velocity ($\omega$) is measured in radians per second, and angular acceleration ($\alpha$) is in radians per second squared. To find the exact linear speed of a point on the edge of a spinning gear, you simply multiply the angular velocity by the radius:</p>
+                $$ v = \omega r $$
+            </article>
+
+
+            <!-- ==========================================
+                 CHAPTER 5: KINETICS
+            =========================================== -->
+            <hr class="chapter-divider" id="ch5">
+
+            <header class="chapter-header">
+                <span class="chapter-badge">Chapter 5</span>
+                <h2>Kinetics (Work, Energy & Momentum)</h2>
+                <p class="chapter-subtitle">The physical forces that dictate acceleration and impact.</p>
+            </header>
+
+            <article class="deep-dive-text">
+                <p><strong>Kinetics</strong> is the final piece of the puzzle. This is where we re-introduce Mass ($m$) and Force ($F$). We transition from merely describing <em>how</em> something moves, to calculating exactly <em>why</em> it moves.</p>
+                
+                <h3>1. Newton's Second Law</h3>
+                <p>The foundation of all kinetics is Newton's Second Law. It states that an unbalanced force applied to a mass will cause it to accelerate in the exact direction of that force. Unlike Statics where $\sum F = 0$, in Kinetics, the sum of the forces equals the inertial response of the body:</p>
+                $$ \sum \vec{F} = m \vec{a} $$
+
+                <h3>2. The Work-Energy Principle</h3>
+                <p>Sometimes, tracking acceleration over time is a mathematical nightmare (especially if the force is constantly changing, like a compressing spring). In these cases, engineers abandon Newton's Second Law and use the Work-Energy Principle. It states that the Work ($U$) done by all external forces on a body equals its absolute change in Kinetic Energy ($T$).</p>
+                
+                $$ T_1 + \sum U_{1-2} = T_2 $$
+                
+                <ul>
+                    <li><strong>Kinetic Energy ($T$):</strong> The energy of motion, calculated as $T = \frac{1}{2}mv^2$.</li>
+                    <li><strong>Work ($U$):</strong> Force applied over a distance, calculated as $U = F \cdot d \cos(\theta)$.</li>
+                </ul>
+
+                <blockquote>
+                    <strong>Architect's Insight: Conservation of Energy.</strong><br>
+                    If there is no friction or wind resistance acting on a system, the system is "Conservative." In a conservative system, you don't even need to calculate Work. The total mechanical energy (Potential Energy + Kinetic Energy) remains absolutely constant. If a rollercoaster drops 50 meters, its loss in potential height perfectly translates into an explosive gain in kinetic velocity.
+                </blockquote>
+
+                <h3>3. Impulse and Momentum</h3>
+                <p>When dealing with car crashes, ballistic impacts, or rocket launches, the forces happen too fast to track over a distance. Instead, we track them over <em>Time</em>. An <strong>Impulse</strong> is a massive force applied over a tiny fraction of a second, which results in a massive change in the object's <strong>Momentum</strong> ($mv$).</p>
+                
+                $$ m\vec{v}_1 + \int_{t_1}^{t_2} \vec{F} dt = m\vec{v}_2 $$
+                
+                <p>In a closed system (like two billiard balls colliding), the total momentum before the impact is always mathematically equal to the total momentum after the impact. This is the bedrock law for analyzing mechanical collisions.</p>
+            </article>
         </main>
     </div>
 
