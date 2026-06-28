@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCME | CN Deep Dive</title>
+    <link rel="stylesheet" href="../../../style.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="top-nav">
+        <div class="nav-left">
+            <h1 class="logo">SCME.</h1>
+            <a href="../index.html" class="btn-retro back-btn">← CS Hub</a>
+        </div>
+        <button id="theme-toggle" class="btn-retro">Toggle Theme</button>
+    </nav>
+
+    <div class="learning-environment">
+        <aside class="chapter-sidebar">
+            <h3>Network Architecture</h3>
+            <ul class="chapter-list">
+                <li><a href="#ch1" class="active">1. OSI Model & Encapsulation</a></li>
+                <li><a href="#ch2">2. IP Addressing & Routing</a></li>
+                <li><a href="#ch3">3. TCP Three-Way Handshake</a></li>
+                <li><a href="#ch4">4. DNS Resolution</a></li>
+            </ul>
+        </aside>
+
+        <main class="reading-core">
+            <header class="chapter-header">
+                <span class="chapter-badge">Chapter 1</span>
+                <h2>The OSI Model & Packet Encapsulation</h2>
+                <p class="chapter-subtitle">How data travels from your application to the physical wire.</p>
+            </header>
+
+            <article class="deep-dive-text">
+                <p>When you type a URL into your browser and hit Enter, it feels instantaneous. But beneath that single click, your operating system orchestrates one of the most complex handoffs in all of computing. Your HTTP request must be wrapped, re-wrapped, and wrapped again—each layer adding its own header—before a single electrical pulse ever leaves your network card.</p>
+
+                <h3>1. The Layered Abstraction</h3>
+                <p>The <strong>OSI (Open Systems Interconnection) Model</strong> divides network communication into seven distinct layers. Each layer talks only to the layer directly above and below it. This separation of concerns is the reason the internet scales to billions of devices: you can swap out Wi-Fi for Ethernet at Layer 2 without rewriting your web browser at Layer 7.</p>
+                <p>In practice, most of the internet runs on the simpler <strong>TCP/IP model</strong> (4 layers), but understanding OSI gives you the vocabulary to debug any network problem—from a misconfigured DNS server to a dropped TCP packet.</p>
+
+                <h3>2. Encapsulation: Wrapping Data at Each Layer</h3>
+                <p>When your application sends data, it passes downward through the stack. At each layer, a <strong>header</strong> (and sometimes a trailer) is prepended to the payload from the layer above. This process is called <strong>Encapsulation</strong>.</p>
+                <ul>
+                    <li><strong>Layer 7 (Application):</strong> Your HTTP request—plain text like <code>GET /index.html HTTP/1.1</code>.</li>
+                    <li><strong>Layer 4 (Transport):</strong> TCP adds source/destination ports, sequence numbers, and checksums for reliable delivery.</li>
+                    <li><strong>Layer 3 (Network):</strong> IP adds source/destination IP addresses so routers know where to forward the packet.</li>
+                    <li><strong>Layer 2 (Data Link):</strong> Ethernet adds MAC addresses for local delivery on the same subnet.</li>
+                    <li><strong>Layer 1 (Physical):</strong> The frame is converted to electrical signals, light pulses, or radio waves.</li>
+                </ul>
+
+                <blockquote>
+                    <strong>Network Engineer's Reality Check:</strong> When you run <code>tcpdump</code> or Wireshark, you are literally peeling back these layers in reverse (decapsulation). A "TCP retransmission" error means Layer 4 detected a lost segment. An "TTL exceeded" error means Layer 3's Time-To-Live counter hit zero. Knowing which layer failed tells you exactly where to look.
+                </blockquote>
+
+                <h3>3. MTU and Fragmentation</h3>
+                <p>Every link in the network has a <strong>Maximum Transmission Unit (MTU)</strong>—typically 1500 bytes for Ethernet. If your encapsulated packet exceeds the MTU, Layer 3 (IP) must fragment it into smaller pieces. Fragmentation is expensive and is a common cause of subtle performance bugs. This is why Path MTU Discovery exists: to find the smallest MTU along the entire route before sending.</p>
+            </article>
+
+            <div id="layer-engine" class="interactive-container layer-container">
+                <div class="engine-controls">
+                    <button id="btn-encapsulate" class="btn-retro success-btn">Encapsulate Packet</button>
+                    <button id="btn-reset-layer" class="btn-retro">Reset Stack</button>
+                </div>
+                <div class="architecture-layout" style="display: block;">
+                    <div class="sys-component ram-tier" style="border-color: #8b5cf6;">
+                        <h4 id="layer-status">Stack idle. Awaiting encapsulation command.</h4>
+                        <div class="layer-stack">
+                            <div class="layer-row layer-app" id="layer-app">
+                                <div class="layer-label">Application</div>
+                                <div class="layer-payload">—</div>
+                            </div>
+                            <div class="layer-row layer-transport" id="layer-transport">
+                                <div class="layer-label">Transport</div>
+                                <div class="layer-payload">—</div>
+                            </div>
+                            <div class="layer-row layer-network" id="layer-network">
+                                <div class="layer-label">Network</div>
+                                <div class="layer-payload">—</div>
+                            </div>
+                            <div class="layer-row layer-link" id="layer-link">
+                                <div class="layer-label">Data Link</div>
+                                <div class="layer-payload">—</div>
+                            </div>
+                            <div class="layer-row layer-physical" id="layer-physical">
+                                <div class="layer-label">Physical</div>
+                                <div class="layer-payload">—</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <p class="engine-caption">Watch each layer wrap the payload with its own header, growing the packet at every step.</p>
+            </div>
+            <hr class="chapter-divider" id="ch2">
+
+            <header class="chapter-header">
+                <span class="chapter-badge">Chapter 2</span>
+                <h2>IP Addressing & Packet Routing</h2>
+                <p class="chapter-subtitle">How routers decide where your packet goes next.</p>
+            </header>
+
+            <article class="deep-dive-text">
+                <p>Every device on the internet has an <strong>IP address</strong>—a 32-bit number (IPv4) or 128-bit number (IPv6) that uniquely identifies it on the network. But IP addresses alone don't tell a packet how to reach its destination across continents. That job belongs to <strong>routers</strong> and their <strong>routing tables</strong>.</p>
+
+                <h3>1. Subnetting and CIDR Notation</h3>
+                <p>IP addresses are grouped into <strong>subnets</strong> using CIDR notation like <code>192.168.1.0/24</code>. The <code>/24</code> means the first 24 bits identify the network, and the remaining 8 bits identify individual hosts (256 addresses, 254 usable). Your home router typically owns <code>192.168.1.0/24</code>, assigning addresses like <code>192.168.1.5</code> to your laptop via DHCP.</p>
+
+                <h3>2. Longest Prefix Match</h3>
+                <p>When a router receives a packet destined for <code>93.184.216.34</code>, it doesn't "know" the full path. It consults its <strong>routing table</strong> and finds the entry with the <strong>longest matching network prefix</strong>. If the table contains both <code>93.184.0.0/16</code> and <code>0.0.0.0/0</code> (the default route), the /16 entry wins because it is more specific.</p>
+
+                <blockquote>
+                    <strong>Architect's Insight:</strong> This is why a misconfigured default route can black-hole all traffic, while a missing specific route only breaks one subnet. Production networks use BGP (Border Gateway Protocol) to exchange routing tables between autonomous systems—the protocol that literally holds the internet together.
+                </blockquote>
+
+                <h3>3. NAT: Stretching IPv4</h3>
+                <p>Your laptop's IP <code>192.168.1.5</code> is a <strong>private address</strong>—unroutable on the public internet. When your packet leaves your home, your router performs <strong>Network Address Translation (NAT)</strong>, rewriting the source IP to your public IP and tracking the connection in a translation table. NAT is why millions of devices can share a single public IP address.</p>
+
+                <h3>4. TTL and the Traceroute Tool</h3>
+                <p>Every IP packet carries a <strong>Time-To-Live (TTL)</strong> counter. Each router decrements it by 1. When TTL hits zero, the router drops the packet and sends back an ICMP "Time Exceeded" message. The <code>traceroute</code> command exploits this: it sends packets with TTL=1, then TTL=2, then TTL=3, mapping every hop along the path to a destination.</p>
+            </article>
+
+            <div id="routing-engine" class="interactive-container routing-container">
+                <div class="engine-controls">
+                    <input type="text" id="route-dest" placeholder="Destination IP (e.g. 93.184.216.34)" autocomplete="off" style="width: 280px;">
+                    <button id="btn-route" class="btn-retro success-btn">Route Packet</button>
+                    <button id="btn-reset-route" class="btn-retro">Reset</button>
+                </div>
+                <div class="routing-layout">
+                    <div class="sys-component ram-tier">
+                        <h4>Routing Table (R1)</h4>
+                        <table class="route-table">
+                            <thead>
+                                <tr><th>Network</th><th>Next Hop</th><th>Iface</th><th>Metric</th></tr>
+                            </thead>
+                            <tbody id="route-table-body"></tbody>
+                        </table>
+                    </div>
+                    <div class="sys-component ram-tier" style="border-color: #10b981;">
+                        <h4 id="route-status">Router idle. Enter a destination IP.</h4>
+                        <div id="hop-display" style="display: flex; flex-direction: column; gap: 0.5rem; margin-top: 1rem;"></div>
+                    </div>
+                </div>
+                <p class="engine-caption">Try: 192.168.1.10 (local), 10.0.5.20 (corporate), 93.184.216.34 (internet).</p>
+            </div>
+            <hr class="chapter-divider" id="ch3">
+
+            <header class="chapter-header">
+                <span class="chapter-badge">Chapter 3</span>
+                <h2>TCP & The Three-Way Handshake</h2>
+                <p class="chapter-subtitle">Building reliable connections on an unreliable network.</p>
+            </header>
+
+            <article class="deep-dive-text">
+                <p>IP (Layer 3) is a <strong>best-effort</strong> protocol—it delivers packets with no guarantee of order, delivery, or integrity. TCP (Layer 4) sits on top of IP and provides <strong>reliable, ordered, byte-stream delivery</strong>. Before any HTTP request can be sent, TCP must first establish a connection using the famous <strong>Three-Way Handshake</strong>.</p>
+
+                <h3>1. Why a Handshake?</h3>
+                <p>Both sides must agree on initial sequence numbers, confirm they can receive data, and synchronize their state machines. Without this, a client could send data to a server that isn't listening, or two stale packets from a previous connection could corrupt a new session.</p>
+
+                <h3>2. The Three Steps</h3>
+                <ul>
+                    <li><strong>Step 1 — SYN:</strong> Client sends a TCP segment with the SYN flag set and a random sequence number (e.g., Seq=100). Client enters SYN-SENT state.</li>
+                    <li><strong>Step 2 — SYN-ACK:</strong> Server responds with SYN+ACK flags, its own sequence number (Seq=300), and Ack=101 (client's Seq + 1). Server enters SYN-RCVD state.</li>
+                    <li><strong>Step 3 — ACK:</strong> Client sends ACK with Ack=301. Both sides enter ESTABLISHED state. Data transfer can begin.</li>
+                </ul>
+
+                <blockquote>
+                    <strong>Performance Note:</strong> This handshake adds one full round-trip time (RTT) before any data flows. On a mobile network with 200ms RTT, that's 200ms of pure latency before your API request even starts. This is why HTTP/3 moved to QUIC (which uses UDP and combines the handshake with TLS negotiation into 0-RTT or 1-RTT).
+                </blockquote>
+
+                <h3>3. Flow Control and Congestion Control</h3>
+                <p>Once connected, TCP manages two critical mechanisms. <strong>Flow Control</strong> (via the receive window) prevents a fast sender from overwhelming a slow receiver's buffer. <strong>Congestion Control</strong> (Slow Start, Congestion Avoidance) prevents a sender from overwhelming the network itself. When packet loss is detected (via duplicate ACKs or timeout), TCP reduces its sending rate—this is why your download speed fluctuates during network congestion.</p>
+
+                <h3>4. Connection Teardown</h3>
+                <p>Closing a TCP connection requires a <strong>Four-Way Handshake</strong> (FIN → ACK → FIN → ACK) because each side must independently signal it has no more data to send. A common bug in backend development is leaving connections in TIME-WAIT state, exhausting available ports on high-traffic servers.</p>
+            </article>
+
+            <div id="tcp-engine" class="interactive-container tcp-container">
+                <div class="engine-controls">
+                    <button id="btn-handshake" class="btn-retro success-btn">Start Handshake</button>
+                    <button id="btn-reset-tcp" class="btn-retro">Reset</button>
+                </div>
+                <div class="architecture-layout" style="display: block;">
+                    <div class="sys-component ram-tier">
+                        <h4 id="tcp-status">Both hosts idle. Click Start Handshake.</h4>
+                        <div class="handshake-layout">
+                            <div class="handshake-host">
+                                <div class="host-box" id="client-box">CLIENT<br><small>192.168.1.5:49152</small></div>
+                                <div class="host-state" id="client-state">CLOSED</div>
+                            </div>
+                            <div class="handshake-messages">
+                                <div class="tcp-msg syn" id="msg-syn" style="top: 10%;">→ SYN (Seq=100) →</div>
+                                <div class="tcp-msg synack" id="msg-synack" style="top: 40%;">← SYN-ACK (Seq=300, Ack=101) ←</div>
+                                <div class="tcp-msg ack" id="msg-ack" style="top: 70%;">→ ACK (Ack=301) →</div>
+                            </div>
+                            <div class="handshake-host">
+                                <div class="host-box" id="server-box">SERVER<br><small>93.184.216.34:443</small></div>
+                                <div class="host-state" id="server-state">LISTEN</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <p class="engine-caption">SYN → SYN-ACK → ACK. Three packets to establish a reliable byte stream.</p>
+            </div>
+            <hr class="chapter-divider" id="ch4">
+
+            <header class="chapter-header">
+                <span class="chapter-badge">Chapter 4</span>
+                <h2>DNS: The Internet's Phone Book</h2>
+                <p class="chapter-subtitle">Translating human-readable names into IP addresses.</p>
+            </header>
+
+            <article class="deep-dive-text">
+                <p>Humans remember <code>example.com</code>. Routers understand <code>93.184.216.34</code>. The <strong>Domain Name System (DNS)</strong> is the distributed database that bridges this gap. Every single web request, email, and API call begins with a DNS lookup—and a slow DNS response adds latency to every downstream operation.</p>
+
+                <h3>1. The DNS Hierarchy</h3>
+                <p>DNS is organized as a tree. At the root are the <strong>Root Servers</strong> (13 logical clusters, lettered A through M). Below them are <strong>TLD (Top-Level Domain) servers</strong> for <code>.com</code>, <code>.org</code>, <code>.in</code>, etc. Each domain has an <strong>Authoritative Nameserver</strong> that holds the actual records.</p>
+
+                <h3>2. Recursive vs. Iterative Queries</h3>
+                <p>When you query <code>example.com</code>, your browser doesn't talk to root servers directly. It asks your ISP's <strong>Recursive Resolver</strong> (often at <code>8.8.8.8</code> or <code>1.1.1.1</code>). The resolver does the hard work: it queries root → TLD → authoritative server, caches the result, and returns the final IP to you.</p>
+
+                <blockquote>
+                    <strong>Production Insight:</strong> DNS caching is controlled by the <strong>TTL (Time-To-Live)</strong> field in each record. A TTL of 300 seconds means resolvers cache the answer for 5 minutes. During a migration, engineers lower TTL days in advance so DNS changes propagate quickly. A TTL of 86400 (24 hours) means a bad deploy can take a full day to roll back via DNS alone.
+                </blockquote>
+
+                <h3>3. Record Types That Matter</h3>
+                <ul>
+                    <li><strong>A Record:</strong> Maps a hostname to an IPv4 address.</li>
+                    <li><strong>AAAA Record:</strong> Maps to IPv6.</li>
+                    <li><strong>CNAME:</strong> Alias—points one name to another (e.g., <code>www</code> → <code>example.com</code>).</li>
+                    <li><strong>MX Record:</strong> Mail exchange—tells email servers where to deliver mail.</li>
+                    <li><strong>NS Record:</strong> Delegates a domain to its authoritative nameservers.</li>
+                </ul>
+
+                <h3>4. DNS Security: DNSSEC and DoH</h3>
+                <p>Classic DNS is unencrypted and unauthenticated—making it vulnerable to spoofing and man-in-the-middle attacks. <strong>DNSSEC</strong> adds cryptographic signatures to verify records haven't been tampered with. <strong>DNS over HTTPS (DoH)</strong> encrypts DNS queries inside TLS, preventing ISPs from snooping on your browsing history.</p>
+            </article>
+
+            <div id="dns-engine" class="interactive-container dns-container">
+                <div class="engine-controls">
+                    <input type="text" id="dns-domain" placeholder="Domain (e.g. example.com)" autocomplete="off" style="width: 220px;">
+                    <button id="btn-resolve" class="btn-retro success-btn">Resolve</button>
+                    <button id="btn-reset-dns" class="btn-retro">Reset</button>
+                </div>
+                <div class="architecture-layout" style="display: block;">
+                    <div class="sys-component ram-tier" style="border-color: #8b5cf6;">
+                        <h4 id="dns-status">DNS resolver idle. Enter a domain.</h4>
+                        <div class="dns-chain">
+                            <div class="dns-step" id="dns-step-0">
+                                <div class="dns-icon">🖥</div>
+                                <div class="dns-info">
+                                    <h5>Browser / Stub Resolver</h5>
+                                    <p class="dns-query">Waiting...</p>
+                                </div>
+                            </div>
+                            <div class="dns-arrow">↓</div>
+                            <div class="dns-step" id="dns-step-1">
+                                <div class="dns-icon">🔄</div>
+                                <div class="dns-info">
+                                    <h5>Recursive Resolver (8.8.8.8)</h5>
+                                    <p class="dns-query">Waiting...</p>
+                                </div>
+                            </div>
+                            <div class="dns-arrow">↓</div>
+                            <div class="dns-step" id="dns-step-2">
+                                <div class="dns-icon">🌐</div>
+                                <div class="dns-info">
+                                    <h5>Root DNS Server</h5>
+                                    <p class="dns-query">Waiting...</p>
+                                </div>
+                            </div>
+                            <div class="dns-arrow">↓</div>
+                            <div class="dns-step" id="dns-step-3">
+                                <div class="dns-icon">📁</div>
+                                <div class="dns-info">
+                                    <h5>TLD Server (.com)</h5>
+                                    <p class="dns-query">Waiting...</p>
+                                </div>
+                            </div>
+                            <div class="dns-arrow">↓</div>
+                            <div class="dns-step" id="dns-step-4">
+                                <div class="dns-icon">✅</div>
+                                <div class="dns-info">
+                                    <h5>Authoritative Nameserver</h5>
+                                    <p class="dns-query">Waiting...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <p class="engine-caption">Recursive resolver walks the DNS tree: Root → TLD → Authoritative → cached A record.</p>
+            </div>
+        </main>
+    </div>
+
+    <div id="global-footer"></div>
+    <script src="../../../core.js"></script>
+    <script src="layer-engine.js"></script>
+    <script src="routing-engine.js"></script>
+    <script src="tcp-engine.js"></script>
+    <script src="dns-engine.js"></script>
+</body>
+</html>
