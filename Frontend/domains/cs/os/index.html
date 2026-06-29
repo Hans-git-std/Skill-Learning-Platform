@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCME | OS Deep Dive</title>
+    <link rel="stylesheet" href="../../../style.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="top-nav">
+        <div class="nav-left">
+            <h1 class="logo">SCME.</h1>
+            <a href="../index.html" class="btn-retro back-btn">← CS Hub</a>
+        </div>
+        <button id="theme-toggle" class="btn-retro">Toggle Theme</button>
+    </nav>
+
+    <div class="learning-environment">
+        <aside class="chapter-sidebar">
+            <h3>OS Architecture</h3>
+            <ul class="chapter-list">
+                <li><a href="#ch1" class="active">1. Process Lifecycle & PCB</a></li>
+                <li><a href="#ch2">2. CPU Scheduling</a></li>
+                <li><a href="#ch3">3. Virtual Memory & Paging</a></li>
+                <li><a href="#ch4">4. Deadlocks & Synchronization</a></li>
+            </ul>
+        </aside>
+
+        <main class="reading-core">
+            <header class="chapter-header">
+                <span class="chapter-badge">Chapter 1</span>
+                <h2>Process Lifecycle & The Process Control Block</h2>
+                <p class="chapter-subtitle">How the kernel tracks every running program on your machine.</p>
+            </header>
+
+            <article class="deep-dive-text">
+                <p>When you double-click an application, it feels like the program simply "starts." But the operating system does not launch programs—it creates <strong>processes</strong>. A process is not the executable file on disk; it is a living, breathing instance of that program loaded into RAM, with its own memory space, file descriptors, and a unique identity tracked by the kernel.</p>
+
+                <h3>1. Process vs. Thread</h3>
+                <p>A <strong>process</strong> is an isolated container: its own virtual address space, heap, stack, and system resources. A <strong>thread</strong> is a lightweight unit of execution <em>inside</em> a process. All threads in a process share the same memory, but each has its own program counter and stack. When Chrome opens 40 tabs, you have one browser process with dozens of threads—or in modern Chrome, multiple processes for sandboxing.</p>
+
+                <h3>2. The Process Control Block (PCB)</h3>
+                <p>The kernel cannot manage thousands of processes by guessing. For every process, it maintains a <strong>Process Control Block (PCB)</strong>—a data structure in kernel memory containing:</p>
+                <ul>
+                    <li><strong>Process ID (PID):</strong> Unique identifier (e.g., PID 4821).</li>
+                    <li><strong>Process State:</strong> New, Ready, Running, Waiting, or Terminated.</li>
+                    <li><strong>Program Counter:</strong> The exact instruction address to resume from after a context switch.</li>
+                    <li><strong>CPU Registers:</strong> Saved snapshot of register values when the process was preempted.</li>
+                    <li><strong>Memory Limits:</strong> Page table pointer, base/limit registers for virtual memory.</li>
+                    <li><strong>I/O Status:</strong> List of open files, network sockets, and pending I/O requests.</li>
+                </ul>
+
+                <blockquote>
+                    <strong>Kernel Engineer's Reality Check:</strong> When you run <code>ps aux</code> or open Task Manager, you are viewing a filtered export of PCB data. When a process crashes with a segfault, the kernel reads the saved program counter from the PCB to tell you exactly which instruction failed.
+                </blockquote>
+
+                <h3>3. The Five Process States</h3>
+                <p>Every process moves through a finite state machine during its lifetime:</p>
+                <ul>
+                    <li><strong>New:</strong> Process is being created. OS allocates PCB and memory.</li>
+                    <li><strong>Ready:</strong> Process is loaded and waiting for CPU time. Sits in the Ready Queue.</li>
+                    <li><strong>Running:</strong> Process has the CPU. Only one process per core can be Running.</li>
+                    <li><strong>Waiting (Blocked):</strong> Process is waiting for I/O, a lock, or a signal. Removed from Ready Queue.</li>
+                    <li><strong>Terminated:</strong> Process finished or was killed. PCB is cleaned up, resources reclaimed.</li>
+                </ul>
+
+                <h3>4. Context Switching: The Hidden Tax</h3>
+                <p>When the scheduler preempts Process A to run Process B, the CPU does not magically jump. The kernel performs a <strong>Context Switch</strong>: it saves Process A's entire register state into its PCB, loads Process B's registers from its PCB, and jumps to B's program counter. This takes microseconds—but on a server handling 10,000 context switches per second, that overhead becomes measurable. This is why excessive threading without purpose hurts performance.</p>
+            </article>
+
+            <div id="process-engine" class="interactive-container process-container">
+                <div class="engine-controls">
+                    <button id="btn-lifecycle" class="btn-retro success-btn">Run Full Lifecycle</button>
+                    <button id="btn-reset-process" class="btn-retro">Reset</button>
+                </div>
+                <div class="architecture-layout" style="display: block;">
+                    <div class="sys-component ram-tier" style="border-color: #3b82f6;">
+                        <h4 id="process-status">Process idle. PID unassigned.</h4>
+                        <div class="state-machine">
+                            <div class="state-node" id="state-new">
+                                <div class="state-icon">🆕</div>
+                                <div class="state-label">NEW</div>
+                            </div>
+                            <div class="state-arrow">→</div>
+                            <div class="state-node" id="state-ready">
+                                <div class="state-icon">⏳</div>
+                                <div class="state-label">READY</div>
+                            </div>
+                            <div class="state-arrow">⇄</div>
+                            <div class="state-node" id="state-running">
+                                <div class="state-icon">⚡</div>
+                                <div class="state-label">RUNNING</div>
+                            </div>
+                            <div class="state-arrow">→</div>
+                            <div class="state-node" id="state-waiting">
+                                <div class="state-icon">💤</div>
+                                <div class="state-label">WAITING</div>
+                            </div>
+                            <div class="state-arrow">→</div>
+                            <div class="state-node" id="state-terminated">
+                                <div class="state-icon">✅</div>
+                                <div class="state-label">TERMINATED</div>
+                            </div>
+                        </div>
+                        <div class="pcb-panel" id="pcb-display">
+                            <div class="pcb-row"><span class="pcb-key">PID</span><span class="pcb-val" id="pcb-pid">—</span></div>
+                            <div class="pcb-row"><span class="pcb-key">State</span><span class="pcb-val" id="pcb-state">—</span></div>
+                            <div class="pcb-row"><span class="pcb-key">PC</span><span class="pcb-val" id="pcb-pc">—</span></div>
+                            <div class="pcb-row"><span class="pcb-key">Open FDs</span><span class="pcb-val" id="pcb-fds">—</span></div>
+                        </div>
+                    </div>
+                </div>
+                <p class="engine-caption">Watch a process move through the kernel state machine as the PCB is updated at each transition.</p>
+            </div>
+            <hr class="chapter-divider" id="ch2">
+
+            <header class="chapter-header">
+                <span class="chapter-badge">Chapter 2</span>
+                <h2>CPU Scheduling Algorithms</h2>
+                <p class="chapter-subtitle">Deciding which process gets the processor when everyone wants it.</p>
+            </header>
+
+            <article class="deep-dive-text">
+                <p>On a single-core machine, only one process can execute at any instant. Yet you have hundreds of processes in the Ready Queue—all waiting for their turn. The <strong>CPU Scheduler</strong> is the kernel component that picks the next process to run. The algorithm it uses determines your system's responsiveness, throughput, and fairness.</p>
+
+                <h3>1. Scheduling Criteria</h3>
+                <p>There is no perfect scheduler. Every algorithm optimizes for different goals:</p>
+                <ul>
+                    <li><strong>CPU Utilization:</strong> Keep the CPU busy. Idle CPU is wasted silicon.</li>
+                    <li><strong>Throughput:</strong> Maximize processes completed per unit time.</li>
+                    <li><strong>Turnaround Time:</strong> Minimize total time from submission to completion.</li>
+                    <li><strong>Waiting Time:</strong> Minimize time spent in the Ready Queue.</li>
+                    <li><strong>Response Time:</strong> Minimize time until a process first gets the CPU (critical for interactive apps).</li>
+                </ul>
+
+                <h3>2. First-Come, First-Served (FCFS)</h3>
+                <p>The simplest scheduler: processes run in arrival order, non-preemptively. If Process A needs 24ms and arrives first, Processes B and C wait the entire 24ms—even if they only need 3ms each. This is the <strong>Convoy Effect</strong>: a short job stuck behind a long job suffers massive waiting time. FCFS is fair in order but terrible for response time.</p>
+
+                <h3>3. Round Robin (RR)</h3>
+                <p>The workhorse of time-sharing systems (Linux, Windows, macOS). Each process gets a fixed <strong>time quantum</strong> (typically 4–100ms). If a process doesn't finish within its quantum, it is preempted and moved to the back of the Ready Queue. This guarantees no process waits more than <code>(n-1) × quantum</code> milliseconds, giving excellent response time for interactive workloads.</p>
+
+                <blockquote>
+                    <strong>Production Insight:</strong> Linux's Completely Fair Scheduler (CFS) is a sophisticated evolution of Round Robin. Instead of fixed quanta, it assigns each process a "virtual runtime" and always picks the process that has consumed the least CPU time—ensuring proportional fairness across priorities.
+                </blockquote>
+
+                <h3>4. Priority Scheduling & Starvation</h3>
+                <p>Each process gets a priority number. The highest-priority Ready process runs next. Real-time systems (medical devices, flight control) use strict priority scheduling. The danger is <strong>Starvation</strong>: a low-priority process may never run if high-priority processes keep arriving. The fix is <strong>Aging</strong>—gradually increasing the priority of processes that have waited too long.</p>
+
+                <h3>5. Multilevel Feedback Queue</h3>
+                <p>Modern OS schedulers combine multiple queues with different priorities and time quanta. A new process starts in the highest-priority queue. If it uses its full quantum, it is demoted to a lower queue. I/O-bound processes (interactive apps) stay in high queues; CPU-bound processes (video encoding) sink to lower queues. This adapts to process behavior without manual configuration.</p>
+            </article>
+
+            <div id="scheduling-engine" class="interactive-container scheduling-container">
+                <div class="engine-controls">
+                    <select id="sched-algo" style="background: var(--bg-color); color: var(--text-main); border: 2px solid var(--card-border); padding: 0.5rem; border-radius: 4px; font-weight: bold;">
+                        <option value="fcfs">FCFS (Non-Preemptive)</option>
+                        <option value="rr" selected>Round Robin (Quantum = 4ms)</option>
+                    </select>
+                    <button id="btn-schedule" class="btn-retro success-btn">Run Scheduler</button>
+                    <button id="btn-reset-sched" class="btn-retro">Reset</button>
+                </div>
+                <div class="architecture-layout" style="display: block;">
+                    <div class="sys-component ram-tier">
+                        <h4 id="sched-status">Scheduler idle. P1(24ms), P2(3ms), P3(3ms) waiting in Ready Queue.</h4>
+                        <div class="gantt-chart" id="gantt-chart"></div>
+                        <table class="sched-table">
+                            <thead>
+                                <tr><th>Process</th><th>Burst Time</th><th>Waiting Time</th><th>Turnaround Time</th></tr>
+                            </thead>
+                            <tbody id="sched-table-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+                <p class="engine-caption">Compare FCFS convoy effect vs. Round Robin fairness on the same three processes.</p>
+            </div>
+            <hr class="chapter-divider" id="ch3">
+
+            <header class="chapter-header">
+                <span class="chapter-badge">Chapter 3</span>
+                <h2>Virtual Memory & Page Replacement</h2>
+                <p class="chapter-subtitle">How your OS gives every process the illusion of infinite RAM.</p>
+            </header>
+
+            <article class="deep-dive-text">
+                <p>Your laptop might have 16GB of physical RAM, but every process believes it owns 128TB of address space. This illusion is <strong>Virtual Memory</strong>—one of the most important abstractions in operating systems. It lets the OS run programs larger than physical RAM, isolate processes from each other, and share memory efficiently.</p>
+
+                <h3>1. Paging: Fixed-Size Memory Blocks</h3>
+                <p>Virtual memory divides address space into fixed-size <strong>pages</strong> (typically 4KB). Physical RAM is divided into matching <strong>frames</strong>. The <strong>Page Table</strong> maps each virtual page number to a physical frame number—or marks it as not present. When Process A accesses virtual address <code>0x00401000</code>, the MMU (Memory Management Unit) consults the page table, translates it to a physical frame, and accesses RAM.</p>
+
+                <h3>2. The Page Fault</h3>
+                <p>If the page table entry says "not in memory," the CPU triggers a <strong>Page Fault</strong>—a hardware interrupt. The kernel's page fault handler:</p>
+                <ul>
+                    <li>Finds a free frame (or evicts one using a replacement algorithm).</li>
+                    <li>Loads the page from disk (swap space) into the frame.</li>
+                    <li>Updates the page table entry.</li>
+                    <li>Restarts the instruction that caused the fault.</li>
+                </ul>
+                <p>Page faults are expensive—disk I/O takes milliseconds vs. nanoseconds for RAM. Excessive page faults cause <strong>thrashing</strong>, where the system spends more time swapping than executing.</p>
+
+                <blockquote>
+                    <strong>Systems Insight:</strong> When your IDE feels sluggish with 50 tabs open, you are likely thrashing. The OS is constantly evicting and reloading pages because working set size exceeds RAM. Adding RAM or closing apps reduces page faults dramatically.
+                </blockquote>
+
+                <h3>3. The Translation Lookaside Buffer (TLB)</h3>
+                <p>Page table lookups on every memory access would be too slow. The CPU caches recent translations in the <strong>TLB</strong>—a small, hardware-managed associative cache. A TLB hit takes ~1 cycle; a TLB miss requires a full page table walk (multiple memory accesses). Context switches flush the TLB, which is why switching between processes has a measurable cost.</p>
+
+                <h3>4. Page Replacement Algorithms</h3>
+                <p>When all frames are full and a page fault occurs, the OS must evict a page. The algorithm matters:</p>
+                <ul>
+                    <li><strong>FIFO (First-In, First-Out):</strong> Evict the oldest page. Simple but ignores usage patterns.</li>
+                    <li><strong>LRU (Least Recently Used):</strong> Evict the page not accessed for the longest time. Excellent approximation of optimal behavior.</li>
+                    <li><strong>Clock (Second Chance):</strong> Practical LRU approximation used by Linux. Pages get a reference bit; the clock hand sweeps and evicts pages with bit=0.</li>
+                </ul>
+            </article>
+
+            <div id="paging-engine" class="interactive-container paging-container">
+                <div class="engine-controls">
+                    <select id="replace-algo" style="background: var(--bg-color); color: var(--text-main); border: 2px solid var(--card-border); padding: 0.5rem; border-radius: 4px; font-weight: bold;">
+                        <option value="lru" selected>LRU Replacement</option>
+                        <option value="fifo">FIFO Replacement</option>
+                    </select>
+                    <button id="btn-page" class="btn-retro success-btn">Simulate Page References</button>
+                    <button id="btn-reset-page" class="btn-retro">Reset</button>
+                </div>
+                <div class="architecture-layout" style="display: block;">
+                    <div class="sys-component ram-tier" style="border-color: #10b981;">
+                        <h4 id="page-status">3 frames available. Reference string loaded.</h4>
+                        <div class="page-ref-string" id="page-ref-string"></div>
+                        <div class="frame-grid" id="frame-grid"></div>
+                        <div class="page-stats">
+                            <span id="page-faults">Page Faults: 0</span>
+                            <span id="page-hits">Page Hits: 0</span>
+                        </div>
+                    </div>
+                </div>
+                <p class="engine-caption">Reference string: 7,0,1,2,0,3,0,4,2,3,0,3,2. Watch LRU vs FIFO eviction decisions.</p>
+            </div>
+            <hr class="chapter-divider" id="ch4">
+
+            <header class="chapter-header">
+                <span class="chapter-badge">Chapter 4</span>
+                <h2>Deadlocks & Synchronization</h2>
+                <p class="chapter-subtitle">When processes wait forever—and how the kernel prevents it.</p>
+            </header>
+
+            <article class="deep-dive-text">
+                <p>Modern software is concurrent. Multiple threads read and write shared data simultaneously. Without coordination, you get race conditions—two threads incrementing a counter and losing an update. With too much coordination, you get something worse: <strong>deadlock</strong>, where processes wait for each other forever.</p>
+
+                <h3>1. Synchronization Primitives</h3>
+                <p>The OS provides tools to coordinate access to shared resources:</p>
+                <ul>
+                    <li><strong>Mutex (Mutual Exclusion Lock):</strong> Only one thread can hold the lock. Others block until it is released. Used to protect critical sections.</li>
+                    <li><strong>Semaphore:</strong> A counter-based lock. A binary semaphore (0 or 1) acts like a mutex. A counting semaphore allows N threads (e.g., limit DB connection pool to 10).</li>
+                    <li><strong>Monitor:</strong> High-level construct combining a mutex with condition variables. Java's <code>synchronized</code> blocks are monitors.</li>
+                </ul>
+
+                <h3>2. The Four Necessary Conditions for Deadlock</h3>
+                <p>Deadlock can only occur when ALL four conditions hold simultaneously (Coffman conditions):</p>
+                <ul>
+                    <li><strong>Mutual Exclusion:</strong> At least one resource can be held by only one process at a time.</li>
+                    <li><strong>Hold and Wait:</strong> A process holds at least one resource while waiting for another.</li>
+                    <li><strong>No Preemption:</strong> Resources cannot be forcibly taken; they must be voluntarily released.</li>
+                    <li><strong>Circular Wait:</strong> A cycle exists: P1 waits for P2, P2 waits for P3, P3 waits for P1.</li>
+                </ul>
+
+                <blockquote>
+                    <strong>Backend Developer's Nightmare:</strong> Deadlocks in production databases often manifest as queries hanging forever. PostgreSQL detects deadlocks automatically and kills one transaction—but only after a timeout. In application code, always acquire locks in a consistent global order to break the circular wait condition.
+                </blockquote>
+
+                <h3>3. Deadlock Handling Strategies</h3>
+                <p>Operating systems and databases choose one of four approaches:</p>
+                <ul>
+                    <li><strong>Prevention:</strong> Break one of the four Coffman conditions (e.g., require all resources to be requested at once).</li>
+                    <li><strong>Avoidance:</strong> Banker's Algorithm—only grant resources if the resulting state is "safe."</li>
+                    <li><strong>Detection & Recovery:</strong> Periodically check the Resource Allocation Graph for cycles; kill or rollback one process.</li>
+                    <li><strong>Ignore:</strong> The Ostrich Algorithm. Used by most general-purpose OSes for user-level deadlocks—you handle it in your code.</li>
+                </ul>
+
+                <h3>4. The Banker's Algorithm</h3>
+                <p>Before granting a resource request, the OS simulates the allocation and checks if a <strong>safe sequence</strong> exists—a ordering of processes where each can eventually finish and release its resources. If no safe sequence exists, the request is denied even if resources are available. This prevents deadlock at the cost of reduced resource utilization.</p>
+            </article>
+
+            <div id="deadlock-engine" class="interactive-container deadlock-container">
+                <div class="engine-controls">
+                    <button id="btn-safe" class="btn-retro success-btn">Check Safe State</button>
+                    <button id="btn-deadlock" class="btn-retro danger-btn">Trigger Deadlock</button>
+                    <button id="btn-reset-deadlock" class="btn-retro">Reset</button>
+                </div>
+                <div class="architecture-layout">
+                    <div class="sys-component ram-tier">
+                        <h4>Resource Allocation</h4>
+                        <table class="banker-table">
+                            <thead>
+                                <tr><th>Process</th><th>Allocated (A,B,C)</th><th>Max Need</th><th>Available</th></tr>
+                            </thead>
+                            <tbody id="banker-table-body"></tbody>
+                        </table>
+                    </div>
+                    <div class="sys-component ram-tier" style="border-color: #ef4444;">
+                        <h4 id="deadlock-status">System in safe state. Click "Check Safe State" to find execution order.</h4>
+                        <div class="safe-sequence" id="safe-sequence"></div>
+                        <div class="rag-graph" id="rag-graph"></div>
+                    </div>
+                </div>
+                <p class="engine-caption">Banker's Algorithm: 5 processes, 3 resource types (A=10, B=5, C=7). Find the safe sequence or detect deadlock.</p>
+            </div>
+        </main>
+    </div>
+
+    <div id="global-footer"></div>
+    <script src="../../../core.js"></script>
+    <script src="process-engine.js"></script>
+    <script src="scheduling-engine.js"></script>
+    <script src="paging-engine.js"></script>
+    <script src="deadlock-engine.js"></script>
+</body>
+</html>
