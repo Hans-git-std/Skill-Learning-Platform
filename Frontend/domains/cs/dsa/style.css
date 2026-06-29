@@ -412,3 +412,51 @@
     color: #fff;
     box-shadow: 0 0 15px rgba(16, 185, 129, 0.6);
 }
+
+/* --- Universal Responsive Fix --- */
+@media (max-width: 768px) {
+    body {
+        overflow-x: hidden;
+    }
+    .container, .learning-environment {
+        padding: 1rem !important;
+        gap: 1.5rem !important;
+    }
+    .interactive-container {
+        padding: 1rem !important;
+        margin: 1.5rem 0 !important;
+        overflow-x: auto;
+    }
+    .sys-component {
+        overflow-x: auto;
+    }
+    .engine-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .engine-controls button {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+    .top-nav {
+        padding: 1rem !important;
+        text-align: center;
+        gap: 1rem;
+    }
+    .nav-left {
+        width: 100%;
+        justify-content: space-between;
+    }
+    .chapter-header h2 {
+        font-size: 1.75rem !important;
+    }
+    .deep-dive-text p {
+        font-size: 1rem !important;
+    }
+    .glass-grid {
+        grid-template-columns: 1fr !important;
+    }
+    .bento-grid {
+        grid-template-columns: 1fr !important;
+    }
+}
