@@ -1,0 +1,578 @@
+/* --- Core Layout Engine --- */
+.learning-environment {
+    display: flex;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+    gap: 4rem;
+    align-items: flex-start;
+}
+
+.chapter-sidebar {
+    width: 280px;
+    position: sticky;
+    top: 2rem;
+    padding-right: 1rem;
+    border-right: 2px solid var(--card-border);
+    flex-shrink: 0;
+}
+
+.chapter-sidebar h3 {
+    margin-bottom: 1.5rem;
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.chapter-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 0;
+}
+
+.chapter-list a {
+    text-decoration: none;
+    color: var(--text-main);
+    font-weight: 500;
+    transition: color 0.2s;
+    opacity: 0.7;
+}
+
+.chapter-list a:hover, .chapter-list a.active {
+    opacity: 1;
+    color: var(--accent);
+}
+
+.reading-core {
+    flex-grow: 1;
+    max-width: 800px;
+    padding-bottom: 5rem;
+}
+
+.chapter-badge {
+    display: inline-block;
+    background: var(--card-border);
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: var(--accent);
+}
+
+.chapter-header h2 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    line-height: 1.2;
+}
+
+.chapter-subtitle {
+    font-size: 1.2rem;
+    color: var(--text-muted);
+    margin-bottom: 3rem;
+}
+
+.deep-dive-text p {
+    font-size: 1.15rem;
+    line-height: 1.8;
+    margin-bottom: 1.5rem;
+    color: var(--text-main);
+    max-width: 70ch;
+}
+
+.deep-dive-text h3 {
+    font-size: 1.8rem;
+    margin: 2.5rem 0 1rem 0;
+}
+
+.deep-dive-text h4 {
+    font-size: 1.35rem;
+    margin: 2.5rem 0 0.5rem 0;
+    color: var(--text-main);
+}
+
+.deep-dive-text ul {
+    margin: 1rem 0 2rem 2rem;
+    line-height: 1.8;
+    font-size: 1.15rem;
+    color: var(--text-main);
+}
+
+.deep-dive-text li {
+    margin-bottom: 0.75rem;
+}
+
+.deep-dive-text blockquote {
+    border-left: 4px solid var(--accent);
+    padding: 1.5rem;
+    background: var(--card-bg);
+    margin: 2rem 0;
+    border-radius: 0 8px 8px 0;
+    font-style: italic;
+    line-height: 1.6;
+}
+
+.chapter-divider {
+    border: 0;
+    height: 2px;
+    background: var(--card-border);
+    margin: 6rem 0 4rem 0;
+    opacity: 0.5;
+}
+
+/* --- Interactive Engine --- */
+.interactive-container {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 2rem;
+    margin: 2rem 0;
+    box-shadow: var(--shadow);
+}
+
+.engine-controls {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.engine-controls input, .engine-controls select {
+    background: var(--bg-color);
+    border: 2px solid var(--card-border);
+    color: var(--text-main);
+    padding: 0.5rem 1rem;
+    font-weight: bold;
+    border-radius: 4px;
+    outline: none;
+}
+
+.engine-controls input:focus, .engine-controls select:focus {
+    border-color: var(--accent);
+}
+
+.engine-caption {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    margin-top: 1.5rem;
+}
+
+.architecture-layout {
+    display: grid;
+    gap: 1.5rem;
+    margin: 2rem 0;
+}
+
+.sys-component {
+    background: var(--bg-color);
+    border: 2px solid var(--card-border);
+    border-radius: 8px;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.sys-component h4 {
+    font-size: 0.9rem;
+    text-align: center;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+    border-bottom: 1px solid var(--card-border);
+    padding-bottom: 0.5rem;
+}
+
+.ram-tier { border-color: #3b82f6; }
+.disk-tier { border-color: #10b981; }
+
+.danger-btn { border-color: #ef4444; color: #ef4444; }
+.danger-btn:hover { background: rgba(239, 68, 68, 0.1); }
+.success-btn { border-color: #10b981; color: #10b981; }
+.success-btn:hover { background: rgba(16, 185, 129, 0.1); }
+.hidden { display: none !important; }
+
+/* --- Chapter 1: Process State Machine --- */
+.state-machine {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding: 1.5rem 0;
+}
+
+.state-node {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+    background: var(--card-bg);
+    border: 2px solid var(--card-border);
+    border-radius: 8px;
+    min-width: 80px;
+    opacity: 0.35;
+    transition: all 0.4s ease;
+}
+
+.state-node.active {
+    opacity: 1;
+    border-color: var(--accent);
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+    transform: scale(1.08);
+}
+
+.state-node.done {
+    opacity: 0.7;
+    border-color: #10b981;
+}
+
+.state-icon {
+    font-size: 1.5rem;
+    margin-bottom: 0.25rem;
+}
+
+.state-label {
+    font-family: monospace;
+    font-size: 0.75rem;
+    font-weight: bold;
+    color: var(--text-muted);
+}
+
+.state-node.active .state-label { color: var(--accent); }
+.state-node.done .state-label { color: #10b981; }
+
+.state-arrow {
+    color: var(--text-muted);
+    font-size: 1.2rem;
+    opacity: 0.4;
+    transition: opacity 0.3s;
+}
+
+.state-arrow.active { opacity: 1; color: var(--accent); }
+
+.pcb-panel {
+    max-width: 400px;
+    margin: 1.5rem auto 0;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    padding: 1rem;
+    font-family: monospace;
+    font-size: 0.85rem;
+}
+
+.pcb-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.4rem 0;
+    border-bottom: 1px solid var(--card-border);
+}
+
+.pcb-row:last-child { border-bottom: none; }
+
+.pcb-key { color: var(--text-muted); font-weight: bold; }
+.pcb-val { color: var(--text-main); }
+
+/* --- Chapter 2: Scheduling Gantt Chart --- */
+.gantt-chart {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin: 1.5rem 0;
+    overflow-x: auto;
+}
+
+.gantt-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.gantt-label {
+    width: 30px;
+    font-family: monospace;
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: var(--text-muted);
+    flex-shrink: 0;
+}
+
+.gantt-track {
+    display: flex;
+    flex: 1;
+    min-height: 36px;
+    background: var(--card-bg);
+    border-radius: 4px;
+    border: 1px solid var(--card-border);
+}
+
+.gantt-block {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: monospace;
+    font-size: 0.75rem;
+    font-weight: bold;
+    color: #fff;
+    min-width: 24px;
+    transition: all 0.3s ease;
+    opacity: 0;
+    animation: ganttIn 0.3s ease forwards;
+}
+
+@keyframes ganttIn {
+    from { opacity: 0; transform: scaleX(0); }
+    to { opacity: 1; transform: scaleX(1); }
+}
+
+.gantt-block.p1 { background: #3b82f6; }
+.gantt-block.p2 { background: #10b981; }
+.gantt-block.p3 { background: #f59e0b; }
+.gantt-block.idle { background: var(--card-border); color: var(--text-muted); }
+
+.sched-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: monospace;
+    font-size: 0.85rem;
+    margin-top: 1rem;
+}
+
+.sched-table th, .sched-table td {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--card-border);
+    text-align: center;
+}
+
+.sched-table th {
+    background: var(--card-bg);
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+}
+
+/* --- Chapter 3: Paging --- */
+.page-ref-string {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+}
+
+.ref-cell {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: monospace;
+    font-weight: bold;
+    font-size: 0.9rem;
+    background: var(--card-bg);
+    border: 2px solid var(--card-border);
+    border-radius: 6px;
+    color: var(--text-muted);
+    transition: all 0.3s ease;
+}
+
+.ref-cell.current {
+    border-color: var(--accent);
+    color: var(--accent);
+    transform: scale(1.15);
+    box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
+}
+
+.ref-cell.fault { border-color: #ef4444; color: #ef4444; }
+.ref-cell.hit { border-color: #10b981; color: #10b981; }
+.ref-cell.done { opacity: 0.5; }
+
+.frame-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-width: 300px;
+    margin: 0 auto;
+}
+
+.frame-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.frame-label {
+    width: 70px;
+    font-family: monospace;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-align: right;
+}
+
+.frame-slot {
+    flex: 1;
+    padding: 0.75rem;
+    text-align: center;
+    font-family: monospace;
+    font-weight: bold;
+    font-size: 1.1rem;
+    background: var(--card-bg);
+    border: 2px solid var(--card-border);
+    border-radius: 6px;
+    color: var(--text-muted);
+    transition: all 0.3s ease;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.frame-slot.filled { color: var(--text-main); border-color: #3b82f6; }
+.frame-slot.evicted { border-color: #ef4444; background: rgba(239, 68, 68, 0.15); color: #ef4444; }
+.frame-slot.loaded { border-color: #10b981; background: rgba(16, 185, 129, 0.15); color: #10b981; }
+
+.page-stats {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-top: 1.5rem;
+    font-family: monospace;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+/* --- Chapter 4: Deadlock / Banker's Algorithm --- */
+.deadlock-container .architecture-layout {
+    grid-template-columns: 1fr 1fr;
+}
+
+@media (max-width: 768px) {
+    .deadlock-container .architecture-layout { grid-template-columns: 1fr; }
+}
+
+.banker-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: monospace;
+    font-size: 0.8rem;
+}
+
+.banker-table th, .banker-table td {
+    padding: 0.5rem;
+    border: 1px solid var(--card-border);
+    text-align: center;
+}
+
+.banker-table th {
+    background: var(--card-bg);
+    color: var(--text-muted);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+}
+
+.banker-table tr.safe-row { background: rgba(16, 185, 129, 0.15); }
+.banker-table tr.deadlock-row { background: rgba(239, 68, 68, 0.15); }
+
+.safe-sequence {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: center;
+    margin: 1rem 0;
+    min-height: 40px;
+}
+
+.safe-step {
+    padding: 0.5rem 1rem;
+    background: var(--card-bg);
+    border: 2px solid var(--card-border);
+    border-radius: 20px;
+    font-family: monospace;
+    font-size: 0.85rem;
+    font-weight: bold;
+    opacity: 0;
+    animation: slideIn 0.3s ease forwards;
+}
+
+.safe-step.done { border-color: #10b981; color: #10b981; }
+.safe-step.deadlock { border-color: #ef4444; color: #ef4444; }
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.rag-graph {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+    padding: 1.5rem;
+    min-height: 120px;
+}
+
+.rag-process, .rag-resource {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.rag-circle {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: monospace;
+    font-weight: bold;
+    font-size: 0.85rem;
+    border: 2px solid var(--card-border);
+    background: var(--card-bg);
+    transition: all 0.3s ease;
+}
+
+.rag-circle.process { border-color: #3b82f6; color: #3b82f6; }
+.rag-circle.resource { border-radius: 4px; border-color: #f59e0b; color: #f59e0b; width: 40px; height: 40px; }
+.rag-circle.blocked { border-color: #ef4444; background: rgba(239, 68, 68, 0.15); color: #ef4444; }
+.rag-circle.running { border-color: #10b981; background: rgba(16, 185, 129, 0.15); color: #10b981; }
+
+.rag-edge {
+    font-size: 1.5rem;
+    color: var(--text-muted);
+    opacity: 0.3;
+    transition: opacity 0.3s;
+}
+
+.rag-edge.active { opacity: 1; color: #ef4444; }
+
+/* --- Mobile --- */
+@media (max-width: 1024px) {
+    .learning-environment { flex-direction: column; }
+    .chapter-sidebar {
+        width: 100%;
+        position: relative;
+        top: 0;
+        border-right: none;
+        border-bottom: 2px solid var(--card-border);
+        padding-bottom: 2rem;
+    }
+    .state-machine { gap: 0.25rem; }
+    .state-arrow { display: none; }
+}
+
+.nav-left {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.back-btn {
+    text-decoration: none;
+    font-size: 0.9rem;
+}
