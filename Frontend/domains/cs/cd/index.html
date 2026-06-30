@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCME | Compiler Design Deep Dive</title>
+    <link rel="stylesheet" href="../../../style.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="top-nav">
+        <div class="nav-left">
+            <h1 class="logo">SCME.</h1>
+            <a href="../../../domains/cs/index.html" class="btn-retro back-btn">← CS Hub</a>
+        </div>
+        <button id="theme-toggle" class="btn-retro">Toggle Theme</button>
+    </nav>
+
+    <div class="learning-environment">
+        <aside class="chapter-sidebar">
+            <h3>Compiler Architecture</h3>
+            <ul class="chapter-list">
+                <li><a href="#ch1" class="active">1. The Compilation Pipeline</a></li>
+                <li><a href="#ch2">2. Lexical Analysis (Scanner)</a></li>
+                <li><a href="#ch3">3. Syntax Analysis (Parser)</a></li>
+                <li><a href="#ch4">4. Semantic Analysis</a></li>
+                <li><a href="#ch5">5. Intermediate Representation</a></li>
+                <li><a href="#ch6">6. Run-Time Environments</a></li>
+                <li><a href="#ch7">7. Code Optimization</a></li>
+                <li><a href="#ch8">8. Target Code Generation</a></li>
+            </ul>
+        </aside>
+
+        <main class="reading-core">
+            <header class="chapter-header">
+                <span class="chapter-badge">Chapter 1</span>
+                <h2 id="ch1">The Compilation Pipeline</h2>
+                <p class="chapter-subtitle">Bridging the gap between human thought and silicon execution.</p>
+            </header>
+
+            <article class="deep-dive-text">
+                <p>A compiler is arguably the most complex and important piece of software ever written. Without it, the modern world—which relies on billions of lines of high-level code like C++, Java, Rust, and Go—would literally cease to exist. A compiler's core responsibility is deceptively simple: take human-readable source code and accurately translate it into raw machine instructions (x86, ARM, RISC-V) that a silicon processor can understand and execute via electrical signals.</p>
+                <p>However, the internal architecture of a compiler is a marvel of algorithmic engineering. To handle the infinite variations of human code, a compiler operates as a highly orchestrated, strict multi-stage pipeline, divided into two massive halves: the <strong>Front-end (Analysis)</strong> and the <strong>Back-end (Synthesis)</strong>.</p>
+                
+                <h3>1. The Front-End (Analysis)</h3>
+                <p>The Front-end is entirely tied to the <em>Source Language</em>. Its job is to understand what the programmer meant. If you write C++ code, the Front-end is dedicated exclusively to understanding C++ rules. It validates syntax, enforces strict type checking (Semantic Analysis), and catches compile-time errors. The Front-end ultimately strips away the text formatting and converts the meaning of the program into a universal data structure called an <strong>Intermediate Representation (IR)</strong>.</p>
+                
+                <h3>2. The Back-End (Synthesis)</h3>
+                <p>The Back-end is entirely blind to the Source Language; it only speaks IR. Its job is tied exclusively to the <em>Target Architecture</em> (the physical hardware). The Back-end takes the IR and aggressively optimizes it to run as fast as physically possible. It then maps the abstract logic directly to the CPU's physical registers and memory constraints, emitting final Assembly code.</p>
+
+                <blockquote>
+                    <strong>Architect's Insight: The LLVM Revolution</strong><br>
+                    Historically, if you invented a new language, you had to write a full compiler from scratch (Front-end + Back-end). The LLVM project revolutionized this by establishing a standardized IR. Today, if you invent a new language (like Rust or Swift), you only write a Front-end that translates your syntax to LLVM IR. You get LLVM's world-class Back-end optimizations and support for every CPU architecture on Earth for free. This is why we have seen an explosion of new languages in the last decade.
+                </blockquote>
+            </article>
+
+            <hr class="chapter-divider" id="ch2">
+
+            <header class="chapter-header">
+                <span class="chapter-badge">Chapter 2</span>
+                <h2 id="ch2">Lexical Analysis (Scanner)</h2>
+                <p class="chapter-subtitle">The science of breaking code down into fundamental vocabulary.</p>
+            </header>
+
+            <article class="deep-dive-text">
+                <p>When you feed a compiler <code>int speed = 85;</code>, it does not see a math equation. It sees a raw, contiguous stream of ASCII or UTF-8 characters: <code>['i', 'n', 't', ' ', 's', 'p', 'e', 'e', 'd', ' ', '=', ' ', '8', '5', ';']</code>.</p>
+                <p>The <strong>Lexical Analyzer (Lexer or Scanner)</strong> is the first line of defense. Its sole job is to iterate through this massive array of characters, discard irrelevant data (like spaces, tabs, and comments), and group the remaining characters into meaningful, categorized words called <strong>Tokens</strong>.</p>
+                
+                <h3>Deterministic Finite Automata (DFA)</h3>
+                <p>To do this at blistering speeds (processing millions of lines per second), Lexers rely on Mathematical Automata Theory. A Lexer uses Regular Expressions (Regex) compiled down into a <strong>Deterministic Finite Automaton (DFA)</strong>—a state machine that transitions based on the current character. For example, if it sees a digit, it enters the "Number State" and stays there until it hits a space or semicolon, at which point it emits a <code>NUMBER</code> token.</p>
+                <p>By the end of Lexical Analysis, our raw character array is reduced to a clean, structured array of Tokens: <code>[TYPE_INT, IDENT_SPEED, OP_ASSIGN, NUM_85, SEMICOLON]</code>.</p>
+            </article>
+
+            <!-- SIMULATOR 1: LEXER -->
+            <div class="interactive-container">
+                <h3 style="text-align: center; margin-bottom: 1.5rem; color: var(--text-main);">Interactive Engine: DFA Tokenizer</h3>
+                <div class="engine-controls">
+                    <input type="text" id="lex-input" value="int speed = 85;" spellcheck="false" autocomplete="off" style="width: 100%;">
+                    <button id="btn-lex-rand" class="btn-retro" style="border-color: #3b82f6; color: #3b82f6;">Randomize</button>
+                    <button id="btn-lex" class="btn-retro success-btn">Run Lexer Scan</button>
+                    <button id="btn-lex-reset" class="btn-retro danger-btn">Reset</button>
+                </div>
+                <div class="architecture-layout">
+                    <div class="sys-component phase-tier">
+                        <h4>Raw Character Stream</h4>
+                        <div id="lex-char-box" class="pipeline-box" style="font-family: monospace; font-size: 1.2rem; letter-spacing: 2px;">
+                            <span class="placeholder-text">Awaiting scan...</span>
+                        </div>
+                    </div>
+                    <div class="sys-component phase-tier">
+                        <h4>Emitted Tokens</h4>
+                        <div id="lex-token-box" class="pipeline-box">
+                            <span class="placeholder-text">Awaiting scan...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="chapter-divider" id="ch3">
+
+            <header class="chapter-header">
+                <span class="chapter-badge">Chapter 3</span>
+                <h2 id="ch3">Syntax Analysis (Parser)</h2>
+                <p class="chapter-subtitle">Enforcing grammar and building the Abstract Syntax Tree.</p>
+            </header>
+
+            <article class="deep-dive-text">
+                <p>A list of valid tokens does not equal a valid program. The sequence <code>[NUM_5, OP_ASSIGN, TYPE_INT]</code> is gibberish. The <strong>Syntax Analyzer (Parser)</strong> takes the stream of tokens and attempts to arrange them into a highly structured hierarchy called an <strong>Abstract Syntax Tree (AST)</strong> according to the language's Context-Free Grammar (CFG).</p>
+                
+                <h3>Context-Free Grammars & Parser Types</h3>
+                <p>A CFG defines recursive rules for how tokens can be combined. Parsers use these rules to build the AST. There are two dominant parsing strategies in compiler architecture:</p>
+                <ul>
+                    <li><strong>Top-Down Parsing (LL):</strong> Starts at the root of the tree and tries to guess the structure going down to the leaves. <em>Recursive Descent</em> is the most famous manual implementation, heavily used by modern compilers (like Clang and GCC) because it makes providing helpful, human-readable syntax errors very easy.</li>
+                    <li><strong>Bottom-Up Parsing (LR):</strong> Starts at the leaves (the tokens) and reduces them upwards to the root. Algorithms like LALR(1) are mathematically powerful and can handle very complex grammars, often generated automatically by tools like YACC or Bison.</li>
+                </ul>
+
+                <h3>The Abstract Syntax Tree (AST)</h3>
+                <p>The AST is the crown jewel of the Front-end. It inherently encodes operator precedence (BODMAS/PEMDAS). If the parser sees <code>A + B * C</code>, it builds a tree where the multiplication node is a child of the addition node, guaranteeing that `B * C` is evaluated first during execution.</p>
+            </article>
+
+            <!-- SIMULATOR 2: PARSER -->
+            <div class="interactive-container">
+                <h3 style="text-align: center; margin-bottom: 1.5rem; color: var(--text-main);">Interactive Engine: AST Builder</h3>
+                <p style="text-align: center; font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">Enter a simple math expression to see how Operator Precedence shapes the Tree.</p>
+                <div class="engine-controls">
+                    <input type="text" id="parse-input" value="A + B * C" spellcheck="false" autocomplete="off" style="width: 100%;">
+                    <button id="btn-parse-rand" class="btn-retro" style="border-color: #3b82f6; color: #3b82f6;">Randomize</button>
+                    <button id="btn-parse" class="btn-retro success-btn">Build AST</button>
+                    <button id="btn-parse-reset" class="btn-retro danger-btn">Reset</button>
+                </div>
+                <div class="sys-component phase-tier" style="min-height: 250px;">
+                    <h4>Abstract Syntax Tree Hierarchy</h4>
+                    <div id="parse-ast-box" class="pipeline-box ast-box" style="justify-content: center; overflow-x: auto;">
+                        <span class="placeholder-text">Awaiting expression...</span>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="chapter-divider" id="ch4">
+
+            <header class="chapter-header">
+                <span class="chapter-badge">Chapter 4</span>
+                <h2 id="ch4">Semantic Analysis</h2>
+                <p class="chapter-subtitle">Context, Type Checking, and The Symbol Table.</p>
+            </header>
+
+            <article class="deep-dive-text">
+                <p>The Parser guarantees structural correctness, but it is entirely oblivious to context. If you write <code>int x = "hello" / 5;</code>, the Parser happily builds an AST because structurally, it is a perfectly valid assignment of a division operation. The <strong>Semantic Analyzer</strong> steps in to catch logical impossibilities.</p>
+                
+                <h3>The Symbol Table</h3>
+                <p>To enforce rules, the Semantic Analyzer must maintain a massive, high-performance database called the <strong>Symbol Table</strong> (usually implemented as a Hash Map). Every time you declare a variable or function, it is logged in the Symbol Table alongside its Data Type, Memory Size, and Scope Level.</p>
+
+                <h3>Type Checking & Scope Resolution</h3>
+                <p>The Semantic Analyzer performs a Depth-First Search (DFS) traversal of the AST. At every node, it performs a lookup in the Symbol Table. It verifies that:</p>
+                <ul>
+                    <li>Variables are declared before they are used (Scope checking).</li>
+                    <li>You are not trying to assign a string to an integer variable (Type checking).</li>
+                    <li>Function calls provide the exact number of arguments required by the function signature.</li>
+                </ul>
+                <p>If the Semantic Analyzer finishes without throwing an error, the compiler guarantees that the program is logically sound and ready for intermediate translation.</p>
+            </article>
+
+            <!-- SIMULATOR 3: SEMANTIC -->
+            <div class="interactive-container">
+                <h3 style="text-align: center; margin-bottom: 1.5rem; color: var(--text-main);">Interactive Engine: Type Checker & Symbol Table</h3>
+                <div class="engine-controls">
+                    <input type="text" id="sem-input" value="int age = 25;" spellcheck="false" autocomplete="off" style="width: 100%;">
+                    <button id="btn-sem-rand" class="btn-retro" style="border-color: #3b82f6; color: #3b82f6;">Randomize</button>
+                    <button id="btn-sem" class="btn-retro success-btn">Run Type Check</button>
+                    <button id="btn-sem-reset" class="btn-retro danger-btn">Reset</button>
+                </div>
+                <div class="architecture-layout">
+                    <div class="sys-component phase-tier">
+                        <h4>Symbol Table (Memory Registry)</h4>
+                        <div id="sem-table-box" class="pipeline-box" style="flex-direction: column;">
+                            <span class="placeholder-text">Table Empty.</span>
+                        </div>
+                    </div>
+                    <div class="sys-component phase-tier">
+                        <h4>Type Check Logs</h4>
+                        <div id="sem-log-box" class="pipeline-box code-box">
+                            <span class="placeholder-text">Awaiting declaration...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="chapter-divider" id="ch5">
+
+            <header class="chapter-header">
+                <span class="chapter-badge">Chapter 5</span>
+                <h2 id="ch5">Intermediate Representation (IR)</h2>
+                <p class="chapter-subtitle">The universal, machine-independent architecture.</p>
+            </header>
+
+            <article class="deep-dive-text">
+                <p>At this stage, the Front-end has finished its job. But we do not translate the AST directly into assembly. Instead, we flatten the hierarchical tree into a linear, universal instruction set called <strong>Intermediate Representation (IR)</strong>. IR is designed to be language-agnostic and machine-agnostic.</p>
+                
+                <h3>Three-Address Code (TAC)</h3>
+                <p>A very common form of IR is Three-Address Code. The rule is strict: an instruction can have at most one operator on the right side, and assign to at most one temporary variable on the left side. Complex equations must be violently broken down.</p>
+                <p>If the AST contains the equation <code>result = (a + b) * (c - d)</code>, the IR generator will flatten it into sequential instructions utilizing temporary registers (<code>t1</code>, <code>t2</code>):</p>
+                <blockquote>
+                    <code>t1 = a + b</code><br>
+                    <code>t2 = c - d</code><br>
+                    <code>t3 = t1 * t2</code><br>
+                    <code>result = t3</code>
+                </blockquote>
+                <p>This flattened sequence mimics how an actual CPU processes data sequentially, making it incredibly easy for the Optimizer and Back-end to manipulate.</p>
+            </article>
+
+            <!-- SIMULATOR 4: IR -->
+            <div class="interactive-container">
+                <h3 style="text-align: center; margin-bottom: 1.5rem; color: var(--text-main);">Interactive Engine: Three-Address Code (IR) Generator</h3>
+                <div class="engine-controls">
+                    <input type="text" id="ir-input" value="X = (A + B) * C" spellcheck="false" autocomplete="off" style="width: 100%;">
+                    <button id="btn-ir-rand" class="btn-retro" style="border-color: #3b82f6; color: #3b82f6;">Randomize</button>
+                    <button id="btn-ir" class="btn-retro success-btn">Generate TAC</button>
+                    <button id="btn-ir-reset" class="btn-retro danger-btn">Reset</button>
+                </div>
+                <div class="sys-component phase-tier" style="max-width: 600px; margin: 0 auto;">
+                    <h4>Linear IR Output</h4>
+                    <div id="ir-out-box" class="pipeline-box code-box" style="min-height: 150px;">
+                        <span class="placeholder-text">Awaiting AST flattening...</span>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="chapter-divider" id="ch6">
+
+            <header class="chapter-header">
+                <span class="chapter-badge">Chapter 6</span>
+                <h2 id="ch6">Run-Time Environments</h2>
+                <p class="chapter-subtitle">Orchestrating memory during live execution.</p>
+            </header>
+
+            <article class="deep-dive-text">
+                <p>Before emitting the final machine code, the compiler must define how the program will physically manage RAM while it is running. The compiler injects instructions to establish the <strong>Run-Time Environment</strong>, strictly dividing memory into the Code Segment, the Data Segment, the Heap, and the Stack.</p>
+                
+                <h3>Activation Records (The Call Stack)</h3>
+                <p>Every time a function is called, the program cannot just blindly jump to that function's code. It must remember where it came from, and it needs fresh memory for the function's local variables. The compiler handles this by designing <strong>Activation Records (Stack Frames)</strong>.</p>
+                <p>When `Function A` calls `Function B`, an Activation Record for B is dynamically pushed onto the Call Stack. This record contains:</p>
+                <ul>
+                    <li><strong>Return Address:</strong> Exactly where to jump back to in `Function A` when finished.</li>
+                    <li><strong>Parameters:</strong> The arguments passed into `Function B`.</li>
+                    <li><strong>Local Variables:</strong> Space for variables defined inside `Function B`.</li>
+                    <li><strong>Saved Registers:</strong> Preserving CPU state so `Function A` isn't corrupted.</li>
+                </ul>
+                <p>When you trigger a <code>StackOverflowError</code> from infinite recursion, you are literally crashing the process because the physical RAM limit for stacking these Activation Records has been reached.</p>
+            </article>
+
+            <hr class="chapter-divider" id="ch7">
+
+            <header class="chapter-header">
+                <span class="chapter-badge">Chapter 7</span>
+                <h2 id="ch7">Code Optimization</h2>
+                <p class="chapter-subtitle">Mathematical wizardry for ultimate performance.</p>
+            </header>
+
+            <article class="deep-dive-text">
+                <p>The Optimizer is arguably the most complex software component in existence. Its job is to take the unoptimized IR and rewrite it to execute in fewer CPU cycles and consume less RAM, all without altering the mathematical outcome of the program. A modern C++ compiler (O3 optimization) will routinely generate assembly that beats hand-written assembly.</p>
+                
+                <h3>Optimization Techniques</h3>
+                <ul>
+                    <li><strong>Constant Folding:</strong> If you write <code>x = 24 * 60 * 60;</code>, the CPU shouldn't do that math at runtime. The optimizer folds it at compile-time to <code>x = 86400;</code>.</li>
+                    <li><strong>Dead Code Elimination:</strong> If the optimizer mathematically proves a block of code (like an <code>if(false)</code>) can never be reached, it deletes it entirely from the final binary, saving space.</li>
+                    <li><strong>Loop Unrolling:</strong> Loops cause "branching", which hurts the CPU's branch predictor pipeline. The optimizer will physically duplicate the code inside the loop to reduce the number of loop jumps required.</li>
+                </ul>
+            </article>
+
+            <!-- SIMULATOR 5: OPTIMIZER -->
+            <div class="interactive-container">
+                <h3 style="text-align: center; margin-bottom: 1.5rem; color: var(--text-main);">Interactive Engine: The Optimizer</h3>
+                <div class="engine-controls">
+                    <button id="btn-opt-load" class="btn-retro" style="border-color: #3b82f6; color: #3b82f6;">Load Unoptimized IR</button>
+                    <button id="btn-opt-fold" class="btn-retro success-btn">Apply Constant Folding</button>
+                    <button id="btn-opt-dead" class="btn-retro danger-btn">Eliminate Dead Code</button>
+                    <button id="btn-opt-reset" class="btn-retro danger-btn">Reset</button>
+                </div>
+                <div class="architecture-layout">
+                    <div class="sys-component phase-tier">
+                        <h4>Pre-Optimization IR</h4>
+                        <div id="opt-before-box" class="pipeline-box code-box">
+                            <span class="placeholder-text">Load IR to begin.</span>
+                        </div>
+                    </div>
+                    <div class="sys-component phase-tier" style="border-color: #10b981;">
+                        <h4>Optimized IR</h4>
+                        <div id="opt-after-box" class="pipeline-box code-box">
+                            <span class="placeholder-text">Awaiting optimizations.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="chapter-divider" id="ch8">
+
+            <header class="chapter-header">
+                <span class="chapter-badge">Chapter 8</span>
+                <h2 id="ch8">Target Code Generation</h2>
+                <p class="chapter-subtitle">Talking to the physical silicon.</p>
+            </header>
+
+            <article class="deep-dive-text">
+                <p>The final phase is the absolute Back-end. The compiler takes the heavily optimized, machine-independent IR and translates it into physical, machine-dependent Assembly Code (x86, ARM64, etc.). This requires deep knowledge of the specific processor's instruction set architecture (ISA).</p>
+                
+                <h3>The Register Allocation Problem</h3>
+                <p>The most difficult challenge in code generation is <strong>Register Allocation</strong>. The CPU has an incredibly limited number of blazing-fast registers (e.g., 16 or 32 registers). However, the IR assumes it has an infinite number of temporary variables (`t1` to `t999`).</p>
+                <p>The compiler must map these infinite variables to the finite physical registers. It does this by building an Interference Graph and solving the mathematical <strong>Graph Coloring Problem</strong>. If there are more active variables than physical registers, the compiler is forced to "spill" variables out to the slow RAM (the stack), drastically hurting performance. The ultimate goal of the Back-end is to minimize spills at all costs.</p>
+                <p>Once registers are allocated and instructions are selected, the compiler emits the final binary object file. The journey from human thought to electrical execution is complete.</p>
+            </article>
+
+        </main>
+    </div>
+
+    <div id="global-footer"></div>
+    <script src="../../../core.js"></script>
+    <script src="compiler-engine.js"></script>
+</body>
+</html>
