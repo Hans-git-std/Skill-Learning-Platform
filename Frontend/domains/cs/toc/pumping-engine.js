@@ -132,40 +132,38 @@
         });
 
         // result status
+        const boxW = Math.min(W - 20, 440);
         const statusColor = inLang ? '#10b981' : '#ef4444';
         ctx.fillStyle = statusColor + '22';
         ctx.strokeStyle = statusColor;
         ctx.lineWidth = 2;
         ctx.beginPath();
-        ctx.roundRect(W/2 - 220, H - 72, 440, 44, 8);
+        ctx.roundRect(W/2 - boxW/2, H - 72, boxW, 44, 8);
         ctx.fill();
         ctx.stroke();
         ctx.fillStyle = statusColor;
-        ctx.font = 'bold 15px Inter, sans-serif';
+        ctx.font = `bold ${W < 450 ? 12 : 15}px Inter, sans-serif`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         const aCount = str.filter(c=>c==='a').length;
         const bCount = str.filter(c=>c==='b').length;
-        ctx.fillText(
-            inLang
-                ? `✓ In a^n·b^n: ${aCount} a's = ${bCount} b's`
-                : `✗ NOT in a^n·b^n: ${aCount} a's ≠ ${bCount} b's — Pumping breaks it!`,
-            W/2, H - 50
-        );
+        const passMsg = W < 450 ? `✓ ${aCount} a's = ${bCount} b's` : `✓ In a^n·b^n: ${aCount} a's = ${bCount} b's`;
+        const failMsg = W < 450 ? `✗ ${aCount} a's ≠ ${bCount} b's (Broken)` : `✗ NOT in a^n·b^n: ${aCount} a's ≠ ${bCount} b's — Pumping breaks it!`;
+        ctx.fillText(inLang ? passMsg : failMsg, W/2, H - 50);
 
         // pump count display
         ctx.fillStyle = '#94a3b8';
         ctx.font = '13px Fira Code, monospace';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'bottom';
-        ctx.fillText(`Pumping i = ${pumpCount} | y = "ab"`, W/2, charY - 40);
+        ctx.fillText(`Pumping i = ${pumpCount} | y = "ab"`, W/2, charY - 65);
 
         // language definition
         ctx.fillStyle = '#60a5fa';
-        ctx.font = '13px Fira Code, monospace';
+        ctx.font = `bold ${W < 450 ? 11 : 13}px Fira Code, monospace`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'top';
-        ctx.fillText('Language: a^n b^n (equal number of a\'s and b\'s)', W/2, 16);
+        ctx.fillText(W < 450 ? 'Language: a^n b^n' : 'Language: a^n b^n (equal number of a\'s and b\'s)', W/2, 16);
     }
 
     document.getElementById('btn-pump-up').addEventListener('click', () => {

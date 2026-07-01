@@ -193,12 +193,13 @@
         ctx.setLineDash([]);
 
         // --- Status bar ---
+        const boxW = Math.min(W - 20, 540);
         ctx.fillStyle = 'rgba(0,0,0,0.55)';
         ctx.beginPath();
-        ctx.roundRect(W/2 - 270, H - 66, 540, 46, 8);
+        ctx.roundRect(W/2 - boxW/2, H - 66, boxW, 46, 8);
         ctx.fill();
         ctx.fillStyle = '#94a3b8';
-        ctx.font = '13px Fira Code, monospace';
+        ctx.font = `${W < 450 ? 10 : 13}px Fira Code, monospace`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText(statusMsg, W / 2, H - 43);

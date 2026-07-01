@@ -179,19 +179,20 @@
             ? `δ(${state}, ${getTape(head)}) → (${trans.newState}, ${trans.write}, ${trans.move > 0 ? 'R' : 'L'})`
             : halted ? 'HALTED — Accept state reached' : 'No transition defined';
 
+        const boxW = Math.min(W - 20, 500);
         ctx.fillStyle = 'rgba(0,0,0,0.5)';
         ctx.beginPath();
-        ctx.roundRect(W/2 - 250, H - 68, 500, 48, 8);
+        ctx.roundRect(W/2 - boxW/2, H - 68, boxW, 48, 8);
         ctx.fill();
         ctx.fillStyle = halted ? '#10b981' : '#60a5fa';
-        ctx.font = 'bold 13px Fira Code, monospace';
+        ctx.font = `bold ${W < 450 ? 11 : 13}px Fira Code, monospace`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText(transBox, W/2, H - 52);
 
         ctx.fillStyle = '#475569';
-        ctx.font = '11px Fira Code, monospace';
-        ctx.fillText(`Step: ${stepCount}  |  Head: cell[${head}]  |  ${statusMsg}`, W/2, H - 28);
+        ctx.font = `${W < 450 ? 9 : 11}px Fira Code, monospace`;
+        ctx.fillText(`Step: ${stepCount} | Head: cell[${head}]${W < 450 ? '' : ' | ' + statusMsg}`, W/2, H - 28);
     }
 
     function step() {

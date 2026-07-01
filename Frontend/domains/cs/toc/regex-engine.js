@@ -123,9 +123,11 @@
             ctx.textAlign = 'center';
             ctx.textBaseline = 'bottom';
             ctx.fillText(g.label, gx, beltY - 84);
-            ctx.fillStyle = '#475569';
-            ctx.font = '11px Inter, sans-serif';
-            ctx.fillText(g.desc, gx, beltY - 70);
+            if (W > 450) {
+                ctx.fillStyle = '#475569';
+                ctx.font = '11px Inter, sans-serif';
+                ctx.fillText(g.desc, gx, beltY - 70);
+            }
         });
 
         // exit zone
@@ -188,12 +190,21 @@
         // counter
         const passed  = blocks.filter(b => b.state === 'accepted').length;
         const rejected= blocks.filter(b => b.state === 'rejected').length;
-        ctx.fillStyle = '#10b981';
-        ctx.font = '13px Fira Code, monospace';
-        ctx.textAlign = 'right';
-        ctx.fillText(`✓ ${passed} passed`, W - 16, 16);
-        ctx.fillStyle = '#ef4444';
-        ctx.fillText(`✗ ${rejected} rejected`, W - 16, 36);
+        if (W > 450) {
+            ctx.fillStyle = '#10b981';
+            ctx.font = '13px Fira Code, monospace';
+            ctx.textAlign = 'right';
+            ctx.fillText(`✓ ${passed} passed`, W - 16, 16);
+            ctx.fillStyle = '#ef4444';
+            ctx.fillText(`✗ ${rejected} rejected`, W - 16, 36);
+        } else {
+            ctx.fillStyle = '#10b981';
+            ctx.font = '12px Fira Code, monospace';
+            ctx.textAlign = 'left';
+            ctx.fillText(`✓ ${passed} passed`, 16, 36);
+            ctx.fillStyle = '#ef4444';
+            ctx.fillText(`✗ ${rejected} rejected`, 16, 52);
+        }
     }
 
     function animate() {

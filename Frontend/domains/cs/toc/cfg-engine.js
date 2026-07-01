@@ -167,20 +167,24 @@
 
         // production rule display
         const step = STEPS[Math.min(stepIdx, STEPS.length - 1)];
+        const boxW = Math.min(W - 20, 520);
         ctx.fillStyle = 'rgba(0,0,0,0.55)';
         ctx.beginPath();
-        ctx.roundRect(W/2 - 260, H - 68, 520, 48, 8);
+        ctx.roundRect(W/2 - boxW/2, H - 68, boxW, 48, 8);
         ctx.fill();
 
         ctx.fillStyle = '#60a5fa';
-        ctx.font = 'bold 14px Inter, sans-serif';
+        ctx.font = `bold ${W < 450 ? 11 : 14}px Inter, sans-serif`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText(step.desc, W / 2, H - 44);
+        let descText = step.desc;
+        if (W < 450 && stepIdx === 1) descText = 'Apply S → aSb';
+        if (W < 450 && stepIdx === 2) descText = 'Apply inner S → ab';
+        ctx.fillText(descText, W / 2, H - 44);
 
         // grammar definition
         ctx.fillStyle = '#475569';
-        ctx.font = '13px Fira Code, monospace';
+        ctx.font = `${W < 450 ? 11 : 13}px Fira Code, monospace`;
         ctx.textAlign = 'center';
         ctx.fillText('Grammar: S → aSb  |  ab', W / 2, H - 18);
 

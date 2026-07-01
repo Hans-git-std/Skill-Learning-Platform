@@ -201,7 +201,7 @@
         ctx.fillStyle = 'rgba(0,0,0,0.5)';
         ctx.fillRect(0, H - 45, W, 45);
         ctx.fillStyle = '#94a3b8';
-        ctx.font = '13px Fira Code, monospace';
+        ctx.font = `${W < 450 ? 10 : 13}px Fira Code, monospace`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText(statusMsg, W / 2, H - 22);

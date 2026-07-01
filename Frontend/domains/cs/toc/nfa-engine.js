@@ -190,10 +190,19 @@
             ctx.fillText(INPUT[i], cx + charW/2, topY + charH/2);
         }
 
+        // status
+        ctx.fillStyle = 'rgba(0,0,0,0.5)';
+        ctx.fillRect(0, H-44, W, 44);
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = `${W < 450 ? 10 : 12}px Fira Code, monospace`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(statusMsg, W/2, H-22);
+
         // legend (thread colors)
-        if (threads.length > 0) {
+        if (threads.length > 0 && W > 450) {
             threads.forEach((t, i) => {
-                const lx = 16 + i * 80, ly = H - 40;
+                const lx = 16 + i * 80, ly = H - 65;
                 ctx.fillStyle = t.alive ? t.color : '#334155';
                 ctx.beginPath();
                 ctx.arc(lx + 8, ly, 7, 0, Math.PI*2);
@@ -206,15 +215,6 @@
                 ctx.fillText(`T${i+1}:${stLbl}${!t.alive?(t.accepted?'✓':'✗'):''}`, lx + 20, ly);
             });
         }
-
-        // status
-        ctx.fillStyle = 'rgba(0,0,0,0.5)';
-        ctx.fillRect(0, H-44, W, 44);
-        ctx.fillStyle = '#94a3b8';
-        ctx.font = '12px Fira Code, monospace';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(statusMsg, W/2, H-22);
     }
 
     function computeNextStates(stateIdx, sym) {
