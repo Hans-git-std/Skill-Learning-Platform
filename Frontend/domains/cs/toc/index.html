@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCME | Theory of Computation Deep Dive</title>
+    <link rel="stylesheet" href="../../../style.css">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="top-nav">
+        <div class="nav-left">
+            <h1 class="logo">SCME.</h1>
+            <a href="../../../domains/cs/index.html" class="btn-retro back-btn">&#8592; CS Hub</a>
+        </div>
+        <button id="theme-toggle" class="btn-retro">Toggle Theme</button>
+    </nav>
+
+    <div class="learning-environment">
+        <aside class="chapter-sidebar">
+            <h3>Theory of Computation</h3>
+            <ul class="chapter-list">
+                <li><a href="#ch1" class="active">1. Mathematical Foundations</a></li>
+                <li><a href="#ch2">2. Deterministic Finite Automata (DFA)</a></li>
+                <li><a href="#ch3">3. Non-Deterministic Automata (NFA)</a></li>
+                <li><a href="#ch4">4. Regular Expressions</a></li>
+                <li><a href="#ch5">5. The Pumping Lemma</a></li>
+                <li><a href="#ch6">6. Context-Free Grammars (CFG)</a></li>
+                <li><a href="#ch7">7. Pushdown Automata (PDA)</a></li>
+                <li><a href="#ch8">8. Turing Machines</a></li>
+                <li><a href="#ch9">9. The Halting Problem</a></li>
+                <li><a href="#ch10">10. Complexity (P vs NP)</a></li>
+            </ul>
+        </aside>
+
+        <main class="reading-core">
+
+            <!-- CHAPTER 1 -->
+            <header class="chapter-header" id="ch1">
+                <span class="chapter-badge">Chapter 1</span>
+                <h2>Mathematical Foundations &amp; Languages</h2>
+                <p class="chapter-subtitle">The alphabet of the universe and the definition of a string.</p>
+            </header>
+
+            <article class="deep-dive-text">
+                <p>Before we can build machines that compute, we must define exactly what they are computing on. In software engineering, we think of strings as just arrays of characters like <code>"Hello World"</code>. In the Theory of Computation, a string is a mathematical entity bound by strict formal logic.</p>
+
+                <h3>1. Alphabets and Strings</h3>
+                <p>Every language begins with an <strong>Alphabet</strong> (denoted by the Greek letter Sigma, <span class="math">&Sigma;</span>). An alphabet is simply a finite, non-empty set of symbols. For a standard computer, the alphabet is binary: <span class="math">&Sigma; = {0, 1}</span>. For the English language, it is the 26 letters.</p>
+                <p>A <strong>String</strong> (or word) is a finite sequence of symbols drawn from that alphabet. The length of a string <span class="math">w</span> is written as <span class="math">|w|</span>. But there is one special string that forms the bedrock of automata theory: the <strong>Empty String</strong> (denoted by Epsilon, <span class="math">&epsilon;</span>). It is a string with length zero. It is the mathematical equivalent of the number 0, allowing us to perform operations on nothing.</p>
+
+                <h3>2. Formal Languages</h3>
+                <p>If you take an alphabet <span class="math">&Sigma;</span>, and you generate <em>every possible string</em> of every possible length, you get the set <span class="math">&Sigma;*</span>. A <strong>Language</strong> <span class="math">L</span> is just a subset of <span class="math">&Sigma;*</span>. It is a collection of strings that follow a specific rule.</p>
+                <ul>
+                    <li>Let <span class="math">L<sub>1</sub></span> be the language of all binary strings that end in "11".</li>
+                    <li>Let <span class="math">L<sub>2</sub></span> be the language of all syntactically valid Python programs.</li>
+                    <li>Let <span class="math">L<sub>3</sub></span> be the language of all prime numbers written in binary.</li>
+                </ul>
+
+                <h3>3. Operations on Languages</h3>
+                <p>Because languages are just sets of strings, we can perform set operations on them:</p>
+                <ul>
+                    <li><strong>Union (<span class="math">A &cup; B</span>):</strong> The language containing all strings that are in A, or in B, or both.</li>
+                    <li><strong>Concatenation (<span class="math">A &#8728; B</span>):</strong> The language formed by taking a string from A and attaching a string from B to the end of it.</li>
+                    <li><strong>Kleene Star (<span class="math">A*</span>):</strong> The ultimate operation. It is the set of all strings formed by concatenating zero or more strings from A together. This is the mechanism that introduces infinity into formal models.</li>
+                </ul>
+
+                <blockquote>
+                    <strong>Architect's Reality Check:</strong> Why do we care about this abstract math? Because when you write a parser, a linter, or a compiler, your software is literally a mathematical machine trying to determine if a given text file (a string) belongs to the language of valid code. If it does, it compiles. If it doesn't, you get a Syntax Error. Computation is just language recognition.
+                </blockquote>
+            </article>
+
+            <hr class="chapter-divider" id="ch2">
+
+            <!-- CHAPTER 2 -->
+            <header class="chapter-header">
+                <span class="chapter-badge">Chapter 2</span>
+                <h2>Deterministic Finite Automata (DFA)</h2>
+                <p class="chapter-subtitle">Machines with zero memory and perfect predictability.</p>
+            </header>
+
+            <article class="deep-dive-text">
+                <p>The simplest model of a computer is a Deterministic Finite Automaton (DFA). It is a machine that reads a string of symbols one by one, from left to right, and changes its internal state based on what it reads. When it finishes reading, if it lands in an "Accepting State", the string is valid. If not, it is rejected.</p>
+
+                <h3>1. The Anatomy of a DFA</h3>
+                <p>A DFA is formally defined as a 5-tuple: <span class="math">(Q, &Sigma;, &delta;, q<sub>0</sub>, F)</span>.</p>
+                <ul>
+                    <li><strong><span class="math">Q</span>:</strong> A finite set of states. The machine must always be in exactly one of these states.</li>
+                    <li><strong><span class="math">&Sigma;</span>:</strong> The alphabet (the symbols it can read).</li>
+                    <li><strong><span class="math">&delta;</span>:</strong> The Transition Function. The strict rules that say: "If you are in state X and read symbol Y, go to state Z."</li>
+                    <li><strong><span class="math">q<sub>0</sub></span>:</strong> The start state. Where the machine begins.</li>
+                    <li><strong><span class="math">F</span>:</strong> The set of accept states. The goal destinations.</li>
+                </ul>
+
+                <h3>2. Determinism and Hardware Constraints</h3>
+                <p>The key word in DFA is <strong>Deterministic</strong>. This means the machine has no choices. For every state and every possible symbol it could read, there is exactly <em>one</em> defined path it must take. It cannot guess. It cannot do two things at once.</p>
+                <p>Crucially, a DFA has <strong>no memory</strong> other than the state it is currently in. It cannot look back at what it read previously, and it cannot count. It cannot recognize the language of "<span class="math">N</span> zeros followed by <span class="math">N</span> ones" because it cannot remember what <span class="math">N</span> is. It only knows where it is right now.</p>
+            </article>
+
+            <div id="dfa-simulator" class="interactive-container">
+                <div class="engine-controls">
+                    <button id="btn-dfa-run" class="btn-retro success-btn">&#9654; Execute Token Stream</button>
+                    <button id="btn-dfa-reset" class="btn-retro danger-btn">&#8635; Reset Machine</button>
+                </div>
+                <div class="sys-component canvas-mode" id="dfa-canvas-container"></div>
+            </div>
+
+            <hr class="chapter-divider" id="ch3">
+
+            <!-- CHAPTER 3 -->
+            <header class="chapter-header">
+                <span class="chapter-badge">Chapter 3</span>
+                <h2>Non-Deterministic Finite Automata (NFA)</h2>
+                <p class="chapter-subtitle">Quantum branching and the illusion of power.</p>
+            </header>
+
+            <article class="deep-dive-text">
+                <p>If determinism is rigid and predictable, non-determinism is magical. An NFA breaks the fundamental rule of DFAs: it is allowed to have choices. When an NFA reads a symbol, it can transition to multiple states simultaneously, or even transition without reading a symbol at all (the <span class="math">&epsilon;</span>-transition).</p>
+
+                <h3>1. Parallel Universe Execution</h3>
+                <p>When an NFA encounters a choice, it does not randomly guess. Instead, you can imagine it splits into parallel universes. It forks its execution thread, creating a new clone of itself for every possible path. These clones then continue reading the rest of the string independently.</p>
+                <p>How does it decide if a string is accepted? The rule is: <strong>If even a single parallel universe reaches an accept state, the entire machine accepts the string.</strong> All the other universes that crashed or ended in reject states are simply ignored.</p>
+
+                <h3>2. The Grand Equivalence Theorem</h3>
+                <p>Intuitively, an NFA seems infinitely more powerful than a DFA. It can guess! It can run parallel threads! However, one of the most profound proofs in computer science is that <strong>NFAs and DFAs are exactly equivalent in computational power.</strong></p>
+                <p>Any language recognized by a quantum-branching NFA can also be recognized by a rigid, boring DFA. We prove this via the <em>Subset Construction Algorithm</em>, which collapses the parallel universes of an NFA into single, massive states in a DFA. The tradeoff? An NFA with <span class="math">N</span> states might require a DFA with <span class="math">2<sup>N</sup></span> states to simulate it. You trade design complexity for an explosion in memory footprint.</p>
+            </article>
+
+            <div id="nfa-simulator" class="interactive-container">
+                <div class="engine-controls">
+                    <button id="btn-nfa-fork" class="btn-retro success-btn">&#10563; Trigger &epsilon;-Fork</button>
+                    <button id="btn-nfa-reset" class="btn-retro danger-btn">&#8635; Reset</button>
+                </div>
+                <div class="sys-component canvas-mode" id="nfa-canvas-container"></div>
+            </div>
+
+            <hr class="chapter-divider" id="ch4">
+
+            <!-- CHAPTER 4 -->
+            <header class="chapter-header">
+                <span class="chapter-badge">Chapter 4</span>
+                <h2>Regular Expressions</h2>
+                <p class="chapter-subtitle">The algebraic shorthand of finite automata.</p>
+            </header>
+
+            <article class="deep-dive-text">
+                <p>Drawing state diagrams with circles and arrows is visually helpful, but it is mathematically tedious. We need an algebraic way to describe the languages accepted by Finite Automata. This is where <strong>Regular Expressions (Regex)</strong> come in.</p>
+
+                <h3>1. The Holy Trinity of Regex</h3>
+                <p>Every complex regex in modern programming languages (like <code>^[a-z0-9]+@[a-z]+\.[a-z]{2,3}</code>) is built entirely on top of three fundamental mathematical operators:</p>
+                <ul>
+                    <li><strong>Union (+ or |):</strong> Describes choice. <span class="math">0 &cup; 1</span> means the string can be "0" or "1".</li>
+                    <li><strong>Concatenation:</strong> Describes sequence. <span class="math">0 &#8728; 1</span> means "0" followed immediately by "1".</li>
+                    <li><strong>Kleene Star (*):</strong> Describes repetition. <span class="math">0*</span> means zero or more "0"s.</li>
+                </ul>
+
+                <h3>2. Kleene's Theorem</h3>
+                <p>Kleene's Theorem proves that Regular Expressions, DFAs, and NFAs are three different ways of describing the exact same thing: <strong>Regular Languages</strong>. If you can write a Regex for a pattern, a compiler can automatically build an NFA for it, convert it to a DFA, and execute it on a CPU with <span class="math">O(N)</span> time complexity.</p>
+            </article>
+
+            <div id="regex-simulator" class="interactive-container">
+                <div class="engine-controls">
+                    <button id="btn-regex-compile" class="btn-retro success-btn">&#9654; Compile Pipeline</button>
+                    <button id="btn-regex-stream" class="btn-retro" style="border-color: #a855f7; color: #a855f7;">&#10549; Start Data Stream</button>
+                    <button id="btn-regex-reset" class="btn-retro danger-btn">&#8635; Reset</button>
+                </div>
+                <div class="sys-component canvas-mode" id="regex-canvas-container"></div>
+            </div>
+
+            <hr class="chapter-divider" id="ch5">
+
+            <!-- CHAPTER 5 -->
+            <header class="chapter-header">
+                <span class="chapter-badge">Chapter 5</span>
+                <h2>The Pumping Lemma for Regular Languages</h2>
+                <p class="chapter-subtitle">Mathematical weapons for proving computation limits.</p>
+            </header>
+
+            <article class="deep-dive-text">
+                <p>We know DFAs can compute Regular Languages. But what <em>can't</em> they compute? How do we mathematically prove that a DFA is incapable of checking if a string has perfectly balanced parentheses, or if it is a palindrome?</p>
+
+                <h3>1. The Pigeonhole Principle</h3>
+                <p>If you have 5 pigeons and 4 holes, at least one hole must contain two pigeons. DFAs have a finite number of states (let's say <span class="math">P</span> states). If a DFA reads a string longer than <span class="math">P</span> characters, it must visit at least one state more than once. It must enter a <strong>loop</strong>.</p>
+
+                <h3>2. The Lemma Mechanics</h3>
+                <p>The Pumping Lemma states that all regular languages have a critical property: if a string in the language is long enough, you can find a repeating subsection in the middle (the loop). You can then "pump" (duplicate) that middle section as many times as you want, or remove it entirely, and the resulting string <em>must still be in the language</em>.</p>
+                <p>To prove a language is NOT regular, we act as an adversary. We take their language, find a long string, and show that no matter how they try to isolate a loop, if we pump it, it breaks the rules of the language. Therefore, it cannot be processed by a finite memory machine.</p>
+            </article>
+
+            <div id="pumping-simulator" class="interactive-container">
+                <div class="engine-controls">
+                    <button id="btn-pump-up" class="btn-retro success-btn">&#10133; Pump Up</button>
+                    <button id="btn-pump-down" class="btn-retro danger-btn">&#10134; Pump Down</button>
+                    <button id="btn-pump-reset" class="btn-retro">&#8635; Reset</button>
+                </div>
+                <div class="sys-component canvas-mode" id="pumping-canvas-container"></div>
+            </div>
+
+            <hr class="chapter-divider" id="ch6">
+
+            <!-- CHAPTER 6 -->
+            <header class="chapter-header">
+                <span class="chapter-badge">Chapter 6</span>
+                <h2>Context-Free Grammars (CFG)</h2>
+                <p class="chapter-subtitle">The architectural blueprint of programming languages.</p>
+            </header>
+
+            <article class="deep-dive-text">
+                <p>Since Regular Languages are too weak to handle nested structures like balanced parentheses or nested <code>if</code> statements, we must ascend the Chomsky Hierarchy to a more powerful tier: <strong>Context-Free Languages</strong>.</p>
+
+                <h3>1. Production Rules</h3>
+                <p>A Context-Free Grammar does not read strings; it <em>generates</em> them. It consists of Variables (like <span class="math">S, A, B</span>), Terminals (the actual characters of the alphabet), and a set of Production Rules. A rule dictates how a Variable can be replaced.</p>
+
+                <div class="math-block">S &rarr; aSb &nbsp;|&nbsp; &epsilon;</div>
+
+                <p>This simple grammar creates the language <span class="math">a<sup>n</sup>b<sup>n</sup></span> (an equal number of 'a's and 'b's). You start with <span class="math">S</span>. You replace <span class="math">S</span> with <span class="math">aSb</span>. You do it again: <span class="math">a(aSb)b</span>. Eventually, you replace <span class="math">S</span> with <span class="math">&epsilon;</span>, resulting in <span class="math">aabb</span>. A DFA could never do this.</p>
+
+                <h3>2. Parse Trees and Ambiguity</h3>
+                <p>When a compiler reads your source code, it applies a CFG to generate a <strong>Parse Tree</strong>. The syntax of Java, C++, and Python are all defined by enormous Context-Free Grammars. If a string can be generated by a grammar in more than one way (resulting in two different parse trees), the grammar is <strong>Ambiguous</strong>. Ambiguity in a programming language means the compiler might interpret your code differently than you intended — catastrophic for software architecture.</p>
+            </article>
+
+            <div id="cfg-simulator" class="interactive-container">
+                <div class="engine-controls">
+                    <button id="btn-cfg-derive" class="btn-retro success-btn">&#10549; Apply Production Rule</button>
+                    <button id="btn-cfg-reset" class="btn-retro danger-btn">&#8635; Reset Tree</button>
+                </div>
+                <div class="sys-component canvas-mode" id="cfg-canvas-container"></div>
+            </div>
+
+            <hr class="chapter-divider" id="ch7">
+
+            <!-- CHAPTER 7 -->
+            <header class="chapter-header">
+                <span class="chapter-badge">Chapter 7</span>
+                <h2>Pushdown Automata (PDA)</h2>
+                <p class="chapter-subtitle">Granting finite machines infinite vertical memory.</p>
+            </header>
+
+            <article class="deep-dive-text">
+                <p>If Context-Free Grammars generate Context-Free Languages, what kind of machine recognizes them? We take our basic, memory-less DFA and attach a highly restrictive, infinite memory module to it: <strong>A Stack</strong>.</p>
+
+                <h3>1. The LIFO Constraint</h3>
+                <p>A Pushdown Automaton (PDA) is a finite state machine with a stack. The stack has infinite depth, but it is strictly Last-In, First-Out (LIFO). The machine can push symbols onto the top of the stack, and pop symbols off the top. It cannot see or access anything deep inside the stack; it only knows what is currently on top.</p>
+
+                <h3>2. Counting by Matching</h3>
+                <p>How does a PDA solve the <span class="math">a<sup>n</sup>b<sup>n</sup></span> problem that broke the DFA? As the PDA reads 'a's, it pushes them onto the stack. It doesn't know how many it pushed — it just pushes them. As soon as it reads a 'b', it pops an 'a' off the stack. If it finishes reading the string exactly as the stack becomes empty, it knows the counts matched perfectly.</p>
+
+                <blockquote>
+                    <strong>Architect's Reality Check:</strong> This is why the Call Stack in your operating system exists. When a function calls another function, the local variables are pushed onto the stack. When the function returns, they are popped off. The hardware execution of your code is literally a deterministic Pushdown Automaton managing a Context-Free Language of nested function calls.
+                </blockquote>
+            </article>
+
+            <div id="pda-simulator" class="interactive-container">
+                <div class="engine-controls">
+                    <button id="btn-pda-push" class="btn-retro success-btn">&#8679; Push Context</button>
+                    <button id="btn-pda-pop" class="btn-retro danger-btn">&#8681; Pop Context</button>
+                    <button id="btn-pda-reset" class="btn-retro">&#8635; Reset</button>
+                </div>
+                <div class="sys-component canvas-mode" id="pda-canvas-container"></div>
+            </div>
+
+            <hr class="chapter-divider" id="ch8">
+
+            <!-- CHAPTER 8 -->
+            <header class="chapter-header">
+                <span class="chapter-badge">Chapter 8</span>
+                <h2>Turing Machines</h2>
+                <p class="chapter-subtitle">The zenith of computation and the Church-Turing Thesis.</p>
+            </header>
+
+            <article class="deep-dive-text">
+                <p>In 1936, Alan Turing stripped away all engineering limitations and designed the ultimate theoretical computer. The Turing Machine takes a finite state control and gives it an infinitely long paper tape divided into cells. A Read/Write head hovers over the tape, capable of moving left or right, reading symbols, overwriting them, and shifting states.</p>
+
+                <h3>1. The Universal Model</h3>
+                <p>Unlike a PDA, a Turing Machine can access memory anywhere. It can write data, scroll a million cells to the left, read it, and scroll back. Because of this unrestricted read/write access to infinite memory, a Turing Machine can compute anything that is physically computable.</p>
+
+                <h3>2. The Church-Turing Thesis</h3>
+                <p>This thesis states that any algorithm, any computation, any mathematical process that can be carried out by a human, a quantum computer, or an alien supercomputer, can also be carried out by a standard Turing Machine. There is no machine more powerful. A modern laptop is mathematically equivalent to a Turing Machine tape moving back and forth — it just does it billions of times faster.</p>
+            </article>
+
+            <div id="turing-simulator" class="interactive-container">
+                <div class="engine-controls">
+                    <button id="btn-tm-step" class="btn-retro success-btn">&#9654; Step</button>
+                    <button id="btn-tm-run" class="btn-retro" style="border-color: #a855f7; color: #a855f7;">&#9654;&#9654; Auto-Compute</button>
+                    <button id="btn-tm-reset" class="btn-retro danger-btn">&#8635; Reset Tape</button>
+                </div>
+                <div class="sys-component canvas-mode" id="turing-canvas-container"></div>
+            </div>
+
+            <hr class="chapter-divider" id="ch9">
+
+            <!-- CHAPTER 9 -->
+            <header class="chapter-header">
+                <span class="chapter-badge">Chapter 9</span>
+                <h2>Decidability &amp; The Halting Problem</h2>
+                <p class="chapter-subtitle">Proving the terrifying boundaries of what code cannot do.</p>
+            </header>
+
+            <article class="deep-dive-text">
+                <p>Turing Machines represent the limit of computation. But what lies beyond that limit? Are there problems that simply cannot be solved by <em>any</em> computer, no matter how much time and memory it has? Yes. These are <strong>Undecidable Problems</strong>.</p>
+
+                <h3>1. The Halting Problem</h3>
+                <p>Every software engineer has written an infinite loop by mistake. Wouldn't it be great to write a compiler tool (let's call it <span class="math">H</span>) that takes your source code, analyzes it, and returns <code>True</code> if your code will eventually halt, and <code>False</code> if your code has an infinite loop?</p>
+                <p>Alan Turing proved that machine <span class="math">H</span> is mathematically impossible to build.</p>
+
+                <h3>2. The Contradiction Proof</h3>
+                <p>Assume machine <span class="math">H</span> exists. It takes a program <span class="math">P</span> as input and tells you if <span class="math">P</span> halts. Turing proposed a malicious program — let's call it <span class="math">Paradox</span>. It takes <span class="math">H</span> as a subroutine and asks <span class="math">H</span> to analyze its own source code.</p>
+                <ul>
+                    <li>If <span class="math">H</span> says <span class="math">Paradox</span> will halt, <span class="math">Paradox</span> deliberately enters an infinite loop.</li>
+                    <li>If <span class="math">H</span> says <span class="math">Paradox</span> will loop infinitely, <span class="math">Paradox</span> instantly halts.</li>
+                </ul>
+                <p>Whatever <span class="math">H</span> predicts, <span class="math">Paradox</span> does the exact opposite. Therefore, <span class="math">H</span> can never be correct. The Halting Problem is undecidable. There are fundamental walls in the universe of computation that no algorithm can ever breach.</p>
+            </article>
+
+            <hr class="chapter-divider" id="ch10">
+
+            <!-- CHAPTER 10 -->
+            <header class="chapter-header">
+                <span class="chapter-badge">Chapter 10</span>
+                <h2>Complexity Theory (P vs NP)</h2>
+                <p class="chapter-subtitle">The million-dollar mystery of time and verification.</p>
+            </header>
+
+            <article class="deep-dive-text">
+                <p>Just because a problem is computable doesn't mean it's practically solvable. Computability theory asks "Can it be solved?". Complexity theory asks "Can it be solved before the heat death of the universe?"</p>
+
+                <h3>1. P (Polynomial Time)</h3>
+                <p>The class <span class="math">P</span> contains all problems that can be solved quickly — in polynomial time, like <span class="math">O(n<sup>2</sup>)</span> or <span class="math">O(n<sup>3</sup>)</span>. Sorting algorithms, graph searches, and basic arithmetic live here. These are the problems our computers crunch effortlessly.</p>
+
+                <h3>2. NP (Non-Deterministic Polynomial Time)</h3>
+                <p>The class <span class="math">NP</span> contains all problems where, if you are magically handed the correct answer, you can <em>verify</em> that it's correct quickly. Sudoku is in NP. If someone hands you a filled-out Sudoku board, you can check if it's correct in seconds. But solving it from scratch is much harder. We currently rely on brute-force searching, which takes exponential time: <span class="math">O(2<sup>n</sup>)</span>.</p>
+
+                <h3>3. NP-Completeness and The Big Question</h3>
+                <p>At the top of NP sit the <strong>NP-Complete</strong> problems. These are the hardest problems in NP (like the Traveling Salesman problem, or Boolean Satisfiability). They are all secretly the same problem mathematically. If someone discovers a fast algorithm to solve just <em>one</em> NP-Complete problem, they instantly solve <em>all</em> of them.</p>
+                <p>This leads to the biggest unsolved problem in computer science: <strong>Does P = NP?</strong> Is every problem whose answer is easy to verify also easy to solve? If someone proves P = NP, all modern cryptography instantly breaks, AI optimization becomes trivial, and the world changes overnight. The Clay Mathematics Institute offers a <strong>1,000,000 USD prize</strong> to anyone who can prove it.</p>
+            </article>
+
+            <div id="complexity-simulator" class="interactive-container">
+                <div class="engine-controls">
+                    <button id="btn-spawn-problem" class="btn-retro success-btn">&#43; Spawn Problem Node</button>
+                    <button id="btn-collapse-pnp" class="btn-retro danger-btn">&#9881; Simulate P=NP Collapse</button>
+                    <button id="btn-complexity-reset" class="btn-retro">&#8635; Reset Universe</button>
+                </div>
+                <div class="sys-component canvas-mode" id="complexity-canvas-container"></div>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        const themeToggle = document.getElementById('theme-toggle');
+        if (themeToggle) {
+            themeToggle.addEventListener('click', () => {
+                document.body.classList.toggle('light-theme');
+            });
+        }
+    </script>
+    <script src="dfa-engine.js"></script>
+    <script src="nfa-engine.js"></script>
+    <script src="regex-engine.js"></script>
+    <script src="pumping-engine.js"></script>
+    <script src="cfg-engine.js"></script>
+    <script src="pda-engine.js"></script>
+    <script src="turing-engine.js"></script>
+    <script src="complexity-engine.js"></script>
+</body>
+</html>
