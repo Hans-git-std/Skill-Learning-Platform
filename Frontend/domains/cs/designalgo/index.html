@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SCME | Design & Analysis of Algorithms</title>
+    <!-- We will reference the general CS style as well if available, but primarily rely on local style -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="top-nav">
+        <div class="nav-left">
+            <h1 class="logo">SCME.</h1>
+            <a href="../../../domains/cs/index.html" class="btn-retro back-btn">← CS Hub</a>
+        </div>
+        <button id="theme-toggle" class="btn-retro">Toggle Theme</button>
+    </nav>
+
+    <div class="learning-environment">
+        <aside class="chapter-sidebar">
+            <h3>Algorithms (DAA)</h3>
+            <ul class="chapter-list">
+                <li><a href="#ch1" class="active">1. Fundamentals of Analysis</a></li>
+                <li><a href="#ch2">2. Divide & Conquer</a></li>
+                <li><a href="#ch3">3. Greedy Method</a></li>
+                <li><a href="#ch4">4. DP: Foundations</a></li>
+                <li><a href="#ch5">5. DP: Advanced</a></li>
+                <li><a href="#ch6">6. Backtracking</a></li>
+                <li><a href="#ch7">7. Branch & Bound</a></li>
+                <li><a href="#ch8">8. Graph Algorithms</a></li>
+                <li><a href="#ch9">9. String Matching</a></li>
+                <li><a href="#ch10">10. Complexity Classes</a></li>
+            </ul>
+        </aside>
+
+        <main class="reading-core">
+            <!-- CHAPTER 1 -->
+            <header class="chapter-header" id="ch1">
+                <span class="chapter-badge">Chapter 1</span>
+                <h2>Fundamentals of Algorithm Analysis</h2>
+                <p class="chapter-subtitle">Measuring the efficiency of computational thought.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>An algorithm is more than just code; it is a mathematical recipe for solving a problem. However, two different algorithms can solve the identical problem while exhibiting drastically different performance profiles. In the real world, where data scales to billions of records, an inefficient algorithm will cripple a system, rendering it functionally useless despite being "logically correct." This is why we analyze algorithms before we ever touch a compiler.</p>
+                
+                <h3>1. Asymptotic Notations: The Language of Scale</h3>
+                <p>When analyzing an algorithm, we don't measure the exact execution time in seconds. CPU speeds, memory architectures, and compiler optimizations vary wildly across machines. Instead, we measure the <strong>rate of growth</strong> relative to the input size, denoted as <code>n</code>. We use asymptotic notations to bound this growth.</p>
+                <ul>
+                    <li><strong>Big-O (O):</strong> Represents the asymptotic upper bound. It defines the worst-case scenario. If an algorithm is <code>O(n^2)</code>, it means the execution time will grow no faster than a quadratic curve.</li>
+                    <li><strong>Big-Omega (Ω):</strong> Represents the asymptotic lower bound. It defines the best-case scenario. An algorithm with <code>Ω(n)</code> will never execute faster than a linear curve.</li>
+                    <li><strong>Big-Theta (Θ):</strong> Represents a tight bound. It means the algorithm's growth rate is sandwiched exactly between an upper and lower bound of the same complexity class.</li>
+                </ul>
+                
+                <h3>2. Space-Time Complexity Trade-offs</h3>
+                <p>Optimization is an eternal negotiation between memory (Space) and CPU cycles (Time). We can often make an algorithm blazingly fast by pre-computing values and storing them in massive memory tables (like a Hash Map lookup, which is <code>O(1)</code> time but <code>O(n)</code> space). Conversely, we can save memory by re-calculating values on the fly, which drastically increases the time complexity. Understanding this trade-off is the hallmark of a senior engineer.</p>
+                
+                <blockquote>
+                    <strong>The Engineer's Axiom:</strong> "Premature optimization is the root of all evil" is a famous quote by Donald Knuth. However, choosing an <code>O(n^2)</code> algorithm when an <code>O(n log n)</code> alternative exists is not premature optimization—it is structural failure. Always choose the correct complexity class first.
+                </blockquote>
+            </article>
+            <div id="sim-ch1" class="interactive-container">
+                <div class="simulator-placeholder-text">
+                    [Step 3: Big-O Particle Race Simulator Engine will mount here]
+                </div>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 2 -->
+            <header class="chapter-header" id="ch2">
+                <span class="chapter-badge">Chapter 2</span>
+                <h2>Divide and Conquer</h2>
+                <p class="chapter-subtitle">Shattering massive problems into trivial fragments.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>The Divide and Conquer paradigm is perhaps the most elegant algorithmic strategy in computer science. It operates on a simple, recursive philosophy: if a problem is too large to solve directly, break it into smaller sub-problems. If the sub-problems are still too large, break them down again. Continue this recursion until the problems become so trivial that they can be solved instantly, and then merge those microscopic solutions back together to form the global answer.</p>
+                
+                <h3>1. The Anatomy of the Strategy</h3>
+                <p>A Divide and Conquer algorithm fundamentally consists of three distinct phases:</p>
+                <ul>
+                    <li><strong>Divide:</strong> Partition the input data <code>S</code> into <code>k</code> distinct subsets. For example, in Merge Sort, we divide an array of size <code>n</code> into two sub-arrays of size <code>n/2</code>.</li>
+                    <li><strong>Conquer:</strong> Recursively process each subset. The recursion bottoms out at the base case, where the subset contains just one element. By definition, a single element is perfectly sorted.</li>
+                    <li><strong>Combine:</strong> Merge the solutions of the sub-problems to produce the solution for the original dataset. The efficiency of the algorithm often hinges heavily on how fast this merging step can be performed.</li>
+                </ul>
+
+                <h3>2. The Master Theorem</h3>
+                <p>Analyzing recursive algorithms mathematically requires solving recurrence relations, which model the time taken as a function of the input size, e.g., <code>T(n) = a*T(n/b) + f(n)</code>. The <strong>Master Theorem</strong> is an algorithmic "cheat sheet" that provides direct asymptotic bounds for these recurrences. By comparing the cost of dividing/combining (<code>f(n)</code>) against the number of sub-problems (<code>a</code>) and the size of each sub-problem (<code>n/b</code>), we can instantly determine if the algorithm is <code>O(n log n)</code>, <code>O(n^2)</code>, or another complexity class without expanding the recursion tree manually.</p>
+            </article>
+            <div id="sim-ch2" class="interactive-container">
+                <div class="simulator-placeholder-text">
+                    [Step 3: Fractal Recursion Tree Simulator Engine will mount here]
+                </div>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 3 -->
+            <header class="chapter-header" id="ch3">
+                <span class="chapter-badge">Chapter 3</span>
+                <h2>The Greedy Method</h2>
+                <p class="chapter-subtitle">Optimal myopia: taking the best immediate choice.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>The Greedy Method makes decisions based purely on the information available at the current moment, without ever looking ahead to consider the long-term consequences. It builds a solution piece by piece, always choosing the next piece that offers the most immediate, localized benefit (the local optimum). The gamble of the greedy method is the hope that a sequence of locally optimal choices will spontaneously result in a globally optimal solution.</p>
+                
+                <h3>1. When does Greedy work?</h3>
+                <p>A greedy algorithm is only guaranteed to yield the optimal solution if the problem exhibits two specific mathematical properties:</p>
+                <ul>
+                    <li><strong>Greedy Choice Property:</strong> A global optimum can be arrived at by selecting a local optimum. In other words, making the greedy choice now will never restrict us from achieving the optimal solution later.</li>
+                    <li><strong>Optimal Substructure:</strong> An optimal solution to the problem contains within it optimal solutions to sub-problems.</li>
+                </ul>
+
+                <h3>2. Applications: Huffman Coding and Beyond</h3>
+                <p>One of the most profound applications of the greedy method is <strong>Huffman Coding</strong>, a lossless data compression algorithm. Instead of using a fixed 8 bits for every character, Huffman assigns variable-length binary codes based on frequency. The algorithm greedily pairs the two least frequent characters, merging them into a new node in a binary tree. This ensures that highly frequent characters (like 'e' or 'a') get very short bit sequences, while rare characters (like 'z' or 'q') get longer ones, mathematically guaranteeing the maximum possible compression ratio for a given alphabet distribution.</p>
+            </article>
+            <div id="sim-ch3" class="interactive-container">
+                <div class="simulator-placeholder-text">
+                    [Step 3: Holographic Huffman Compressor Engine will mount here]
+                </div>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 4 -->
+            <header class="chapter-header" id="ch4">
+                <span class="chapter-badge">Chapter 4</span>
+                <h2>Dynamic Programming - Foundations</h2>
+                <p class="chapter-subtitle">Those who forget the past are condemned to compute it.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Dynamic Programming (DP) is often viewed as the most intimidating algorithmic paradigm by students, yet it is conceptually just a very organized application of memory. Where Divide and Conquer breaks a problem into <em>independent</em> sub-problems, DP is used when the sub-problems <em>overlap</em>. A naive recursive algorithm will compute the same overlapping sub-problem millions of times, leading to catastrophic exponential time complexities <code>O(2^n)</code>.</p>
+                
+                <h3>1. The Core Philosophy: Memoization and Tabulation</h3>
+                <p>Dynamic Programming solves the overlap issue by introducing state memory. We calculate the solution to a sub-problem exactly once and store it. When the algorithm needs that solution again, it performs a <code>O(1)</code> lookup instead of re-executing the recursion.</p>
+                <ul>
+                    <li><strong>Memoization (Top-Down):</strong> We start at the main problem and recursively call sub-problems. However, before computing, we check a cache (usually an array or hash map). If the answer exists, we return it instantly. If not, we compute it, cache it, and then return it.</li>
+                    <li><strong>Tabulation (Bottom-Up):</strong> We eliminate recursion entirely. We build an n-dimensional table and iteratively fill it starting from the absolute smallest base cases, building upwards to the final answer. This avoids the overhead of recursive function calls on the call stack.</li>
+                </ul>
+
+                <h3>2. The Fibonacci Revelation</h3>
+                <p>Consider calculating the 50th Fibonacci number. A naive recursive <code>fib(n) = fib(n-1) + fib(n-2)</code> will perform roughly 2^50 operations—it might take years on a standard CPU. By implementing a simple 1D DP array to store previously computed values, the algorithm collapses into exactly 50 linear operations, executing in nanoseconds. This is a transformation from <code>O(2^n)</code> to <code>O(n)</code>. DP isn't just an optimization; it is a fundamental shift in the realm of physical computability.</p>
+            </article>
+            <div id="sim-ch4" class="interactive-container">
+                <div class="simulator-placeholder-text">
+                    [Step 3: Memoization Matrix Simulator Engine will mount here]
+                </div>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 5 -->
+            <header class="chapter-header" id="ch5">
+                <span class="chapter-badge">Chapter 5</span>
+                <h2>Advanced Dynamic Programming</h2>
+                <p class="chapter-subtitle">Multi-dimensional state management.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>While 1D DP (like Fibonacci) is trivial, real-world engineering problems often require tracking multiple constraints simultaneously. This elevates our state-space from a simple array to 2D, 3D, or even higher-dimensional matrices. Formulating the "State Transition Equation" for these problems is the true test of algorithmic mastery.</p>
+                
+                <h3>1. The 0/1 Knapsack Problem</h3>
+                <p>Imagine you are a thief with a knapsack that holds a maximum weight <code>W</code>. You are faced with <code>n</code> items, each with a specific weight and a specific value. You cannot take a fraction of an item (hence 0/1—you take it or you don't). A greedy approach (picking the highest value-to-weight ratio) fails here because leaving empty space might be sub-optimal. We must use a 2D DP table where the rows represent the items we can choose from, and the columns represent every possible weight capacity up to <code>W</code>. The algorithm systematically decides, for every cell, whether including the current item yields a higher total value than excluding it.</p>
+                
+                <h3>2. Matrix Chain Multiplication</h3>
+                <p>When multiplying a chain of matrices, the order of multiplication drastically affects the number of scalar operations required. <code>(A × B) × C</code> could take 10,000 operations, while <code>A × (B × C)</code> might take only 1,000. Finding the optimal parenthesization is a classic DP problem. We define a state <code>dp[i][j]</code> representing the minimum cost to multiply matrices from index <code>i</code> to <code>j</code>, and we iterate through all possible splitting points <code>k</code> between them. This requires visualizing a table being filled diagonally, a complex but highly symmetric memory pattern.</p>
+            </article>
+            <div id="sim-ch5" class="interactive-container">
+                <div class="simulator-placeholder-text">
+                    [Step 3: 0/1 Geometric Knapsack Optimizer Engine will mount here]
+                </div>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 6 -->
+            <header class="chapter-header" id="ch6">
+                <span class="chapter-badge">Chapter 6</span>
+                <h2>Backtracking</h2>
+                <p class="chapter-subtitle">Systematic exploration of the multi-verse.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Backtracking is an algorithmic technique for solving constraint satisfaction problems by incrementally building candidates to the solutions, and abandoning a candidate ("backtracking") as soon as it determines that the candidate cannot possibly be completed to a valid solution. It is a refined, optimized form of brute force.</p>
+                
+                <h3>1. The State-Space Tree</h3>
+                <p>Think of backtracking as exploring a massive maze. You walk down a path until you hit a dead end (a constraint violation). Instead of starting over from the beginning, you walk backward to the last intersection where you had an unexplored option, and take the new path. This exploration forms a "State-Space Tree." Backtracking is essentially a Depth-First Search (DFS) of this conceptual tree.</p>
+                
+                <h3>2. The N-Queens Problem</h3>
+                <p>The classic example is placing <code>N</code> chess queens on an <code>N x N</code> board so that no two queens attack each other. The algorithm places a queen in the first column, then moves to the second column. If it finds a safe square, it places the next queen. If a column has zero safe squares, the board state is fundamentally broken. The algorithm immediately aborts, backtracks to the previous column, and moves that queen to a new position. This simple pruning prevents the algorithm from checking billions of trivially invalid board states.</p>
+            </article>
+            <div id="sim-ch6" class="interactive-container">
+                <div class="simulator-placeholder-text">
+                    [Step 3: N-Queens Multiverse Simulator Engine will mount here]
+                </div>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 7 -->
+            <header class="chapter-header" id="ch7">
+                <span class="chapter-badge">Chapter 7</span>
+                <h2>Branch and Bound</h2>
+                <p class="chapter-subtitle">Pruning the exponential explosion.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Branch and Bound is an advanced design paradigm specifically utilized for solving combinatorial optimization problems. While Backtracking is used for finding <em>any</em> valid solution (or all solutions), Branch and Bound is strictly used for finding the <em>optimal</em> solution (minimum or maximum) in an exponential search space.</p>
+                
+                <h3>1. The Mechanics of Bounding</h3>
+                <p>The algorithm maintains a global variable tracking the "best solution found so far" (the Upper Bound in a minimization problem). As it explores the state-space tree (Branching), it mathematically estimates the absolute lowest possible cost that the current branch could ever achieve (the Lower Bound). If this computed Lower Bound is strictly greater than the global Upper Bound, the entire branch is mathematically proven to be sub-optimal. The algorithm immediately terminates exploration of that branch, effectively "pruning" millions of potential states from existence in a single operation.</p>
+                
+                <h3>2. The Traveling Salesperson Problem (TSP)</h3>
+                <p>In TSP, a salesperson must visit <code>N</code> cities exactly once and return to the origin, minimizing the total travel distance. The brute force solution is <code>O(N!)</code>, which is computationally intractable for even 20 cities. By applying Branch and Bound using techniques like cost matrix reduction to calculate the Lower Bound, we can prune massive swaths of the permutation tree, making the problem solvable in reasonable time for much larger datasets in industrial routing applications.</p>
+            </article>
+            <div id="sim-ch7" class="interactive-container">
+                <div class="simulator-placeholder-text">
+                    [Step 3: TSP Global Pathfinder Engine will mount here]
+                </div>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 8 -->
+            <header class="chapter-header" id="ch8">
+                <span class="chapter-badge">Chapter 8</span>
+                <h2>Graph Algorithms</h2>
+                <p class="chapter-subtitle">Navigating nodes, edges, and complex networks.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>A Graph is a non-linear data structure consisting of Nodes (Vertices) connected by Edges. The internet, social networks, Google Maps, and neural networks are all mathematically modeled as graphs. Graph algorithms are the engines that traverse, analyze, and optimize these structures.</p>
+                
+                <h3>1. Traversals: BFS vs DFS</h3>
+                <p>Graph traversal requires tracking which nodes have been visited to prevent infinite loops in cyclic graphs. <strong>Breadth-First Search (BFS)</strong> uses a Queue to explore outward in concentric layers, making it the perfect tool for finding the unweighted shortest path. <strong>Depth-First Search (DFS)</strong> uses a Stack (or recursion) to plunge as deep as possible before backtracking, making it ideal for topological sorting, cycle detection, and solving mazes.</p>
+                
+                <h3>2. Dijkstra's Algorithm</h3>
+                <p>When edges have weights (representing distance, cost, or latency), BFS fails. <strong>Dijkstra's Algorithm</strong> solves the Single-Source Shortest Path problem on weighted graphs with non-negative edge weights. It utilizes a Priority Queue (Min-Heap) to greedily select the unvisited node with the smallest tentative distance from the source. It then "relaxes" all outgoing edges, updating their neighbors if a shorter path is found. This elegant algorithm powers the routing protocols of the global internet (like OSPF).</p>
+            </article>
+            <div id="sim-ch8" class="interactive-container">
+                <div class="simulator-placeholder-text">
+                    [Step 3: Topological Web Crawler Simulator Engine will mount here]
+                </div>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 9 -->
+            <header class="chapter-header" id="ch9">
+                <span class="chapter-badge">Chapter 9</span>
+                <h2>String Matching Algorithms</h2>
+                <p class="chapter-subtitle">The mechanics of search and bioinformatics.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>String matching is the problem of finding one or all occurrences of a "pattern" string within a larger "text" string. While simple in concept, searching massive datasets—such as indexing the web or scanning a 3-billion-base-pair human genome—requires highly sophisticated logic to avoid <code>O(n*m)</code> worst-case scenarios.</p>
+                
+                <h3>1. The Knuth-Morris-Pratt (KMP) Algorithm</h3>
+                <p>The naive approach to string matching shifts the pattern by exactly one character whenever a mismatch occurs. The KMP algorithm observes that the pattern itself contains structural information that we can exploit. It pre-processes the pattern to generate a Longest Prefix Suffix (LPS) array. When a mismatch occurs, the LPS array tells the algorithm exactly how far it can mathematically "jump" the pattern forward without missing any potential matches, completely eliminating redundant character comparisons and bringing the time complexity down to a strict <code>O(n + m)</code>.</p>
+                
+                <h3>2. Rabin-Karp and Hashing</h3>
+                <p>The Rabin-Karp algorithm takes a fundamentally different approach using mathematical hashing. Instead of comparing characters individually, it computes a numerical hash value for the pattern, and then computes a rolling hash for every substring of the text. If the hash values match, it performs a full string comparison to verify. The genius of Rabin-Karp is the "rolling hash"—by sliding the window one character to the right, it can update the hash in <code>O(1)</code> time by simply subtracting the outgoing character's value and adding the incoming one.</p>
+            </article>
+            <div id="sim-ch9" class="interactive-container">
+                <div class="simulator-placeholder-text">
+                    [Step 3: KMP Pattern Scanner Simulator Engine will mount here]
+                </div>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 10 -->
+            <header class="chapter-header" id="ch10">
+                <span class="chapter-badge">Chapter 10</span>
+                <h2>Complexity Classes & Intractability</h2>
+                <p class="chapter-subtitle">The absolute boundaries of computation.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>We conclude our study of algorithms not with what computers can do, but with what they fundamentally <em>cannot</em> do. Some problems are so mathematically dense that no amount of Moore's Law or hardware scaling will ever solve them efficiently. Understanding these boundaries prevents engineers from wasting years trying to solve the unsolvable.</p>
+                
+                <h3>1. P versus NP</h3>
+                <p>This is the most famous unsolved problem in theoretical computer science. <strong>P (Polynomial Time)</strong> represents all problems that a computer can <em>solve</em> quickly (e.g., Sorting, Shortest Path). <strong>NP (Nondeterministic Polynomial Time)</strong> represents all problems where, if a computer is given a potential solution, it can <em>verify</em> if that solution is correct quickly (e.g., Sudoku, TSP). The million-dollar question is: does P = NP? If being able to verify a solution quickly means you can also compute it quickly, the world as we know it changes (all modern cryptography collapses).</p>
+                
+                <h3>2. NP-Hard and NP-Complete</h3>
+                <p><strong>NP-Complete</strong> problems are the "hardest" problems in NP. They possess an incredible property: if you find a polynomial-time algorithm for just <em>one</em> NP-Complete problem, you mathematically prove that P = NP, because every other NP problem can be "reduced" (translated) into your problem in polynomial time. Classic NP-Complete problems include the Boolean Satisfiability Problem (SAT), Graph 3-Coloring, and the Traveling Salesperson Problem. When faced with an NP-Complete problem in industry, we do not try to find the perfect answer. We rely on heuristic algorithms, approximations, and genetic algorithms to find a "good enough" solution.</p>
+            </article>
+            <div id="sim-ch10" class="interactive-container">
+                <div class="simulator-placeholder-text">
+                    [Step 3: The Complexity Gravity Well Simulator Engine will mount here]
+                </div>
+            </div>
+
+            <!-- Spacer for scrolling -->
+            <div style="height: 100px;"></div>
+        </main>
+    </div>
+
+    <script>
+        // Simple Theme Toggle Logic matching the existing UI behavior
+        const themeBtn = document.getElementById('theme-toggle');
+        themeBtn.addEventListener('click', () => {
+            const current = document.documentElement.getAttribute('data-theme');
+            if(current === 'dark') {
+                document.documentElement.removeAttribute('data-theme');
+            } else {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            }
+        });
+
+        // Simple smooth scroll and active state management for sidebar
+        const chapters = document.querySelectorAll('.chapter-header');
+        const navLinks = document.querySelectorAll('.chapter-list a');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            chapters.forEach(chapter => {
+                const chapterTop = chapter.offsetTop;
+                if (pageYOffset >= chapterTop - 150) {
+                    current = chapter.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href').includes(current)) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+    <script src="daa-engine.js"></script>
+</body>
+</html>
