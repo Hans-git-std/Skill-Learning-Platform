@@ -1,0 +1,643 @@
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@300;400;500;600&family=Outfit:wght@500;700;800&display=swap');
+
+:root {
+    /* Light Mode Default */
+    --bg-primary: #ffffff;
+    --bg-secondary: #f4f4f5;
+    --bg-panel: #e4e4e7;
+    --text-primary: #09090b;
+    --text-secondary: #52525b;
+    --accent-neon: #ea580c; /* Orange focus for COA */
+    --accent-purple: #4f46e5; /* Indigo */
+    --accent-green: #059669;
+    --accent-warning: #b91c1c;
+    --border-color: #d4d4d8;
+    --font-heading: 'Outfit', sans-serif;
+    --font-body: 'Inter', sans-serif;
+    --font-mono: 'Fira Code', monospace;
+    --sidebar-width: 300px;
+}
+
+[data-theme="dark"] {
+    /* Dark Mode Overrides */
+    --bg-primary: #09090b;
+    --bg-secondary: #121214;
+    --bg-panel: #18181b;
+    --text-primary: #fafafa;
+    --text-secondary: #a1a1aa;
+    --accent-neon: #f97316; /* Bright Orange */
+    --accent-purple: #6366f1;
+    --accent-green: #10b981;
+    --accent-warning: #ef4444;
+    --border-color: #27272a;
+}
+
+/* STRICT ZERO OVERFLOW */
+html, body {
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: hidden; /* Absolute enforcement */
+    margin: 0;
+    padding: 0;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    line-height: 1.65;
+    box-sizing: border-box;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+*, *::before, *::after {
+    box-sizing: inherit;
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    line-height: 1.2;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+}
+
+h2 { font-size: 2.25rem; letter-spacing: -0.02em; }
+h3 { font-size: 1.5rem; margin-top: 2rem; color: var(--accent-neon); }
+h4 { font-size: 1.25rem; margin-top: 1.5rem; }
+
+p { margin-bottom: 1.25rem; font-size: 1.05rem; color: var(--text-secondary); }
+strong { color: var(--text-primary); font-weight: 600; }
+code { 
+    font-family: var(--font-mono); 
+    background: var(--bg-panel);
+    padding: 0.2em 0.4em;
+    border-radius: 4px;
+    font-size: 0.9em;
+    color: var(--accent-purple);
+}
+
+/* Layout */
+.learning-environment {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+@media (min-width: 1024px) {
+    .learning-environment {
+        flex-direction: row;
+    }
+}
+
+/* Sidebar */
+.chapter-sidebar {
+    width: 100%;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+    padding: 2rem;
+    position: relative;
+    z-index: 10;
+}
+
+@media (min-width: 1024px) {
+    .chapter-sidebar {
+        width: var(--sidebar-width);
+        flex-shrink: 0;
+        height: calc(100vh - 70px);
+        position: sticky;
+        top: 70px;
+        border-bottom: none;
+        border-right: 1px solid var(--border-color);
+        overflow-y: auto;
+    }
+}
+
+.chapter-sidebar h3 {
+    font-size: 1.2rem;
+    color: var(--text-primary);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 1.5rem;
+    margin-top: 0;
+}
+
+.chapter-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.chapter-list li {
+    margin-bottom: 0.5rem;
+}
+
+.chapter-list a {
+    display: block;
+    text-decoration: none;
+    color: var(--text-secondary);
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+.chapter-list a:hover {
+    background: var(--bg-panel);
+    color: var(--accent-neon);
+    transform: translateX(5px);
+}
+
+.chapter-list a.active {
+    background: rgba(249, 115, 22, 0.1);
+    color: var(--accent-neon);
+    border-left: 3px solid var(--accent-neon);
+}
+
+/* Main Content Area */
+.reading-core {
+    flex-grow: 1;
+    padding: 2rem 1.5rem;
+    max-width: 100%;
+}
+
+@media (min-width: 768px) {
+    .reading-core {
+        padding: 4rem;
+        max-width: 900px;
+        margin: 0 auto;
+    }
+}
+
+/* Chapter Headers */
+.chapter-header {
+    margin-bottom: 2.5rem;
+}
+
+.chapter-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    background: rgba(99, 102, 241, 0.15);
+    color: var(--accent-purple);
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 1rem;
+    border: 1px solid rgba(99, 102, 241, 0.3);
+}
+
+.chapter-subtitle {
+    font-size: 1.25rem;
+    color: var(--accent-neon);
+    font-weight: 500;
+}
+
+.chapter-divider {
+    border: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border-color), transparent);
+    margin: 5rem 0;
+}
+
+/* Deep Dive Text specific styling */
+.deep-dive-text blockquote {
+    background: var(--bg-panel);
+    border-left: 4px solid var(--accent-purple);
+    padding: 1.5rem;
+    margin: 2rem 0;
+    border-radius: 0 8px 8px 0;
+    font-style: italic;
+    color: var(--text-primary);
+}
+
+.deep-dive-text blockquote strong {
+    color: var(--accent-purple);
+    font-style: normal;
+}
+
+/* Simulators Base Styling */
+.interactive-container {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 3rem 0;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+@media (min-width: 768px) {
+    .interactive-container {
+        padding: 2.5rem;
+    }
+}
+
+.engine-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.btn-retro {
+    background: transparent;
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    padding: 0.75rem 1.5rem;
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 0.9rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.btn-retro:hover {
+    background: var(--bg-panel);
+    border-color: var(--text-secondary);
+}
+
+.architecture-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    width: 100%;
+}
+
+.sys-component {
+    background: var(--bg-panel);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.engine-caption {
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-top: 1.5rem;
+}
+
+.top-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    height: 70px;
+}
+
+.nav-left {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+.logo {
+    margin: 0;
+    font-size: 1.5rem;
+    color: var(--accent-neon);
+}
+
+.simulator-placeholder {
+    opacity: 0.5;
+    border: 2px dashed var(--accent-purple);
+}
+
+/* -------------------------------------
+   Simulator 1: IEEE 754
+-------------------------------------- */
+.fp-breakdown {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    justify-content: center;
+}
+.fp-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: rgba(0,0,0,0.1);
+    padding: 1rem;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+.fp-section h5 {
+    margin-top: 0;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    letter-spacing: 1px;
+}
+.bit-container {
+    display: flex;
+    gap: 2px;
+}
+.fp-bit {
+    width: 20px;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    cursor: pointer;
+    user-select: none;
+}
+.fp-bit:hover { border-color: var(--accent-neon); }
+.fp-bit[data-val="1"] {
+    background: rgba(234, 88, 12, 0.2);
+    color: var(--accent-neon);
+}
+.sign-sec .fp-bit[data-val="1"] { background: rgba(239, 68, 68, 0.2); color: var(--accent-warning); }
+.exp-sec .fp-bit[data-val="1"] { background: rgba(16, 185, 129, 0.2); color: var(--accent-green); }
+
+.fp-formula {
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: 1.1rem;
+    background: var(--bg-primary);
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+
+/* -------------------------------------
+   Simulator 2: ALU Sandbox
+-------------------------------------- */
+.alu-diagram {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    position: relative;
+}
+.alu-buses-in {
+    display: flex;
+    gap: 4rem;
+}
+.bus {
+    font-family: var(--font-mono);
+    background: var(--bg-primary);
+    border: 1px solid var(--accent-purple);
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    color: var(--accent-purple);
+}
+.alu-core-shape {
+    display: flex;
+    border-top: 60px solid var(--bg-primary);
+    border-left: 20px solid transparent;
+    border-right: 20px solid transparent;
+    border-bottom: 20px solid transparent;
+    width: 300px;
+    height: 150px;
+    position: relative;
+    justify-content: center;
+}
+/* A clever way to draw the V-shape of an ALU */
+.alu-core-shape::before {
+    content: '';
+    position: absolute;
+    top: -60px;
+    left: 110px;
+    border-top: 30px solid transparent;
+    border-left: 20px solid var(--bg-panel);
+    border-right: 20px solid var(--bg-panel);
+}
+.alu-core-shape {
+    background: var(--bg-panel);
+    clip-path: polygon(0 0, 40% 0, 50% 20%, 60% 0, 100% 0, 80% 100%, 20% 100%);
+    border-top: none;
+    align-items: flex-end;
+    padding-bottom: 1rem;
+}
+.alu-logic-blocks {
+    display: flex;
+    gap: 0.5rem;
+    position: absolute;
+    top: 20px;
+}
+.logic-block {
+    font-size: 0.7rem;
+    padding: 0.2rem;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border-color);
+    opacity: 0.3;
+}
+.logic-block.active {
+    opacity: 1;
+    border-color: var(--accent-neon);
+    background: rgba(234, 88, 12, 0.2);
+    color: var(--accent-neon);
+}
+.alu-mux {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 0.7rem;
+    border: 1px dashed var(--border-color);
+    padding: 0.2rem 1rem;
+}
+
+.alu-flags {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+}
+.flag {
+    padding: 0.2rem 0.5rem;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+}
+.flag.active {
+    background: rgba(16, 185, 129, 0.2);
+    border-color: var(--accent-green);
+    color: var(--accent-green);
+}
+
+/* -------------------------------------
+   Simulator 3: Visual Assembly
+-------------------------------------- */
+.asm-lines {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+}
+.asm-line {
+    padding: 0.5rem;
+    border-radius: 4px;
+    color: var(--text-secondary);
+}
+.asm-line .pc-addr {
+    color: var(--accent-purple);
+    margin-right: 1rem;
+    opacity: 0.7;
+}
+.asm-line.active {
+    background: rgba(234, 88, 12, 0.1);
+    color: var(--text-primary);
+    border-left: 3px solid var(--accent-neon);
+}
+
+.cpu-registers {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+}
+.reg-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 0.5rem 1rem;
+    min-width: 80px;
+}
+.reg-name {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.2rem;
+}
+.reg-val {
+    font-family: var(--font-mono);
+    font-weight: bold;
+    color: var(--text-primary);
+}
+.reg-val.highlight {
+    color: var(--accent-neon);
+    animation: pulseVal 0.5s ease;
+}
+@keyframes pulseVal {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); color: var(--accent-green); }
+    100% { transform: scale(1); }
+}
+
+/* CHAPTER 4: Microcode */
+.ch4-micro-rom {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    padding: 1rem;
+    border-radius: 6px;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+/* CHAPTER 5: Datapath */
+.ch5-datapath {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+}
+.dp-stage {
+    flex: 1;
+    min-width: 100px;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1rem 0.5rem;
+    text-align: center;
+    background: var(--bg-primary);
+    position: relative;
+    transition: border-color 0.3s;
+}
+.dp-stage h4 {
+    margin: 0;
+    color: var(--accent-blue);
+    font-size: 1.2rem;
+}
+.dp-stage span {
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 0.5rem;
+}
+.dp-token {
+    width: 20px;
+    height: 20px;
+    background: var(--accent-neon);
+    border-radius: 50%;
+    margin: 0 auto;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+.dp-token.active {
+    opacity: 1;
+    box-shadow: 0 0 10px var(--accent-neon);
+}
+
+/* CHAPTER 6: Pipeline */
+.pipeline-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    text-align: center;
+}
+.pipeline-table th, .pipeline-table td {
+    border: 1px solid var(--border-color);
+    padding: 0.5rem;
+}
+.pipeline-table th {
+    background: var(--bg-panel);
+    color: var(--accent-neon);
+}
+.pipeline-table td.pipe-s {
+    background: rgba(99, 102, 241, 0.1);
+}
+.pipeline-table td.pipe-stall {
+    background: rgba(234, 88, 12, 0.2);
+    color: var(--accent-neon);
+    font-weight: bold;
+}
+
+/* CHAPTER 7: Cache */
+.cache-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    text-align: center;
+}
+.cache-table th, .cache-table td {
+    border: 1px solid var(--border-color);
+    padding: 0.5rem;
+}
+.cache-table th {
+    background: var(--bg-panel);
+    color: var(--text-primary);
+}
+.cache-table tr.active td {
+    background: rgba(16, 185, 129, 0.2);
+}
+.cache-v.active {
+    color: var(--accent-green);
+    font-weight: bold;
+}
