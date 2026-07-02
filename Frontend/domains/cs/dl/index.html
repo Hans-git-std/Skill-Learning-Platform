@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SCME | Digital Logic Deep Dive</title>
+    <link rel="stylesheet" href="../../../style.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="top-nav">
+        <div class="nav-left">
+            <h1 class="logo">SCME.</h1>
+            <a href="../../../domains/cs/index.html" class="btn-retro back-btn">← CS Hub</a>
+        </div>
+        <button id="theme-toggle" class="btn-retro">Toggle Theme</button>
+    </nav>
+
+    <div class="learning-environment">
+        <aside class="chapter-sidebar">
+            <h3>Digital Logic</h3>
+            <ul class="chapter-list">
+                <li><a href="#ch1" class="active">1. Data Representation</a></li>
+                <li><a href="#ch2">2. Boolean Algebra & Gates</a></li>
+                <li><a href="#ch3">3. Combinational Logic</a></li>
+                <li><a href="#ch4">4. Arithmetic Circuits</a></li>
+                <li><a href="#ch5">5. Data Routing (MUX)</a></li>
+                <li><a href="#ch6">6. Sequential Logic (Time)</a></li>
+                <li><a href="#ch7">7. Shift Registers</a></li>
+                <li><a href="#ch8">8. Modulo Counters</a></li>
+                <li><a href="#ch9">9. Finite State Machines</a></li>
+                <li><a href="#ch10">10. LUTs & FPGAs</a></li>
+            </ul>
+        </aside>
+
+        <main class="reading-core">
+            <!-- CHAPTER 1 -->
+            <header class="chapter-header" id="ch1">
+                <span class="chapter-badge">Chapter 1</span>
+                <h2>Data Representation & Hardware Reality</h2>
+                <p class="chapter-subtitle">The physical truth behind the numbers in your RAM.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>In high-level programming, we take numbers for granted. You declare an <code>int</code>, and you assume the computer just knows what the number "42" is. But there is no such thing as a number inside a CPU. A computer is nothing but a highly organized rock that we tricked into thinking by pumping lightning into it. <strong>Data is just voltage.</strong></p>
+                
+                <h3>1. The Voltage Illusion</h3>
+                <p>When we say a bit is a "1" or a "0", what we actually mean is that a specific microscopic wire inside the silicon chip is currently carrying a voltage (usually around 1.0 to 3.3 volts) or it is grounded (0 volts). The "1" and "0" are just human abstractions for HIGH and LOW voltage. If a cosmic ray hits that wire and slightly alters the voltage, your "0" might accidentally flip to a "1", causing what is known as a single-event upset.</p>
+                
+                <h3>2. Binary, Hex, and Two's Complement</h3>
+                <p>Because we only have two states (HIGH and LOW), we must count in Base-2 (Binary). To represent the number 13, we need four wires: <code>1101</code> (8 + 4 + 0 + 1). But writing out 64-bit numbers in binary is impossible for human engineers to read quickly, so we compress binary into Hexadecimal (Base-16). Four wires perfectly map to one Hex digit. <code>1101</code> becomes <code>0xD</code>.</p>
+                <p>But how do we represent negative numbers? The hardware cannot physically draw a minus sign on a wire. Engineers devised <strong>Two's Complement</strong>. By looking at the Most Significant Bit (MSB—the wire furthest to the left), we decide the sign. If the MSB is 1, the number is negative. To find its value, you flip all the bits and add 1. This mathematical trick is revolutionary because it means the CPU doesn't need a separate subtraction circuit; it can just feed negative numbers into its addition circuit and get the correct answer naturally.</p>
+                
+                <blockquote>
+                    <strong>Hardware Architect's Reality:</strong> The type system in C or Java (like <code>unsigned int</code> vs <code>int</code>) doesn't exist in the physical silicon. The CPU simply sees 32 wires with voltages on them. It is strictly up to the compiler and the Assembly instructions to decide whether to interpret that exact same pattern of voltages as a massive positive number or a negative number.
+                </blockquote>
+            </article>
+            <div id="sim-ch1" class="interactive-container">
+                <div class="engine-controls">
+                    <button id="btn-ch1-random" class="btn-retro">Randomize Bits</button>
+                    <button id="btn-ch1-zero" class="btn-retro secondary-btn">Zero Out</button>
+                </div>
+                <div class="architecture-layout">
+                    <div class="sys-component bit-matrix-container">
+                        <h4 style="margin-bottom: 0.5rem;">8-Bit Hardware Register</h4>
+                        <div class="bit-row" id="ch1-bit-row">
+                            <!-- JS will inject bits here -->
+                        </div>
+                        <div class="data-interpretations">
+                            <div class="data-box"><span class="data-label">Unsigned (uint8)</span><span class="data-val" id="ch1-val-unsigned">0</span></div>
+                            <div class="data-box"><span class="data-label">Signed (int8)</span><span class="data-val" id="ch1-val-signed">0</span></div>
+                            <div class="data-box"><span class="data-label">Hexadecimal</span><span class="data-val" id="ch1-val-hex">0x00</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 2 -->
+            <header class="chapter-header" id="ch2">
+                <span class="chapter-badge">Chapter 2</span>
+                <h2>Boolean Algebra & Silicon Gates</h2>
+                <p class="chapter-subtitle">Building logical thought from raw transistors.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Now that we know data is just voltage on wires, how do we make decisions based on those voltages? We use transistors—specifically, MOSFETs (Metal-Oxide-Semiconductor Field-Effect Transistors). A transistor is essentially an electrically controlled light switch. By arranging these microscopic switches in specific patterns, we can create <strong>Logic Gates</strong>.</p>
+                
+                <h3>1. The Primitives: AND, OR, NOT</h3>
+                <p>The foundation of all digital thought rests on three basic operations:</p>
+                <ul>
+                    <li><strong>AND Gate:</strong> Only outputs HIGH if both Input A <em>and</em> Input B are HIGH. Internally, this is just two transistors wired in series. If one is off, the current is blocked.</li>
+                    <li><strong>OR Gate:</strong> Outputs HIGH if either Input A <em>or</em> Input B (or both) are HIGH. This is two transistors wired in parallel. The current only needs one path to get through.</li>
+                    <li><strong>NOT Gate (Inverter):</strong> Flips the signal. If HIGH goes in, LOW comes out.</li>
+                </ul>
+
+                <h3>2. The Universal Gates: NAND & NOR</h3>
+                <p>While AND/OR make logical sense to humans, hardware engineers vastly prefer <strong>NAND</strong> (NOT-AND) and <strong>NOR</strong> (NOT-OR) gates. Why? Because of CMOS manufacturing reality. A NAND gate requires fewer physical transistors to build on a silicon wafer than a standard AND gate.</p>
+                <p>More importantly, NAND is <em>Universal</em>. You can build absolutely any digital circuit in existence—including your computer's multi-core CPU—using nothing but millions of NAND gates wired together. If you tie the two inputs of a NAND gate together, it becomes a NOT gate. If you put a NOT gate after a NAND gate, it becomes an AND gate. This uniformity makes mass-manufacturing microchips incredibly efficient.</p>
+            </article>
+            <div id="sim-ch2" class="interactive-container">
+                <div class="engine-controls">
+                    <select id="ch2-gate-select" class="btn-retro" style="background:var(--bg-panel); color:var(--text-primary);">
+                        <option value="AND">AND Gate</option>
+                        <option value="OR">OR Gate</option>
+                        <option value="XOR">XOR Gate</option>
+                        <option value="NAND">NAND Gate</option>
+                        <option value="NOR">NOR Gate</option>
+                    </select>
+                </div>
+                <div class="architecture-layout">
+                    <div class="sys-component gate-sandbox">
+                        <h4>Logic Circuit Sandbox</h4>
+                        <div class="circuit-board">
+                            <div class="inputs-col">
+                                <button class="logic-switch" id="ch2-in-a" data-state="0">A: 0</button>
+                                <button class="logic-switch" id="ch2-in-b" data-state="0">B: 0</button>
+                            </div>
+                            <div class="wires-col">
+                                <svg class="wire-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
+                                    <path d="M0,25 C50,25 50,40 100,40" class="wire-path" id="wire-a"/>
+                                    <path d="M0,75 C50,75 50,60 100,60" class="wire-path" id="wire-b"/>
+                                </svg>
+                            </div>
+                            <div class="gate-col">
+                                <div class="logic-gate-box" id="ch2-active-gate">AND</div>
+                            </div>
+                            <div class="wires-col">
+                                <svg class="wire-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
+                                    <path d="M0,50 L100,50" class="wire-path" id="wire-out"/>
+                                </svg>
+                            </div>
+                            <div class="outputs-col">
+                                <div class="lightbulb" id="ch2-bulb">OUT</div>
+                            </div>
+                        </div>
+                        <p class="engine-caption" style="margin-top: 1.5rem;">Click the A and B logic switches above to toggle the input voltages.</p>
+                    </div>
+                </div>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 3 -->
+            <header class="chapter-header" id="ch3">
+                <span class="chapter-badge">Chapter 3</span>
+                <h2>Combinational Logic Design</h2>
+                <p class="chapter-subtitle">Taming complexity with Karnaugh Maps.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Once you connect multiple gates together, you create a Combinational Circuit. In combinational logic, the output depends <em>purely</em> on the current present state of the inputs. There is no memory. If you change the inputs, the output changes instantly (ignoring minor propagation delays).</p>
+                
+                <h3>1. Sum of Products (SOP)</h3>
+                <p>Any logical problem can be defined by a Truth Table—a massive list of every possible input combination and the desired output. To convert a truth table into physical hardware, we use the <strong>Sum of Products (SOP)</strong> method. You find every row where the desired output is a "1" (a Minterm), write an AND expression for that row, and then OR all those expressions together.</p>
+                <p>This guarantees a working circuit, but it is often massively bloated, requiring dozens of unnecessary gates. Bloated circuits consume more physical space on the silicon die, draw more electrical power, generate more heat, and run slower.</p>
+                
+                <h3>2. The Karnaugh Map (K-Map) Optimization</h3>
+                <p>Hardware optimization is non-negotiable. To simplify complex Boolean algebra equations, engineers use a visual grid called a <strong>Karnaugh Map</strong>. By wrapping a truth table into a 2D grid ordered in Gray Code (where only one bit changes between adjacent cells), we can physically <em>see</em> redundant logic.</p>
+                <p>When you circle adjacent 1s in a K-Map in groups of 2, 4, or 8, you are mathematically identifying variables that do not actually affect the output. You eliminate those variables, drastically shrinking the size of your final equation. A massive 15-gate nightmare can often be reduced to a sleek 3-gate circuit.</p>
+            </article>
+            <div id="sim-ch3" class="interactive-container">
+                <div class="engine-controls">
+                    <button id="btn-ch3-reset" class="btn-retro secondary-btn">Clear Map</button>
+                    <button id="btn-ch3-example" class="btn-retro primary-btn">Load Example</button>
+                </div>
+                <div class="architecture-layout" style="flex-direction: row; flex-wrap: wrap;">
+                    <div class="sys-component" style="flex: 1; min-width: 300px;">
+                        <h4>2-Variable K-Map (A, B)</h4>
+                        <div class="kmap-grid">
+                            <div class="kmap-header-empty"></div>
+                            <div class="kmap-header">B=0</div>
+                            <div class="kmap-header">B=1</div>
+                            <div class="kmap-header">A=0</div>
+                            <button class="kmap-cell" data-r="0" data-c="0" data-val="0">0</button>
+                            <button class="kmap-cell" data-r="0" data-c="1" data-val="0">0</button>
+                            <div class="kmap-header">A=1</div>
+                            <button class="kmap-cell" data-r="1" data-c="0" data-val="0">0</button>
+                            <button class="kmap-cell" data-r="1" data-c="1" data-val="0">0</button>
+                        </div>
+                    </div>
+                    <div class="sys-component" style="flex: 1; min-width: 300px; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                        <h4>Optimized Boolean Equation</h4>
+                        <div id="ch3-equation" class="equation-display">OUT = 0</div>
+                        <p class="engine-caption" style="margin-top: 2rem;">Click K-Map cells to toggle 1/0.</p>
+                    </div>
+                </div>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 4 -->
+            <header class="chapter-header" id="ch4">
+                <span class="chapter-badge">Chapter 4</span>
+                <h2>Arithmetic Circuits & The ALU</h2>
+                <p class="chapter-subtitle">Teaching sand how to do math.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Computers don't natively "know" math. They only know logic. To perform addition, we must design a specific arrangement of logic gates that perfectly mimics binary arithmetic.</p>
+                
+                <h3>1. Half Adders and Full Adders</h3>
+                <p>If you want to add two 1-bit numbers (A and B), the result can be 0, 1, or 2 (which is <code>10</code> in binary). This means addition produces two outputs: a <strong>Sum</strong> and a <strong>Carry</strong>. An XOR gate handles the Sum flawlessly, while an AND gate calculates the Carry. This 2-gate circuit is called a <strong>Half Adder</strong>.</p>
+                <p>But when you stack binary addition into columns, the middle columns have to add <em>three</em> bits: A, B, and the Carry from the previous column. To do this, we chain two Half Adders together to create a <strong>Full Adder</strong>.</p>
+                
+                <h3>2. Ripple Carry & The Speed of Light</h3>
+                <p>To add 32-bit numbers, you just chain 32 Full Adders in a row. This is a <strong>Ripple Carry Adder</strong>. It is simple, but it has a fatal, physical flaw. The last Full Adder in the chain cannot do its math until the 31st adder calculates its Carry-out bit. The 31st is waiting on the 30th, and so on.</p>
+                <p>Electricity is incredibly fast, but it is not instantaneous. Each physical gate takes a few picoseconds for the transistors to fully switch state (Propagation Delay). In a 64-bit Ripple Carry Adder, the CPU has to sit and wait for the Carry bit to literally "ripple" across the entire silicon die. To solve this, modern CPUs use highly complex <strong>Carry Lookahead Adders (CLA)</strong>, which use parallel logic to mathematically predict the Carry bits instantly, trading massive amounts of silicon space for blazing speed.</p>
+            </article>
+            <div id="sim-ch4" class="interactive-container">
+                <div class="engine-controls">
+                    <button id="btn-ch4-add" class="btn-retro primary-btn">Execute Addition Cycle</button>
+                    <button id="btn-ch4-reset" class="btn-retro">Reset ALU</button>
+                </div>
+                <div class="architecture-layout">
+                    <div class="sys-component alu-sandbox">
+                        <div class="alu-inputs" style="display:flex; justify-content:center; gap:2rem; margin-bottom:1rem;">
+                            <div>A: <input type="number" id="ch4-input-a" value="5" min="0" max="15" class="btn-retro" style="width:70px;"></div>
+                            <div>B: <input type="number" id="ch4-input-b" value="7" min="0" max="15" class="btn-retro" style="width:70px;"></div>
+                        </div>
+                        <div class="alu-circuit" id="ch4-alu-circuit">
+                            <!-- JS injects 4-bit adder -->
+                        </div>
+                        <h4 style="text-align:center; margin-top:2rem;">Result: <span id="ch4-result" style="color:var(--accent-green); font-size:1.5rem;">?</span></h4>
+                    </div>
+                </div>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 5 -->
+            <header class="chapter-header" id="ch5">
+                <span class="chapter-badge">Chapter 5</span>
+                <h2>Data Routing (Multiplexers)</h2>
+                <p class="chapter-subtitle">The traffic cops of the motherboard.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>A CPU has dozens of registers, cache memory, and an ALU, all fighting to send data over a limited number of shared copper wires (the System Bus). How do we control whose data gets onto the bus, and where it goes? We use routing logic.</p>
+                
+                <h3>1. The Multiplexer (MUX)</h3>
+                <p>A Multiplexer acts like a physical railway switch. It has multiple input data lines, but only one output line. To control which input gets connected to the output, a MUX uses <strong>Select Lines</strong>. By feeding a binary number into the Select Lines (e.g., <code>10</code> for channel 2), the internal AND/OR gates physically route only that specific input to the output.</p>
+                <p>Every time your software says <code>c = a + b;</code>, a Multiplexer inside the CPU is firing, selecting the Register holding <code>a</code> and routing it into the left side of the ALU, while another MUX routes <code>b</code> into the right side.</p>
+                
+                <h3>2. Decoders and Encoders</h3>
+                <p>While a MUX routes data, a <strong>Decoder</strong> routes <em>activation signals</em>. A 3-to-8 Decoder takes a 3-bit binary input (like <code>101</code>, which is 5) and activates exactly one of its 8 output wires (wire #5 turns ON, the rest stay OFF). Decoders are the fundamental backbone of RAM addressing. When your code asks for memory address <code>0x4FA</code>, a massive Decoder array turns on the exact physical row of transistors in the RAM chip associated with that address.</p>
+            </article>
+            <div id="sim-ch5" class="interactive-container">
+                <div class="engine-controls" style="justify-content: center; border-bottom: none; margin-bottom: 0;">
+                    <div class="mux-selectors">
+                        <span style="font-family:var(--font-mono); margin-right:10px;">Select Lines:</span>
+                        <button class="logic-switch" id="ch5-sel-1" data-state="0" style="width:45px; height:45px; font-size:1rem;">S1: 0</button>
+                        <button class="logic-switch" id="ch5-sel-0" data-state="0" style="width:45px; height:45px; font-size:1rem;">S0: 0</button>
+                    </div>
+                </div>
+                <div class="architecture-layout">
+                    <div class="sys-component mux-sandbox">
+                        <div class="mux-layout">
+                            <div class="mux-inputs">
+                                <div class="mux-channel" id="ch5-in-00">Data Stream 00</div>
+                                <div class="mux-channel" id="ch5-in-01">Data Stream 01</div>
+                                <div class="mux-channel" id="ch5-in-10">Data Stream 10</div>
+                                <div class="mux-channel" id="ch5-in-11">Data Stream 11</div>
+                            </div>
+                            <div class="mux-chip">4-to-1<br>MUX</div>
+                            <div class="mux-outputs">
+                                <div class="mux-channel" id="ch5-out" style="border-color:var(--accent-neon); color:var(--accent-neon); box-shadow:0 0 10px rgba(6,182,212,0.5);">ROUTED OUTPUT</div>
+                            </div>
+                        </div>
+                        <p class="engine-caption" style="margin-top:2rem;">Toggle the S1 and S0 switches to route one specific channel through the multiplexer.</p>
+                    </div>
+                </div>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 6 -->
+            <header class="chapter-header" id="ch6">
+                <span class="chapter-badge">Chapter 6</span>
+                <h2>Sequential Logic & Time</h2>
+                <p class="chapter-subtitle">Trapping voltage in a loop to create Memory.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Combinational logic has a major limitation: it has no concept of time or memory. The moment you remove the input voltage, the output dies. To build a computer, we need circuits that can "remember" a state even after the initial input is gone. We must transition from Combinational Logic to <strong>Sequential Logic</strong>.</p>
+                
+                <h3>1. The Feedback Loop (The Latch)</h3>
+                <p>Memory is created by a paradox: feeding a circuit's output directly back into its own input. If you cross-wire two NOR gates together, you create an <strong>SR Latch (Set-Reset Latch)</strong>. When you pulse the Set wire with a brief voltage spike, the feedback loop locks the output to HIGH permanently. Even if the Set wire goes back to zero, the circuit sustains itself. You have just stored 1 bit of memory.</p>
+                
+                <h3>2. The Problem with Latches</h3>
+                <p>Latches are "Level-Sensitive". As long as an "Enable" wire is held HIGH, the Latch will frantically update its memory to whatever the data input is. In a complex CPU running at 4GHz, signals take different amounts of time to travel across the chip. If a Latch stays open even a fraction of a nanosecond too long, a delayed signal from another part of the CPU might overwrite the data. This creates chaotic, unpredictable race conditions.</p>
+
+                <h3>3. The Flip-Flop & The Clock</h3>
+                <p>To restore order, we introduce the <strong>System Clock</strong>—a quartz crystal that pulses HIGH and LOW billions of times a second. We upgrade our Latch into a <strong>Flip-Flop</strong> (usually a D-Flip-Flop) by making it "Edge-Triggered."</p>
+                <p>A Flip-Flop ignores its input entirely, <em>except</em> for the exact microscopic moment when the Clock signal transitions from LOW to HIGH (the Rising Edge). In that tiny fraction of a nanosecond, it captures the data and locks it in. It refuses to change again until the next Rising Edge. This synchronization forces the entire chaotic motherboard to march in perfect unison, eliminating race conditions.</p>
+            </article>
+            <div id="sim-ch6" class="interactive-container">
+                <div class="engine-controls">
+                    <button class="logic-switch" id="ch6-data-in" data-state="0" style="border-radius: 8px; width:80px;">D: 0</button>
+                    <button id="btn-ch6-clock" class="btn-retro primary-btn">Trigger Clock Pulse (Rising Edge)</button>
+                </div>
+                <div class="architecture-layout">
+                    <div class="sys-component flip-flop-sandbox">
+                        <div class="ff-chip-container">
+                            <div class="ff-chip">
+                                <div class="ff-pins-left">
+                                    <div class="pin" id="ch6-d-pin">D</div>
+                                    <div class="pin" id="ch6-clk-pin">CLK ></div>
+                                </div>
+                                <div class="ff-body">D Flip-Flop</div>
+                                <div class="ff-pins-right">
+                                    <div class="pin" id="ch6-q-pin">Q</div>
+                                    <div class="pin" id="ch6-qnot-pin">Q'</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ff-state-display" style="text-align:center; margin-top:2rem;">
+                            Current Memory State (Q): <span id="ch6-q-out" style="color:var(--accent-green); font-size:2rem; font-family:var(--font-mono); font-weight:bold;">0</span>
+                        </div>
+                        <p class="engine-caption" style="margin-top:1.5rem;">Change the Data (D) input. Notice that Q does not update until the exact moment you click the Clock pulse!</p>
+                    </div>
+                </div>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 7 -->
+            <header class="chapter-header" id="ch7">
+                <span class="chapter-badge">Chapter 7</span>
+                <h2>Registers & Data Movement</h2>
+                <p class="chapter-subtitle">Moving bits serially and in parallel.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>A single Flip-Flop stores exactly 1 bit. To store an 8-bit byte, we simply line up 8 Flip-Flops side-by-side and wire them to the exact same System Clock. This array is called a <strong>Register</strong>. When the clock ticks, all 8 Flip-Flops simultaneously capture the 8 parallel data wires coming in. This is how the CPU's internal variables (like `EAX` or `RSP`) are physically constructed.</p>
+                
+                <h3>1. The Shift Register</h3>
+                <p>Sometimes, we don't want to just store data; we want to move it laterally. If you take the output of Flip-Flop 0 and wire it directly into the input of Flip-Flop 1, you create a <strong>Shift Register</strong>. Every time the clock ticks, the data physically shifts one position to the right.</p>
+                
+                <h3>2. Serial vs. Parallel Networking</h3>
+                <p>Shift Registers are the magic behind USB (Universal <strong>Serial</strong> Bus) and Ethernet. Inside your computer, data moves in <strong>Parallel</strong> (32 or 64 wires side-by-side). But you cannot run a 64-wire cable from your computer to a server in Tokyo; it would be insanely expensive and suffer from signal cross-talk.</p>
+                <p>Instead, your Network Interface Card loads the 64-bit parallel data into a massive Shift Register. It then ticks the clock incredibly fast, blasting the data out onto a single fiber-optic cable, one bit at a time, in a <strong>Serial</strong> stream. On the receiving server in Tokyo, another Shift Register catches the incoming bits one-by-one, and once full, dumps them onto the motherboard in parallel. Shift registers are the bridge between the internal parallel world and the external serial world.</p>
+            </article>
+            <div id="sim-ch7" class="interactive-container">
+                <div class="engine-controls" style="justify-content:space-between; padding: 1rem 2rem;">
+                    <div>
+                        <span style="color:var(--text-secondary); font-family:var(--font-mono); font-size:0.9rem; margin-right:10px;">DATA IN (Serial):</span>
+                        <button class="logic-switch" id="ch7-data-in" data-state="1" style="width:50px; height:50px; border-radius:4px;">1</button>
+                    </div>
+                    <button id="btn-ch7-clock" class="btn-retro primary-btn" style="box-shadow: 0 0 15px var(--accent-purple); font-size:1.1rem; letter-spacing:1px;">► TRIGGER SHIFT CLOCK</button>
+                </div>
+                <div class="architecture-layout">
+                    <div class="sys-component shift-register-sandbox">
+                        <div class="sr-array" id="ch7-sr-array">
+                            <!-- JS will inject 8 FF blocks here -->
+                        </div>
+                        <p class="engine-caption" style="margin-top:3rem;">Set the incoming serial data bit on the left, then hit the Clock Pulse to physically shift the entire 8-bit array right.</p>
+                    </div>
+                </div>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 8 -->
+            <header class="chapter-header" id="ch8">
+                <span class="chapter-badge">Chapter 8</span>
+                <h2>Counters & Frequency Division</h2>
+                <p class="chapter-subtitle">Hardware loops and timing modulation.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>In software, writing a <code>for</code> loop is trivial. In hardware, loops require specialized sequential circuits called <strong>Counters</strong>. A counter is a chain of Flip-Flops designed to cycle through a specific sequence of binary states (e.g., 000, 001, 010, 011...) every time the clock pulses.</p>
+                
+                <h3>1. Asynchronous (Ripple) Counters</h3>
+                <p>In a Ripple Counter, the System Clock is only attached to the first Flip-Flop. When Flip-Flop 0 toggles, its output acts as the clock for Flip-Flop 1. Flip-Flop 1 acts as the clock for Flip-Flop 2. The signal "ripples" down the chain. Because each Flip-Flop toggles exactly half as fast as the one before it, it inherently acts as a <strong>Frequency Divider</strong>.</p>
+                <p>If you feed a 1 MHz clock into a 10-bit ripple counter, the final output pin will tick at roughly 976 Hz. This is how digital clocks and timers take high-speed crystal oscillations and slow them down to exactly 1 tick per second.</p>
+                
+                <h3>2. Modulo-N Counters</h3>
+                <p>A 4-bit counter naturally counts from 0 to 15. But what if you are building a digital clock and need a counter that counts from 0 to 9, then resets? You build a <strong>Mod-10 Counter</strong>. By adding an AND gate that detects the number 10 (Binary <code>1010</code>) and wiring that gate directly to the asynchronous "Clear" pins of the Flip-Flops, the counter will instantly wipe itself back to 0 the millisecond it hits 10.</p>
+            </article>
+            <div id="sim-ch8" class="interactive-container">
+                <div class="engine-controls" style="justify-content:center; gap:2rem;">
+                    <button id="btn-ch8-clock" class="btn-retro primary-btn" style="width:200px;">Pulse Clock</button>
+                    <button id="btn-ch8-auto" class="btn-retro" style="background:var(--bg-secondary); border-color:var(--accent-green); color:var(--accent-green);">Auto-Clock: OFF</button>
+                </div>
+                <div class="architecture-layout">
+                    <div class="sys-component counter-sandbox">
+                        <div class="counter-display-wrapper">
+                            <div class="seven-segment" id="ch8-display">0</div>
+                            <div class="modulo-alert" id="ch8-mod-alert"></div>
+                        </div>
+                        <div class="timing-diagram">
+                            <div class="timing-track"><span class="timing-label">CLK</span><div class="timing-wave" id="wave-clk"></div></div>
+                            <div class="timing-track"><span class="timing-label">Q0 (LSB)</span><div class="timing-wave" id="wave-q0"></div></div>
+                            <div class="timing-track"><span class="timing-label">Q1</span><div class="timing-wave" id="wave-q1"></div></div>
+                            <div class="timing-track"><span class="timing-label">Q2</span><div class="timing-wave" id="wave-q2"></div></div>
+                            <div class="timing-track"><span class="timing-label">Q3 (MSB)</span><div class="timing-wave" id="wave-q3"></div></div>
+                        </div>
+                        <p class="engine-caption" style="margin-top:2rem;">Watch the frequency division: Q0 toggles half as fast as CLK. Q1 toggles half as fast as Q0. At Mod-10 (Binary 1010), it instantly resets!</p>
+                    </div>
+                </div>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 9 -->
+            <header class="chapter-header" id="ch9">
+                <span class="chapter-badge">Chapter 9</span>
+                <h2>Finite State Machines (FSMs)</h2>
+                <p class="chapter-subtitle">Programming without code.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>When you combine Combinational Logic (decision making) with Sequential Logic (memory), you ascend to the final boss of digital design: The <strong>Finite State Machine (FSM)</strong>. An FSM is a mathematical model of computation. It consists of a finite number of States, Transitions between those states, and Outputs.</p>
+                
+                <p>Every non-trivial piece of hardware—from a vending machine, to a traffic light controller, to the massive control unit inside an Intel Core i9 processor—is an FSM. It waits in a specific state, looks at the incoming data, looks at its current memory, and then transitions to a new state while executing an action.</p>
+                
+                <h3>1. Moore vs. Mealy Machines</h3>
+                <ul>
+                    <li><strong>Moore Machine:</strong> The output depends <em>only</em> on the current State. It is safer, highly stable, and easier to design, but usually requires more states to get the job done. The output changes synchronously with the clock.</li>
+                    <li><strong>Mealy Machine:</strong> The output depends on the current State <em>and</em> the current Inputs. This makes Mealy machines highly aggressive and responsive; they can react to an input mid-clock cycle. However, this responsiveness can cause glitchy outputs if the inputs are noisy.</li>
+                </ul>
+                
+                <blockquote>
+                    <strong>Software Engineering Parallel:</strong> FSMs are not just hardware concepts. When you build a modern React application, Redux/Zustand is essentially implementing a massive Moore Machine in software. The UI (Output) is a pure function of the Global Store (Current State).
+                </blockquote>
+            </article>
+            <div id="sim-ch9" class="interactive-container">
+                <div class="engine-controls" style="justify-content:space-evenly; background: #0f172a; border-radius: 12px 12px 0 0; padding:1.5rem; border-bottom:1px solid #334155;">
+                    <button class="btn-retro" id="btn-ch9-insert" style="border-color:var(--accent-warning); color:var(--accent-warning); font-size:1.2rem; box-shadow: 0 0 10px rgba(245, 158, 11, 0.4);">🪙 Insert Quarter (25¢)</button>
+                    <button class="btn-retro" id="btn-ch9-reset" style="opacity:0.7;">System Reset</button>
+                </div>
+                <div class="architecture-layout">
+                    <div class="sys-component fsm-sandbox">
+                        <div class="fsm-graph">
+                            <div class="fsm-state active" id="state-0">
+                                <div class="state-title">STATE 0</div>
+                                <div class="val">0¢</div>
+                            </div>
+                            <div class="fsm-edge" id="edge-0-1">Wait for 25¢ ➔</div>
+                            
+                            <div class="fsm-state" id="state-1">
+                                <div class="state-title">STATE 1</div>
+                                <div class="val">25¢</div>
+                            </div>
+                            <div class="fsm-edge" id="edge-1-2">Wait for 25¢ ➔</div>
+                            
+                            <div class="fsm-state success-state" id="state-2">
+                                <div class="state-title">STATE 2</div>
+                                <div class="val">50¢</div>
+                            </div>
+                        </div>
+                        <div class="fsm-output-box" id="fsm-dispenser">
+                            [ WAIT ] OUTPUT OFF
+                        </div>
+                        <p class="engine-caption" style="margin-top:2rem;">A classic Moore Machine: The vending machine dispenses soda ONLY when the memory register physically transitions into State 2.</p>
+                    </div>
+                </div>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 10 -->
+            <header class="chapter-header" id="ch10">
+                <span class="chapter-badge">Chapter 10</span>
+                <h2>LUTs & FPGAs</h2>
+                <p class="chapter-subtitle">Faking logic with raw memory.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>In all previous chapters, if you wanted an AND gate, you literally had to melt silicon and etch the transistors into the chip permanently. If you made a mistake, you had to throw out the $500 million factory run. <strong>ASICs (Application-Specific Integrated Circuits)</strong> are fast, but completely rigid.</p>
+                
+                <h3>1. The Look-Up Table (LUT)</h3>
+                <p>What if we could change the hardware <em>after</em> we built it? We can, using a brilliant trick. Instead of wiring together physical AND/OR gates, we use a tiny block of high-speed SRAM (Memory) called a <strong>Look-Up Table (LUT)</strong>.</p>
+                <p>If you have a 3-input truth table, there are 8 possible combinations. We build an 8-bit RAM chip. We use the 3 logic inputs as the <em>Address Lines</em> to the RAM. If we want the LUT to act like an AND gate, we simply pre-program the memory so that address <code>111</code> holds a "1", and all other addresses hold a "0". When the inputs arrive, the RAM instantly outputs whatever is stored at that address.</p>
+
+                <h3>2. Field-Programmable Gate Arrays (FPGAs)</h3>
+                <p>By stamping hundreds of thousands of these programmable LUTs onto a single chip, surrounded by a programmable routing matrix, you create an <strong>FPGA</strong>. An FPGA is a blank canvas of silicon. By uploading a bitstream file to it, you dynamically reconfigure the LUTs and the wiring matrix to become <em>any</em> digital circuit you want.</p>
+                <p>You can turn an FPGA into a custom AI accelerator in the morning, reboot it, and turn it into an ultra-low-latency high-frequency trading algorithm in the afternoon. It is the ultimate manifestation of hardware mimicking software flexibility.</p>
+            </article>
+            <div id="sim-ch10" class="interactive-container">
+                <div class="engine-controls" style="flex-direction:column; align-items:center; gap:1rem;">
+                    <h3 style="color:var(--accent-neon); margin:0; font-family:var(--font-mono); letter-spacing:2px;">FPGA LUT CONFIGURATOR</h3>
+                    <div style="display:flex; gap:2rem; background:rgba(0,0,0,0.2); padding:1rem; border-radius:8px;">
+                        <div style="font-family:var(--font-mono); color:var(--text-secondary); line-height:40px;">INPUT BUS:</div>
+                        <button class="logic-switch" id="ch10-in-a" data-state="0" style="width:40px; height:40px; font-size:1rem;">0</button>
+                        <button class="logic-switch" id="ch10-in-b" data-state="0" style="width:40px; height:40px; font-size:1rem;">0</button>
+                    </div>
+                </div>
+                <div class="architecture-layout">
+                    <div class="sys-component lut-sandbox">
+                        <div class="lut-container">
+                            <div class="lut-sram">
+                                <h4 style="color:var(--accent-purple); text-align:center; margin-top:0;">SRAM Array</h4>
+                                <div class="sram-row" id="sram-00"><span>Addr 00 ➔</span><button class="sram-cell logic-switch" style="width:30px; height:30px; font-size:0.9rem;" data-state="0">0</button></div>
+                                <div class="sram-row" id="sram-01"><span>Addr 01 ➔</span><button class="sram-cell logic-switch" style="width:30px; height:30px; font-size:0.9rem;" data-state="0">0</button></div>
+                                <div class="sram-row" id="sram-10"><span>Addr 10 ➔</span><button class="sram-cell logic-switch" style="width:30px; height:30px; font-size:0.9rem;" data-state="0">0</button></div>
+                                <div class="sram-row" id="sram-11"><span>Addr 11 ➔</span><button class="sram-cell logic-switch" style="width:30px; height:30px; font-size:0.9rem;" data-state="0">0</button></div>
+                            </div>
+                            <div class="lut-core">
+                                <div class="lut-address-bus" id="lut-addr-bus">Routing: 00</div>
+                                <div class="lut-chip">2-LUT<br>MATRIX</div>
+                            </div>
+                            <div class="lut-out">
+                                <h4 style="color:var(--accent-green); text-align:center; margin-top:0;">OUTPUT</h4>
+                                <div class="lut-result" id="lut-final-out">0</div>
+                            </div>
+                        </div>
+                        <p class="engine-caption" style="margin-top:2rem;">Click the 4 SRAM cells to program the memory (e.g., set to 0,0,0,1 to create an AND gate). Toggle the Input Bus to route that memory cell to the Output!</p>
+                    </div>
+                </div>
+            </div>
+            
+        </main>
+    </div>
+
+    <div id="global-footer"></div>
+    <script src="../../../core.js"></script>
+    <script src="dl-engine.js"></script>
+</body>
+</html>
