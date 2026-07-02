@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SCME | Computer Organization & Architecture</title>
+    <link rel="stylesheet" href="../../../style.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="top-nav">
+        <div class="nav-left">
+            <h1 class="logo">SCME.</h1>
+            <a href="../../../domains/cs/index.html" class="btn-retro back-btn">← CS Hub</a>
+        </div>
+        <button id="theme-toggle" class="btn-retro">Toggle Theme</button>
+    </nav>
+
+    <div class="learning-environment">
+        <aside class="chapter-sidebar">
+            <h3>COA Journey</h3>
+            <ul class="chapter-list">
+                <li><a href="#ch1" class="active">1. Data Representation</a></li>
+                <li><a href="#ch2">2. Digital Logic & Microops</a></li>
+                <li><a href="#ch3">3. Instruction Set Arch</a></li>
+                <li><a href="#ch4">4. CPU Control Unit</a></li>
+                <li><a href="#ch5">5. Datapath Architecture</a></li>
+                <li><a href="#ch6">6. Pipelining</a></li>
+                <li><a href="#ch7">7. Memory Hierarchy</a></li>
+                <li><a href="#ch8">8. Virtual Memory</a></li>
+                <li><a href="#ch9">9. I/O Organization</a></li>
+                <li><a href="#ch10">10. Multiprocessors</a></li>
+            </ul>
+        </aside>
+
+        <main class="reading-core">
+            <!-- CHAPTER 1 -->
+            <header class="chapter-header" id="ch1">
+                <span class="chapter-badge">Chapter 1</span>
+                <h2>Data Representation & Arithmetic</h2>
+                <p class="chapter-subtitle">Bridging the physical and numerical worlds.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Computer Architecture fundamentally concerns itself with how physical voltage states map to logical and numerical concepts. At the lowest level, all computation is merely the orchestration of these electrical states. When you declare an integer or a float in a high-level language, the processor has no inherent understanding of these types. It merely observes patterns of high (1) and low (0) voltages.</p>
+                
+                <h3>1. Integer Representation and Two's Complement</h3>
+                <p>To represent unsigned integers, we use straightforward positional binary notation. However, expressing negative numbers poses a significant challenge since hardware lacks a physical "minus" symbol. Early architectures experimented with Sign-and-Magnitude and One's Complement, but these approaches suffered from a "negative zero" anomaly and required complex ALU designs to handle addition and subtraction as separate operations.</p>
+                <p>The solution is <strong>Two's Complement</strong>. By inverting all bits and adding one, we establish a system where the Most Significant Bit (MSB) effectively acts as a sign bit, yet the underlying binary addition logic remains identical for both positive and negative numbers. This brilliant mathematical abstraction allows the CPU to perform subtraction using the exact same hardware circuit (the adder) as addition.</p>
+                
+                <h3>2. IEEE 754 Floating-Point Standard</h3>
+                <p>Scientific computing requires a vast dynamic range—from sub-atomic distances to intergalactic measurements. Fixed-point arithmetic is insufficient. Thus, the IEEE 754 standard was universally adopted, defining a representation that mimics scientific notation in binary.</p>
+                <p>A floating-point number is partitioned into three fields: the <strong>Sign bit</strong>, the <strong>Biased Exponent</strong>, and the <strong>Fraction (Mantissa)</strong>. The exponent uses a bias rather than two's complement to make floating-point comparison as fast as integer comparison in hardware. The mantissa employs an implicit leading "1" to squeeze an extra bit of precision out of the physical memory. Understanding these physical hardware compromises is crucial for avoiding insidious rounding errors in software.</p>
+            </article>
+            <div id="sim-ch1" class="interactive-container">
+                <div class="engine-controls">
+                    <div style="display:flex; align-items:center; gap: 1rem;">
+                        <span style="font-family:var(--font-mono);">Input Decimal:</span>
+                        <input type="number" id="ch1-dec-input" class="btn-retro" style="background:var(--bg-panel); color:var(--text-primary); width:150px;" value="-118.625" step="any">
+                    </div>
+                    <button id="btn-ch1-convert" class="btn-retro primary-btn">Generate IEEE 754</button>
+                    <button id="btn-ch1-random" class="btn-retro secondary-btn">Randomize</button>
+                </div>
+                <div class="architecture-layout">
+                    <div class="sys-component floating-point-sandbox">
+                        <div class="fp-breakdown">
+                            <div class="fp-section sign-sec">
+                                <h5>SIGN (1)</h5>
+                                <div class="bit-container" id="fp-sign-container"></div>
+                            </div>
+                            <div class="fp-section exp-sec">
+                                <h5>EXPONENT (8)</h5>
+                                <div class="bit-container" id="fp-exp-container"></div>
+                            </div>
+                            <div class="fp-section man-sec">
+                                <h5>MANTISSA (23)</h5>
+                                <div class="bit-container" id="fp-man-container"></div>
+                            </div>
+                        </div>
+                        <div class="fp-formula">
+                            <span id="fp-calc-sign">-1</span> × 2<sup><span id="fp-calc-exp">6</span></sup> × <span id="fp-calc-man">1.4828125</span> = <strong style="color:var(--accent-neon); font-size:1.5rem;" id="fp-calc-final">-118.625</strong>
+                        </div>
+                        <p class="engine-caption">Click any individual bit block above to manually flip it and see how the mathematical interpretation changes in real-time!</p>
+                    </div>
+                </div>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 2 -->
+            <header class="chapter-header" id="ch2">
+                <span class="chapter-badge">Chapter 2</span>
+                <h2>Digital Logic & Microoperations</h2>
+                <p class="chapter-subtitle">The foundation of computation.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Before we can execute complex instructions, we must build the physical structures that compute logic and route data. These are the microoperations—the atomic, indivisible steps that occur during a single clock cycle.</p>
+                
+                <h3>1. The Arithmetic Logic Unit (ALU)</h3>
+                <p>The ALU is the mathematical heart of the processor. It is entirely composed of combinational logic gates. Through multiplexers, a control signal dictates whether the ALU's internal adder, AND gates, OR gates, or XOR gates are routed to the final output. The ALU does not hold memory; it merely continuously processes whatever voltages are currently presented to its input buses.</p>
+                
+                <h3>2. Register Transfers</h3>
+                <p>Computation without data movement is useless. The architecture connects registers to the ALU via buses. A microoperation often looks like <code>R3 ← R1 + R2</code>. In a single clock cycle, the Control Unit asserts the read enable on R1 and R2, routes them onto the internal buses feeding the ALU, signals the ALU to perform addition, and asserts the write enable on R3 to capture the output on the clock's rising edge.</p>
+            </article>
+            <div id="sim-ch2" class="interactive-container">
+                <div class="engine-controls" style="justify-content:center; gap:2rem;">
+                    <div style="display:flex; flex-direction:column; align-items:center;">
+                        <label style="font-family:var(--font-mono); font-size:0.8rem; color:var(--text-secondary);">Input A (4-bit)</label>
+                        <select id="ch2-input-a" class="btn-retro" style="background:var(--bg-panel); color:var(--text-primary);"><option value="0">0000 (0)</option><option value="3" selected>0011 (3)</option><option value="12">1100 (12)</option><option value="15">1111 (15)</option></select>
+                    </div>
+                    <div style="display:flex; flex-direction:column; align-items:center;">
+                        <label style="font-family:var(--font-mono); font-size:0.8rem; color:var(--text-secondary);">Input B (4-bit)</label>
+                        <select id="ch2-input-b" class="btn-retro" style="background:var(--bg-panel); color:var(--text-primary);"><option value="0">0000 (0)</option><option value="5" selected>0101 (5)</option><option value="10">1010 (10)</option><option value="15">1111 (15)</option></select>
+                    </div>
+                    <div style="display:flex; flex-direction:column; align-items:center;">
+                        <label style="font-family:var(--font-mono); font-size:0.8rem; color:var(--text-secondary);">ALU Opcode (Select)</label>
+                        <select id="ch2-opcode" class="btn-retro primary-btn"><option value="AND">00: AND</option><option value="OR">01: OR</option><option value="XOR">10: XOR</option><option value="ADD">11: ADD</option></select>
+                    </div>
+                </div>
+                <div class="architecture-layout">
+                    <div class="sys-component alu-datapath-sandbox">
+                        <div class="alu-diagram">
+                            <div class="alu-buses-in">
+                                <div class="bus" id="bus-a">A = 0011</div>
+                                <div class="bus" id="bus-b">B = 0101</div>
+                            </div>
+                            <div class="alu-core-shape">
+                                <div class="alu-logic-blocks">
+                                    <div class="logic-block" id="lb-and">AND Block</div>
+                                    <div class="logic-block" id="lb-or">OR Block</div>
+                                    <div class="logic-block" id="lb-xor">XOR Block</div>
+                                    <div class="logic-block" id="lb-add">ADD Block</div>
+                                </div>
+                                <div class="alu-mux">
+                                    <div class="mux-label">MUX</div>
+                                    <div class="mux-select" id="mux-sel">Sel = 00</div>
+                                </div>
+                            </div>
+                            <div class="alu-bus-out" id="bus-out">OUT = 0001</div>
+                            <div class="alu-flags">
+                                <div class="flag" id="flag-z">Zero: 0</div>
+                                <div class="flag" id="flag-c">Carry: 0</div>
+                            </div>
+                            <div id="alu-overflow-msg" style="display:none; margin-top:1rem; padding:1rem; background:rgba(234, 88, 12, 0.15); border:1px solid var(--accent-neon); border-radius:4px; font-size:0.9rem; color:var(--text-secondary); text-align:left;">
+                                <!-- Overflow message populated by JS -->
+                            </div>
+                        </div>
+                        <p class="engine-caption">Change the Opcode to see how the Multiplexer (MUX) inside the ALU dynamically routes a different physical logic block to the output.</p>
+                    </div>
+                </div>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 3 -->
+            <header class="chapter-header" id="ch3">
+                <span class="chapter-badge">Chapter 3</span>
+                <h2>Instruction Set Architecture (ISA)</h2>
+                <p class="chapter-subtitle">The software-hardware contract.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>The Instruction Set Architecture (ISA) is the defining boundary between software and hardware. It is the language that the compiler writes and the silicon natively understands (e.g., x86, ARM, RISC-V). An ISA dictates the available registers, data types, memory addressing modes, and the binary format of the instructions.</p>
+                
+                <h3>1. Instruction Formats and Fields</h3>
+                <p>A machine instruction is a rigid binary string. In a fixed-length ISA like MIPS or ARM, every instruction is exactly 32 bits. These 32 bits are sliced into fields. An R-type (Register) instruction might dedicate 6 bits to the opcode (the "verb" like ADD or SUB), 5 bits to the source register, 5 bits to the target register, and so on. The hardware's Decoder physically wires these specific bit-ranges to different parts of the CPU datapath.</p>
+                
+                <h3>2. RISC vs. CISC Philosophies</h3>
+                <p>Historically, memory was incredibly expensive, leading to <strong>Complex Instruction Set Computers (CISC)</strong> like x86. CISC instructions are variable-length and can execute complex, multi-step operations (like moving data directly from one memory address to another) to keep code size small. As memory became cheaper and CPU speed outpaced RAM, <strong>Reduced Instruction Set Computers (RISC)</strong> emerged. RISC mandates fixed-length instructions and a load/store architecture—meaning the ALU only operates on registers, forcing memory access into dedicated instructions. This simplification allows for aggressive pipelining and higher clock speeds.</p>
+            </article>
+            <div id="sim-ch3" class="interactive-container">
+                <div class="engine-controls">
+                    <button id="btn-ch3-step" class="btn-retro primary-btn">Step Instruction ➔</button>
+                    <button id="btn-ch3-reset" class="btn-retro secondary-btn">Reset CPU</button>
+                </div>
+                <div class="architecture-layout" style="flex-direction:row; flex-wrap:wrap;">
+                    <div class="sys-component asm-editor" style="flex:1; min-width:300px;">
+                        <h4>Instruction Memory (ROM)</h4>
+                        <div class="asm-lines" id="asm-code">
+                            <div class="asm-line active" data-pc="0"><span class="pc-addr">0x00</span> MOV R1, #5</div>
+                            <div class="asm-line" data-pc="1"><span class="pc-addr">0x04</span> MOV R2, #10</div>
+                            <div class="asm-line" data-pc="2"><span class="pc-addr">0x08</span> ADD R3, R1, R2</div>
+                            <div class="asm-line" data-pc="3"><span class="pc-addr">0x0C</span> SUB R1, R2, R1</div>
+                            <div class="asm-line" data-pc="4"><span class="pc-addr">0x10</span> HALT</div>
+                        </div>
+                    </div>
+                    <div class="sys-component asm-cpu" style="flex:1; min-width:300px;">
+                        <h4>CPU State</h4>
+                        <div class="cpu-registers">
+                            <div class="reg-box"><span class="reg-name">PC</span><span class="reg-val" id="reg-pc">0x00</span></div>
+                            <div class="reg-box"><span class="reg-name">IR</span><span class="reg-val" id="reg-ir">MOV R1, #5</span></div>
+                            <hr style="width:100%; border-color:var(--border-color); margin:0.5rem 0;">
+                            <div class="reg-box"><span class="reg-name">R1</span><span class="reg-val highlight-target" id="reg-r1">0</span></div>
+                            <div class="reg-box"><span class="reg-name">R2</span><span class="reg-val highlight-target" id="reg-r2">0</span></div>
+                            <div class="reg-box"><span class="reg-name">R3</span><span class="reg-val highlight-target" id="reg-r3">0</span></div>
+                        </div>
+                        <div class="cpu-datapath-anim" id="cpu-anim-text" style="margin-top:1rem; padding:1rem; background:rgba(0,0,0,0.2); border-radius:4px; font-family:var(--font-mono); color:var(--accent-green); text-align:center;">
+                            [System Ready] Click Step to Fetch instruction.
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 4 -->
+            <header class="chapter-header" id="ch4">
+                <span class="chapter-badge">Chapter 4</span>
+                <h2>CPU Control Unit Design</h2>
+                <p class="chapter-subtitle">The brain within the brain.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>While the datapath provides the physical wires and ALUs, it is completely inert without the Control Unit. The Control Unit acts as the orchestra conductor, decoding the opcode of the instruction and firing precisely timed voltage signals to dozens of multiplexers, register write-enables, and ALU control lines.</p>
+                
+                <h3>1. Hardwired Control</h3>
+                <p>In a Hardwired Control Unit, the logic is implemented entirely with static combinational logic gates (AND/OR/Decoders) and state flip-flops. It operates incredibly fast because electricity simply flows through the silicon maze to generate the control signals. However, it is insanely difficult to design, impossible to patch if a bug is found after fabrication, and grows exponentially complex as the ISA expands. Most RISC processors utilize hardwired control for speed.</p>
+                
+                <h3>2. Microprogrammed Control</h3>
+                <p>CISC architectures often use Microprogrammed Control to tame the complexity of their massive instruction sets. Inside the CPU is a tiny, hidden ROM (Read-Only Memory). Each complex assembly instruction acts as an address to this ROM. When fetched, it triggers a sequence of "microinstructions"—invisible, atomic hardware operations that execute over several clock cycles to complete the overarching complex instruction. This allows CPU designers to "write software" to control the hardware, making it easier to patch CPU bugs via microcode updates.</p>
+            </article>
+            <div id="sim-ch4" class="interactive-container">
+                <div class="engine-controls">
+                    <button id="btn-ch4-macro" class="btn-retro primary-btn">Fetch Macro-Instruction</button>
+                    <button id="btn-ch4-micro" class="btn-retro secondary-btn" disabled>Clock Micro-Sequence</button>
+                </div>
+                <div class="architecture-layout" style="flex-direction:column; gap:1rem;">
+                    <div style="display:flex; justify-content:space-between; width:100%; gap:1rem;">
+                        <div class="sys-component" style="flex:1;">
+                            <h5>Main Memory</h5>
+                            <div style="background:rgba(0,0,0,0.3); padding:0.5rem; font-family:var(--font-mono); font-size:0.9rem;" id="ch4-macro-ir">WAITING...</div>
+                        </div>
+                        <div class="sys-component" style="flex:1;">
+                            <h5>Micro-PC</h5>
+                            <div style="background:rgba(0,0,0,0.3); padding:0.5rem; font-family:var(--font-mono); font-size:0.9rem;" id="ch4-upc">0x00</div>
+                        </div>
+                    </div>
+                    <div class="sys-component" style="width:100%;">
+                        <h5>Control ROM (Microcode)</h5>
+                        <div class="ch4-micro-rom" id="ch4-rom-list">
+                            <div class="asm-line" id="u-fetch1">0x00: IR <- Mem[PC]</div>
+                            <div class="asm-line" id="u-fetch2">0x01: PC <- PC + 4</div>
+                            <div class="asm-line" id="u-fetch3">0x02: uPC <- Dispatch(IR.Opcode)</div>
+                            <div class="asm-line" id="u-exec1" style="display:none;">0x10: ALU_OUT <- A + B</div>
+                            <div class="asm-line" id="u-exec2" style="display:none;">0x11: Reg[Rd] <- ALU_OUT</div>
+                            <div class="asm-line" id="u-exec3" style="display:none;">0x12: uPC <- 0x00 (Fetch)</div>
+                        </div>
+                    </div>
+                    <div class="sys-component" style="width:100%;">
+                        <h5>Active Control Signals</h5>
+                        <div style="display:flex; gap:1rem; flex-wrap:wrap; font-family:var(--font-mono); color:var(--accent-neon);" id="ch4-signals">
+                            - NONE -
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 5 -->
+            <header class="chapter-header" id="ch5">
+                <span class="chapter-badge">Chapter 5</span>
+                <h2>Datapath Architecture</h2>
+                <p class="chapter-subtitle">The physical journey of a bit.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>The Datapath consists of all the components that actually hold and process data: the Register File, the ALU, multiplexers, and the data buses connecting them. Understanding the datapath is essential for understanding performance bottlenecks.</p>
+                
+                <h3>1. The Single-Cycle Datapath</h3>
+                <p>In a pure single-cycle architecture, every instruction completes in one monumental clock cycle. The clock period must be stretched to accommodate the absolute slowest instruction in the ISA (typically a memory Load instruction, which must traverse instruction memory, register file read, ALU for address calculation, data memory read, and register file write). This is terribly inefficient because fast instructions (like a simple register ADD) are forced to sit idle, waiting for the massive clock cycle to finish.</p>
+                
+                <h3>2. The Multi-Cycle Datapath</h3>
+                <p>A multi-cycle datapath breaks instruction execution into discrete, smaller steps (Fetch, Decode, Execute, Memory, Write-Back). By isolating components into these stages with intermediate buffer registers, the clock can run much faster. A simple ADD might finish in 3 fast clock cycles, while a complex LOAD takes 5. This drastically improves overall throughput.</p>
+            </article>
+            <div id="sim-ch5" class="interactive-container">
+                <div class="engine-controls">
+                    <button id="btn-ch5-clock" class="btn-retro primary-btn">Pulse Clock Cycle</button>
+                    <span id="ch5-cycle-count" style="font-family:var(--font-mono); color:var(--text-secondary);">Cycle: 0</span>
+                </div>
+                <div class="architecture-layout">
+                    <div class="sys-component ch5-datapath" style="width:100%; display:flex; justify-content:space-between; gap:0.5rem;">
+                        <div class="dp-stage" id="dp-if"><h4>IF</h4><span>Fetch</span><div class="dp-token" id="token-if"></div></div>
+                        <div class="dp-stage" id="dp-id"><h4>ID</h4><span>Decode</span><div class="dp-token" id="token-id"></div></div>
+                        <div class="dp-stage" id="dp-ex"><h4>EX</h4><span>Execute</span><div class="dp-token" id="token-ex"></div></div>
+                        <div class="dp-stage" id="dp-mem"><h4>MEM</h4><span>Memory</span><div class="dp-token" id="token-mem"></div></div>
+                        <div class="dp-stage" id="dp-wb"><h4>WB</h4><span>Writeback</span><div class="dp-token" id="token-wb"></div></div>
+                    </div>
+                </div>
+                <p class="engine-caption" id="ch5-desc" style="text-align:center;">Click 'Pulse Clock Cycle' to send a new instruction through the 5-stage datapath.</p>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 6 -->
+            <header class="chapter-header" id="ch6">
+                <span class="chapter-badge">Chapter 6</span>
+                <h2>Pipelining & Instruction-Level Parallelism</h2>
+                <p class="chapter-subtitle">The factory assembly line of computation.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Pipelining is the most profound architectural leap in CPU history. Rather than waiting for an instruction to completely finish before starting the next one, a pipelined datapath operates like a factory assembly line. While Instruction 1 is in the Execute stage, Instruction 2 is in the Decode stage, and Instruction 3 is being Fetched. Ideally, one instruction completes every single clock cycle.</p>
+                
+                <h3>1. Pipeline Hazards</h3>
+                <p>This overlapping execution introduces terrifying complexities known as hazards.</p>
+                <ul>
+                    <li><strong>Data Hazards:</strong> Occur when an instruction needs the result of a previous instruction that hasn't finished its write-back yet. Hardware solves this via Data Forwarding—intercepting the result directly from the ALU output and routing it back to the input before it hits the registers.</li>
+                    <li><strong>Control Hazards:</strong> Branch instructions (like `if` statements) ruin pipelining. The CPU doesn't know which instruction to fetch next until the branch is evaluated. Modern CPUs use Branch Prediction—guessing the outcome of an `if` statement based on historical patterns to keep the pipeline full. If it guesses wrong, it must frantically flush the pipeline.</li>
+                    <li><strong>Structural Hazards:</strong> Arise when two instructions in the pipeline need the same physical hardware resource simultaneously.</li>
+                </ul>
+            </article>
+            <div id="sim-ch6" class="interactive-container">
+                <div class="engine-controls">
+                    <button id="btn-ch6-hazard" class="btn-retro primary-btn">Simulate Data Hazard</button>
+                    <button id="btn-ch6-reset" class="btn-retro secondary-btn">Clear Pipeline</button>
+                </div>
+                <div class="architecture-layout">
+                    <div class="sys-component" style="width:100%; overflow-x:auto;">
+                        <table class="pipeline-table" id="ch6-table">
+                            <thead>
+                                <tr>
+                                    <th>Instruction</th><th>CC1</th><th>CC2</th><th>CC3</th><th>CC4</th><th>CC5</th><th>CC6</th><th>CC7</th><th>CC8</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr id="pipe-i1"><td>I1: ADD R1, R2, R3</td>
+                                    <td class="pipe-s">IF</td><td class="pipe-s">ID</td><td class="pipe-s">EX</td><td class="pipe-s">MEM</td><td class="pipe-s">WB</td><td></td><td></td><td></td>
+                                </tr>
+                                <tr id="pipe-i2"><td>I2: SUB R4, <b>R1</b>, R5</td>
+                                    <td></td><td class="pipe-s">IF</td><td class="pipe-s">ID</td><td class="pipe-s">EX</td><td class="pipe-s">MEM</td><td class="pipe-s">WB</td><td></td><td></td>
+                                </tr>
+                                <tr id="pipe-i3"><td>I3: AND R6, R7, R8</td>
+                                    <td></td><td></td><td class="pipe-s">IF</td><td class="pipe-s">ID</td><td class="pipe-s">EX</td><td class="pipe-s">MEM</td><td class="pipe-s">WB</td><td></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <p class="engine-caption" id="ch6-msg">Notice how I2 depends on R1, which I1 is writing. Click "Simulate Data Hazard" to stall I2.</p>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 7 -->
+            <header class="chapter-header" id="ch7">
+                <span class="chapter-badge">Chapter 7</span>
+                <h2>Memory Hierarchy & Cache Design</h2>
+                <p class="chapter-subtitle">Bridging the processor-memory gap.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Since the 1980s, CPU speeds have increased exponentially, while DRAM latency has barely improved. If a CPU had to fetch every variable directly from main memory, it would spend 99% of its life frozen, waiting for data. The solution is the Memory Hierarchy: placing small, blazing-fast SRAM (Cache) directly on the CPU die.</p>
+                
+                <h3>1. The Principle of Locality</h3>
+                <p>Caches work because of human programming behavior. <strong>Temporal Locality</strong> means if you access a variable now, you will likely access it again very soon (like a loop counter). <strong>Spatial Locality</strong> means if you access an array at index 0, you will likely access index 1 next. When a CPU asks for a byte, the cache hardware automatically fetches a large "Block" or "Line" of 64 contiguous bytes, betting on spatial locality.</p>
+                
+                <h3>2. Cache Mapping and Replacements</h3>
+                <p>Where does a block of data go when it enters the cache? <strong>Direct Mapped</strong> caches force each memory block into one exact slot, which is fast but leads to high conflict misses. <strong>Fully Associative</strong> caches let a block go anywhere, which is highly efficient but requires massively complex hardware to search. <strong>Set-Associative</strong> caches offer a middle ground. When the cache is full, replacement policies like LRU (Least Recently Used) dictate which old block gets evicted back to RAM to make room for new data.</p>
+            </article>
+            <div id="sim-ch7" class="interactive-container">
+                <div class="engine-controls">
+                    <button id="btn-ch7-loop" class="btn-retro primary-btn">Execute Loop (Access 0 to 3)</button>
+                    <button id="btn-ch7-reset" class="btn-retro secondary-btn">Clear Cache</button>
+                </div>
+                <div class="architecture-layout" style="gap:2rem;">
+                    <div class="sys-component" style="flex:1;">
+                        <h5>CPU Core</h5>
+                        <div id="ch7-cpu" style="padding:1rem; border:1px solid var(--border-color); border-radius:6px; text-align:center; font-family:var(--font-mono); font-size:1.2rem; height:80px; display:flex; align-items:center; justify-content:center;">
+                            Idle
+                        </div>
+                        <div id="ch7-latency" style="text-align:center; margin-top:1rem; color:var(--text-secondary); font-size:0.9rem; font-family:var(--font-mono);">Latency: --</div>
+                    </div>
+                    <div class="sys-component" style="flex:1.5;">
+                        <h5>L1 Cache (Block Size = 2)</h5>
+                        <table class="cache-table">
+                            <thead><tr><th>Block</th><th>Valid</th><th>Contents (Addresses)</th></tr></thead>
+                            <tbody id="ch7-cache-body">
+                                <tr id="ch7-cblock-0"><td>0</td><td class="cache-v">0</td><td class="cache-d">Empty</td></tr>
+                                <tr id="ch7-cblock-1"><td>1</td><td class="cache-v">0</td><td class="cache-d">Empty</td></tr>
+                            </tbody>
+                        </table>
+                        <div id="ch7-status" style="margin-top:1rem; font-family:var(--font-mono); text-align:center; font-weight:bold;">System Ready</div>
+                    </div>
+                    <div class="sys-component" style="flex:1;">
+                        <h5>Main Memory (Slow)</h5>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; font-family:var(--font-mono); text-align:center;">
+                            <div class="ch7-mem-cell" id="ch7-mem-0" style="border:1px solid var(--border-color); padding:0.5rem; border-radius:4px;">Addr 0</div>
+                            <div class="ch7-mem-cell" id="ch7-mem-1" style="border:1px solid var(--border-color); padding:0.5rem; border-radius:4px;">Addr 1</div>
+                            <div class="ch7-mem-cell" id="ch7-mem-2" style="border:1px solid var(--border-color); padding:0.5rem; border-radius:4px;">Addr 2</div>
+                            <div class="ch7-mem-cell" id="ch7-mem-3" style="border:1px solid var(--border-color); padding:0.5rem; border-radius:4px;">Addr 3</div>
+                        </div>
+                    </div>
+                </div>
+                <p class="engine-caption">Notice how the first request causes a slow MISS, but it fetches a block of 2. The next sequential request is an instant HIT!</p>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 8 -->
+            <header class="chapter-header" id="ch8">
+                <span class="chapter-badge">Chapter 8</span>
+                <h2>Virtual Memory</h2>
+                <p class="chapter-subtitle">The grand illusion of infinite RAM.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Every process running on a modern OS believes it has complete, solitary control over gigabytes of contiguous RAM. This is an illusion orchestrated jointly by the Operating System and a physical hardware component called the MMU (Memory Management Unit).</p>
+                
+                <h3>1. Paging and Address Translation</h3>
+                <p>Physical RAM is chopped into fixed-size chunks called Page Frames (usually 4KB). A program generates Virtual Addresses. The hardware uses a Page Table (stored in RAM) to translate the Virtual Page Number into a Physical Frame Number. If the OS ran out of physical RAM, it might have swapped that page to the hard drive. Accessing it triggers a hardware interrupt called a Page Fault, pausing the program until the disk retrieves it.</p>
+                
+                <h3>2. The TLB (Translation Lookaside Buffer)</h3>
+                <p>Address translation poses a severe performance penalty. To read a variable, the CPU must access RAM once to read the Page Table, then access RAM again to get the actual data. It doubles the memory latency. To fix this, CPUs feature a specialized, ultra-fast cache called the <strong>Translation Lookaside Buffer (TLB)</strong>. The TLB caches the most recent virtual-to-physical address mappings. A TLB hit allows translation in a fraction of a nanosecond.</p>
+            </article>
+            <div id="sim-ch8" class="interactive-container">
+                <div class="engine-controls">
+                    <button id="btn-ch8-alloc-browser" class="btn-retro" style="border-color:#3b82f6; color:#3b82f6;">Open Browser (Needs 2 Pages)</button>
+                    <button id="btn-ch8-alloc-game" class="btn-retro" style="border-color:#10b981; color:#10b981;">Launch Game (Needs 2 Pages)</button>
+                    <button id="btn-ch8-alloc-music" class="btn-retro" style="border-color:#a855f7; color:#a855f7;">Open Music (Needs 1 Page)</button>
+                    <button id="btn-ch8-reset" class="btn-retro secondary-btn">Reboot OS</button>
+                </div>
+                <div class="architecture-layout" style="gap:2rem;">
+                    <div class="sys-component" style="flex:1; display:flex; flex-direction:column; gap:1rem;">
+                        <div style="border:1px solid #3b82f6; padding:0.5rem; border-radius:6px; text-align:center;">
+                            <h5 style="color:#3b82f6; margin-bottom:0.5rem;">Browser (App)</h5>
+                            <div id="ch8-browser-pages" style="display:flex; gap:0.5rem; justify-content:center; flex-wrap:wrap;"></div>
+                        </div>
+                        <div style="border:1px solid #10b981; padding:0.5rem; border-radius:6px; text-align:center;">
+                            <h5 style="color:#10b981; margin-bottom:0.5rem;">Game (App)</h5>
+                            <div id="ch8-game-pages" style="display:flex; gap:0.5rem; justify-content:center; flex-wrap:wrap;"></div>
+                        </div>
+                        <div style="border:1px solid #a855f7; padding:0.5rem; border-radius:6px; text-align:center;">
+                            <h5 style="color:#a855f7; margin-bottom:0.5rem;">Music (App)</h5>
+                            <div id="ch8-music-pages" style="display:flex; gap:0.5rem; justify-content:center; flex-wrap:wrap;"></div>
+                        </div>
+                    </div>
+                    <div class="sys-component" style="flex:1; border:2px solid var(--accent-green); background:rgba(16,185,129,0.05);">
+                        <h5 style="color:var(--accent-green);">Physical RAM (4 Frames Max)</h5>
+                        <div id="ch8-ram" style="display:flex; flex-direction:column; gap:0.5rem; min-height:150px; padding:0.5rem; border-radius:4px;">
+                            <!-- RAM frames will populate here -->
+                        </div>
+                        <div id="ch8-ram-status" style="margin-top:1rem; text-align:center; font-family:var(--font-mono); font-size:0.8rem;">0/4 Frames Used</div>
+                    </div>
+                    <div class="sys-component" style="flex:1; border:2px solid var(--accent-purple); background:rgba(168,85,247,0.05);">
+                        <h5 style="color:var(--accent-purple);">Disk / Swap Space (Huge)</h5>
+                        <div id="ch8-disk" style="display:flex; flex-wrap:wrap; gap:0.5rem; min-height:150px; padding:0.5rem; border-radius:4px; align-content:flex-start;">
+                            <!-- Disk pages will populate here -->
+                        </div>
+                    </div>
+                </div>
+                <p id="ch8-msg" class="engine-caption" style="color:var(--accent-neon); font-weight:bold; font-size:1.1rem; text-align:center;">Start opening apps to fill up RAM.</p>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 9 -->
+            <header class="chapter-header" id="ch9">
+                <span class="chapter-badge">Chapter 9</span>
+                <h2>I/O Organization</h2>
+                <p class="chapter-subtitle">Communicating with the outside world.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>A CPU cannot just directly talk to a keyboard or a network card. It communicates through buses (like PCIe) and I/O Controllers. Handling asynchronous events from external devices without crippling CPU performance requires sophisticated hardware interventions.</p>
+                
+                <h3>1. Interrupt-Driven I/O</h3>
+                <p>Polling (constantly checking if a device is ready) wastes billions of clock cycles. Instead, devices use hardware Interrupts. An interrupt is a literal electrical signal sent to a specific pin on the CPU. When asserted, the CPU stops whatever it is doing, saves its current state to the stack, and jumps to a specific memory address to run an Interrupt Service Routine (ISR) in the kernel to handle the incoming data.</p>
+                
+                <h3>2. Direct Memory Access (DMA)</h3>
+                <p>If you are downloading a 10GB file from a 10-Gigabit network card, an interrupt for every byte would paralyze the CPU. The solution is a <strong>DMA Controller</strong>. The CPU simply tells the DMA controller: "Here is the network card port, here is the starting RAM address, move 10GB." The DMA controller takes over the system bus, moving the data straight from the network card into RAM autonomously, completely bypassing the CPU. The CPU is free to keep running your video game, and the DMA only interrupts the CPU once when the entire 10GB transfer is fully complete.</p>
+            </article>
+            <div id="sim-ch9" class="interactive-container">
+                <div class="engine-controls">
+                    <button id="btn-ch9-dma" class="btn-retro primary-btn">Start DMA Network Transfer (10GB)</button>
+                </div>
+                <div class="architecture-layout" style="gap:1rem;">
+                    <div class="sys-component" style="flex:1; text-align:center;">
+                        <h5>CPU Core</h5>
+                        <div id="ch9-cpu-state" style="padding:2rem; background:rgba(0,255,0,0.1); border:1px solid var(--accent-green); border-radius:8px; font-family:var(--font-mono);">
+                            Running User Program (Game)
+                        </div>
+                    </div>
+                    <div class="sys-component" style="flex:1; text-align:center;">
+                        <h5>DMA Controller</h5>
+                        <div style="margin-bottom:1rem; padding:0.5rem; background:var(--bg-panel); font-family:var(--font-mono);">
+                            Status: <span id="ch9-dma-status">IDLE</span>
+                        </div>
+                        <div style="width:100%; background:var(--border-color); height:20px; border-radius:10px; overflow:hidden;">
+                            <div id="ch9-dma-progress" style="width:0%; height:100%; background:var(--accent-neon); transition:width 0.2s linear;"></div>
+                        </div>
+                        <p id="ch9-bytes" style="font-family:var(--font-mono); font-size:0.8rem; margin-top:0.5rem;">0 / 10 GB</p>
+                    </div>
+                </div>
+                <p class="engine-caption">Notice how the CPU continues running the game without interruption while the DMA autonomously transfers the network data to RAM.</p>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 10 -->
+            <header class="chapter-header" id="ch10">
+                <span class="chapter-badge">Chapter 10</span>
+                <h2>Multiprocessors & Thread-Level Parallelism</h2>
+                <p class="chapter-subtitle">Coordinating the multi-core chaos.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>We hit the physical limitations of clock speed (power and heat dissipation walls) in the mid-2000s. To increase performance, the industry pivoted to Thread-Level Parallelism: stamping multiple independent CPU cores onto a single silicon die.</p>
+                
+                <h3>1. Symmetric Multiprocessing (SMP)</h3>
+                <p>In SMP systems, multiple cores share the same physical RAM. This introduces the nightmare of Cache Coherence. If Core 0 reads variable X (value: 5) into its private L1 cache, and Core 1 reads variable X into its L1 cache, we have two copies. If Core 0 modifies X to 10, Core 1 now has stale, invalid data in its cache. A program running on Core 1 will crash or calculate incorrect results.</p>
+                
+                <h3>2. Cache Coherence Protocols (MESI)</h3>
+                <p>Hardware solves this invisibly using "Snooping" protocols. The most common is MESI (Modified, Exclusive, Shared, Invalid). The caches constantly monitor the memory bus. When Core 0 writes to its cached copy of X, its cache controller broadcasts an "Invalidate" signal on the bus. Core 1 hears this, checks its own cache, realizes it holds X, and marks its copy as 'Invalid'. The next time Core 1 needs X, it suffers a cache miss and is forced to fetch the fresh '10' from Core 0 or Main Memory. Designing this state machine to run efficiently across dozens of cores without saturating the bus is one of the hardest problems in modern architecture.</p>
+            </article>
+            <div id="sim-ch10" class="interactive-container">
+                <div class="architecture-layout" style="gap:2rem;">
+                    <div class="sys-component" style="flex:1;">
+                        <h5>Core 0 (L1 Cache)</h5>
+                        <div style="padding:1rem; border:1px solid var(--border-color); border-radius:6px; margin-bottom:1rem; text-align:center;">
+                            <div style="font-family:var(--font-mono);">Variable X</div>
+                            <div id="ch10-c0-state" style="font-size:0.8rem; font-weight:bold; margin:0.5rem 0; color:var(--text-secondary);">State: INVALID</div>
+                            <div id="ch10-c0-val" style="font-family:var(--font-mono); font-size:1.5rem;">--</div>
+                        </div>
+                        <div style="display:flex; gap:0.5rem; justify-content:center;">
+                            <button id="btn-ch10-c0-rd" class="btn-retro">Read X</button>
+                            <button id="btn-ch10-c0-wr" class="btn-retro">Write X=10</button>
+                        </div>
+                    </div>
+                    <div style="display:flex; flex-direction:column; justify-content:center; align-items:center; flex:0.5;">
+                        <h5 style="color:var(--accent-neon);">Memory Bus</h5>
+                        <div id="ch10-bus" style="width:100%; height:4px; background:var(--border-color); margin:1rem 0;"></div>
+                        <div id="ch10-msg" style="font-family:var(--font-mono); font-size:0.8rem; color:var(--accent-neon); text-align:center;">Idle</div>
+                    </div>
+                    <div class="sys-component" style="flex:1;">
+                        <h5>Core 1 (L1 Cache)</h5>
+                        <div style="padding:1rem; border:1px solid var(--border-color); border-radius:6px; margin-bottom:1rem; text-align:center;">
+                            <div style="font-family:var(--font-mono);">Variable X</div>
+                            <div id="ch10-c1-state" style="font-size:0.8rem; font-weight:bold; margin:0.5rem 0; color:var(--text-secondary);">State: INVALID</div>
+                            <div id="ch10-c1-val" style="font-family:var(--font-mono); font-size:1.5rem;">--</div>
+                        </div>
+                        <div style="display:flex; gap:0.5rem; justify-content:center;">
+                            <button id="btn-ch10-c1-rd" class="btn-retro">Read X</button>
+                            <button id="btn-ch10-c1-wr" class="btn-retro">Write X=99</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </main>
+    </div>
+
+    <div id="global-footer"></div>
+    <script src="../../../core.js"></script>
+    <script src="coa-engine.js"></script>
+</body>
+</html>
