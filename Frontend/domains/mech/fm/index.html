@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SCME | Fluid Mechanics</title>
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- MathJax for rendering formulas -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']]
+        }
+      };
+    </script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+    <nav class="top-nav">
+        <div class="nav-left">
+            <h1 class="logo">SCME.</h1>
+            <a href="../../mech/index.html" class="btn-retro back-btn">â† ME Hub</a>
+        </div>
+        <button id="theme-toggle" class="btn-retro">Toggle Theme</button>
+    </nav>
+
+    <div class="learning-environment">
+        <aside class="chapter-sidebar">
+            <h3>Fluid Mechanics</h3>
+            <ul class="chapter-list">
+                <li><a href="#ch1" class="active">1. Fluid Properties</a></li>
+                <li><a href="#ch2">2. Fluid Statics</a></li>
+                <li><a href="#ch3">3. Fluid Kinematics</a></li>
+                <li><a href="#ch4">4. Fluid Dynamics</a></li>
+                <li><a href="#ch5">5. Momentum Analysis</a></li>
+                <li><a href="#ch6">6. Dimensional Analysis</a></li>
+                <li><a href="#ch7">7. Internal Flow</a></li>
+                <li><a href="#ch8">8. External Flow</a></li>
+                <li><a href="#ch9">9. Compressible Flow</a></li>
+                <li><a href="#ch10">10. Open Channel Flow</a></li>
+                <li><a href="#ch11">11. Turbomachinery</a></li>
+            </ul>
+        </aside>
+
+        <main class="reading-core">
+            <!-- CHAPTER 1 -->
+            <header class="chapter-header" id="ch1">
+                <span class="chapter-badge">Chapter 1</span>
+                <h2>Introduction & Fluid Properties</h2>
+                <p class="chapter-subtitle">The fundamental characteristics of flowing matter.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Fluid Mechanics is the branch of engineering science dealing with the behavior of fluids at rest (fluid statics) and in motion (fluid dynamics). Unlike a solid, a fluid is a substance that deforms continuously under the application of a shear (tangential) stress, no matter how small that stress may be. This continuous deformation is what we perceive as "flow." Before analyzing complex flow fields, we must rigidly define the intrinsic properties of the matter itself.</p>
+                
+                <h3>1. Density, Specific Volume, and Specific Gravity</h3>
+                <p>The macroscopic behavior of any fluid is heavily dictated by how its mass is packed into a given volume. The <strong>density</strong> ($\rho$) of a fluid is defined as its mass per unit volume. For liquids like water, density is virtually constant regardless of pressure (incompressible). However, for gases like air, density is highly dependent on both temperature and pressure according to the ideal gas law: $P = \rho R T$.</p>
+                <div class="math-formula">
+                    $$ \rho = \lim_{\Delta V \to 0} \frac{\Delta m}{\Delta V} $$
+                </div>
+                <p><strong>Specific Gravity (SG)</strong> provides a dimensionless ratio comparing a fluid's density to a standard reference fluid (usually pure water at $4^\circ\text{C}$). A specific gravity greater than 1.0 means the fluid will sink in water, while an SG less than 1.0 implies it will float.</p>
+
+                <h3>2. Viscosity and Newton's Law of Viscosity</h3>
+                <p>Viscosity is perhaps the most critical property in fluid dynamics. It represents a fluid's internal resistance to flow, effectively its "internal friction." When a fluid moves adjacent to a solid boundary, the fluid molecules directly contacting the surface adhere to itâ€”this is known as the <strong>no-slip condition</strong>. Consequently, velocity gradients develop within the flow field.</p>
+                <p>Newton's Law of Viscosity postulates that the shear stress ($\tau$) between fluid layers is directly proportional to the velocity gradient ($du/dy$) perpendicular to the flow direction. The constant of proportionality is the dynamic viscosity ($\mu$).</p>
+                <div class="math-formula">
+                    $$ \tau = \mu \frac{du}{dy} $$
+                </div>
+                <p>Fluids that obey this linear relationshipâ€”such as water, air, and most common oilsâ€”are called Newtonian fluids. Fluids that deviate from this linearity, requiring yield stresses or demonstrating shear-thickening/thinning (like ketchup, blood, or cornstarch suspensions), are Non-Newtonian.</p>
+            </article>
+            <div id="sim-ch1" class="interactive-container">
+                <div class="sim-overlay">
+                    <h4>Viscometer Drop Test</h4>
+                    <div class="sim-controls">
+                        <label>Fluid: 
+                            <select id="sim1-fluid">
+                                <option value="water">Water (Î¼ = 1 mPaÂ·s)</option>
+                                <option value="oil">Engine Oil (Î¼ = 250 mPaÂ·s)</option>
+                                <option value="honey">Honey (Î¼ = 10,000 mPaÂ·s)</option>
+                            </select>
+                        </label>
+                        <button id="sim1-drop-btn" class="btn-retro">Drop Sphere</button>
+                    </div>
+                    <div class="sim-stats">
+                        Velocity: <span id="sim1-vel">0.00</span> m/s<br>
+                        Time: <span id="sim1-time">0.00</span> s
+                    </div>
+                </div>
+                <canvas id="sim1-canvas"></canvas>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 2 -->
+            <header class="chapter-header" id="ch2">
+                <span class="chapter-badge">Chapter 2</span>
+                <h2>Fluid Statics & Hydrostatics</h2>
+                <p class="chapter-subtitle">Pressure distribution in quiescent fluids.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Fluid statics explores fluids at absolute rest, implying that there are strictly zero velocity gradients and, consequently, zero shear stresses everywhere in the fluid domain. The only stresses present are normal stresses, which we interpret as pressure. The governing principle of fluid statics dictates that pressure in a continuously connected, static fluid body varies solely due to the weight of the fluid above it.</p>
+                
+                <h3>1. The Fundamental Equation of Fluid Statics</h3>
+                <p>By taking a differential fluid element and balancing the pressure forces against the gravitational body force, we derive the fundamental equation of hydrostatics. In a uniform gravity field ($g$) aligned with the negative $z$-axis, pressure strictly depends on depth.</p>
+                <div class="math-formula">
+                    $$ \nabla P = \rho \mathbf{g} \implies \frac{dP}{dz} = -\rho g = -\gamma $$
+                </div>
+                <p>For an incompressible liquid, integrating this relationship yields Pascalâ€™s law, where $P_0$ is atmospheric pressure and $h$ is the depth below the free surface: $P = P_0 + \rho g h$. This linear pressure distribution implies that the structural load on submerged bodiesâ€”such as submarine hulls or dam wallsâ€”escalates linearly with increasing depth.</p>
+
+                <h3>2. Hydrostatic Forces on Submerged Surfaces</h3>
+                <p>Engineers routinely calculate the resultant forces acting on submerged surfaces like lock gates, ship hulls, and retaining walls. The magnitude of the resultant hydrostatic force ($F_R$) on a planar surface is given by the pressure at the centroid of the area ($P_c$) multiplied by the total area ($A$).</p>
+                <div class="math-formula">
+                    $$ F_R = P_c A = \left( P_0 + \rho g h_c \right) A $$
+                </div>
+                <p>However, because the pressure distribution is non-uniform (it forms a pressure prism that gets wider at the bottom), the resultant force does not act through the geometric centroid. It acts through a lower point known as the <strong>Center of Pressure ($y_p$)</strong>. Determining this exact point is crucial for predicting rotational moments and ensuring the structural stability of the gate mechanism.</p>
+            </article>
+            <div id="sim-ch2" class="interactive-container">
+                <div class="sim-overlay">
+                    <h4>Hydrostatic Pressure Prism</h4>
+                    <div class="sim-controls">
+                        <label>Water Depth (h): 
+                            <input type="range" id="sim2-depth" min="1" max="10" step="0.1" value="5">
+                            <span id="sim2-depth-val">5.0</span> m
+                        </label>
+                    </div>
+                    <div class="sim-stats">
+                        Force ($F_R$): <span id="sim2-force">0</span> kN<br>
+                        Center of Pressure ($y_p$): <span id="sim2-yp">0</span> m
+                    </div>
+                </div>
+                <canvas id="sim2-canvas"></canvas>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 3 -->
+            <header class="chapter-header" id="ch3">
+                <span class="chapter-badge">Chapter 3</span>
+                <h2>Fluid Kinematics</h2>
+                <p class="chapter-subtitle">The geometry of fluid motion.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Kinematics analyzes the motion of fluids strictly from a geometric standpoint, completely ignoring the forces (pressure, gravity, friction) that actually cause the motion. Here, we transition from observing static bodies to mapping dynamic flow fields defined by velocities, accelerations, and rotational rates across space and time.</p>
+                
+                <h3>1. Lagrangian vs. Eulerian Descriptions</h3>
+                <p>There are two fundamental frameworks for analyzing fluid motion. The <strong>Lagrangian approach</strong> tracks individual fluid particles as they traverse through space, much like tracking a specific car in a traffic jam. In contrast, the <strong>Eulerian approach</strong> defines a fixed control volume in space (a "window") and observes the fluid as it passes through. Because tracking trillions of individual molecules is impossible, engineering analysis relies almost exclusively on the Eulerian framework, treating fluid properties as continuous field variables: $\mathbf{V}(x, y, z, t)$ and $P(x, y, z, t)$.</p>
+
+                <h3>2. Acceleration and The Material Derivative</h3>
+                <p>In an Eulerian flow field, a fluid particle can accelerate even if the overall flow field is perfectly steady (time-invariant). This occurs because the particle is physically moving into regions of different spatial velocity (e.g., accelerating as it enters a narrowing pipe). We account for this using the <strong>Material Derivative</strong> ($D/Dt$), which encapsulates both the local time derivative and the convective acceleration components.</p>
+                <div class="math-formula">
+                    $$ \frac{D\mathbf{V}}{Dt} = \frac{\partial\mathbf{V}}{\partial t} + (\mathbf{V} \cdot \nabla)\mathbf{V} $$
+                </div>
+                <p>This expression is profoundly important; the non-linear convective acceleration term, $(\mathbf{V} \cdot \nabla)\mathbf{V}$, is the mathematical origin of nearly all complexity and turbulence in fluid dynamics.</p>
+                
+                <h3>3. Streamlines, Pathlines, and Streaklines</h3>
+                <p>Visualization is vital in kinematics. A <strong>streamline</strong> is a curve that is instantaneously tangent to the velocity vector of the flow. A <strong>pathline</strong> is the actual physical trajectory traced by a single fluid particle over time. A <strong>streakline</strong> connects all fluid particles that have passed through a specific spatial point (like smoke from a chimney). In a purely steady flow, these three lines are completely identical. In unsteady, transient flows, they diverge wildly.</p>
+            </article>
+            <div id="sim-ch3" class="interactive-container">
+                <div class="sim-overlay">
+                    <h4>Kinematic Wind Tunnel</h4>
+                    <div class="sim-controls">
+                        <label>Object: 
+                            <select id="sim3-shape">
+                                <option value="cylinder">Cylinder</option>
+                                <option value="flat">Flat Plate</option>
+                            </select>
+                        </label>
+                        <button id="sim3-particles-btn" class="btn-retro">Toggle Particles</button>
+                    </div>
+                </div>
+                <canvas id="sim3-canvas"></canvas>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 4 -->
+            <header class="chapter-header" id="ch4">
+                <span class="chapter-badge">Chapter 4</span>
+                <h2>Fluid Dynamics & The Bernoulli Equation</h2>
+                <p class="chapter-subtitle">Energy conservation along a streamline.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Moving from kinematics to dynamics, we introduce forces. Applying Newton's Second Law to a fluid particle yields the monumental Navier-Stokes equations. However, if we assume the fluid is frictionless (inviscid), steady, and incompressible, these equations dramatically simplify into Euler's equation of motion. Integrating Euler's equation along a streamline produces arguably the most famous relationship in mechanical engineering: The Bernoulli Equation.</p>
+                
+                <h3>1. The Bernoulli Equation</h3>
+                <p>The Bernoulli equation is a specialized statement of the principle of conservation of mechanical energy. It dictates that the sum of pressure energy, kinetic energy, and potential energy remains strictly constant along a streamline for an ideal fluid.</p>
+                <div class="math-formula">
+                    $$ P + \frac{1}{2}\rho V^2 + \rho g z = \text{Constant} $$
+                </div>
+                <p>This powerful equation reveals the inverse relationship between velocity and pressure. If a fluid accelerates (such as flowing over the curved top of an airplane wing or passing through a pipe throat), its kinetic energy increases. To strictly maintain the energy balance, the localized pressure must drop. This exact pressure differential generates aerodynamic lift and allows carburetors and atomizers to function.</p>
+
+                <h3>2. Practical Applications: The Venturimeter</h3>
+                <p>Engineers exploit the Bernoulli principle extensively to measure fluid flow rates. A <strong>Venturimeter</strong> is a pipe modification that gradually converges to a narrow throat, then diverges. As fluid accelerates through the throat, the pressure drops. By measuring the pressure difference ($\Delta P$) between the wide inlet and the narrow throat, one can calculate the exact volumetric flow rate ($Q$).</p>
+                <div class="math-formula">
+                    $$ V_2 = \sqrt{ \frac{2(P_1 - P_2)}{\rho (1 - (A_2 / A_1)^2)} } $$
+                </div>
+                <p>While the Bernoulli equation assumes an ideal frictionless fluid, real fluids lose energy to viscous shear. Engineers modify the ideal equation by incorporating a discharge coefficient ($C_d$) to account for these unavoidable thermodynamic losses.</p>
+            </article>
+            <div id="sim-ch4" class="interactive-container">
+                <div class="sim-overlay">
+                    <h4>Venturi Tube Dynamics</h4>
+                    <div class="sim-controls">
+                        <label>Inlet Velocity ($V_1$): 
+                            <input type="range" id="sim4-v1" min="1" max="10" step="0.5" value="5">
+                            <span id="sim4-v1-val">5.0</span> m/s
+                        </label>
+                        <label>Throat Ratio ($A_2/A_1$): 
+                            <input type="range" id="sim4-ratio" min="0.2" max="0.9" step="0.1" value="0.5">
+                            <span id="sim4-ratio-val">0.5</span>
+                        </label>
+                    </div>
+                    <div class="sim-stats">
+                        Throat Vel ($V_2$): <span id="sim4-v2">10.0</span> m/s<br>
+                        Pressure Drop ($\Delta P$): <span id="sim4-dp">0</span> kPa
+                    </div>
+                </div>
+                <canvas id="sim4-canvas"></canvas>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 5 -->
+            <header class="chapter-header" id="ch5">
+                <span class="chapter-badge">Chapter 5</span>
+                <h2>Momentum Analysis of Flow Systems</h2>
+                <p class="chapter-subtitle">Reynolds Transport Theorem and macroscopic forces.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>While the Bernoulli equation is excellent for tracking energy along a single streamline, it cannot predict the macroscopic forces that a moving fluid exerts on solid boundaries, such as the thrust of a jet engine, the impact force of a water jet against a turbine blade, or the structural anchor forces required to hold a fire hose nozzle in place. For this, we require the Control Volume approach combined with the Conservation of Linear Momentum.</p>
+                
+                <h3>1. The Reynolds Transport Theorem (RTT)</h3>
+                <p>The laws of physics (Newton's laws) are inherently defined for closed systems (Lagrangian masses). To apply them to open control volumes where fluid continuously enters and exits, we use the Reynolds Transport Theorem. The RTT acts as a mathematical bridge, converting time derivatives of system properties into equivalent spatial formulations across control surfaces.</p>
+                
+                <h3>2. The Linear Momentum Equation</h3>
+                <p>Applying the RTT to Newton's Second Law ($\Sigma \mathbf{F} = d(m\mathbf{V})/dt$) yields the integral form of the linear momentum equation. It states that the sum of all external forces acting on a control volume equals the rate of change of momentum within the volume, plus the net flux of momentum exiting the control surfaces.</p>
+                <div class="math-formula">
+                    $$ \sum \mathbf{F} = \frac{\partial}{\partial t} \int_{CV} \mathbf{V} \rho dV + \int_{CS} \mathbf{V} \rho (\mathbf{V}_r \cdot \mathbf{n}) dA $$
+                </div>
+                <p>For steady, one-dimensional flow, this complex integral simplifies significantly to $\sum \mathbf{F} = \sum (\dot{m} \mathbf{V})_{out} - \sum (\dot{m} \mathbf{V})_{in}$. This is the foundational equation for rocket propulsion. The massive momentum flux ($\dot{m}V_{exit}$) leaving the engine nozzle generates an equal and opposite reaction forceâ€”thrustâ€”propelling the vehicle forward in space.</p>
+            </article>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 6 -->
+            <header class="chapter-header" id="ch6">
+                <span class="chapter-badge">Chapter 6</span>
+                <h2>Dimensional Analysis & Similitude</h2>
+                <p class="chapter-subtitle">Scaling prototypes using dimensionless numbers.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>In modern engineering, designing a new commercial airliner or a massive hydroelectric dam directly from pure mathematics is impossible due to the unyielding complexity of the Navier-Stokes equations. Instead, engineers rely heavily on experimental testing. However, building full-scale prototypes is financially prohibitive. We must test scaled-down models in wind tunnels or towing tanks. Dimensional Analysis ensures that the data gathered from a tiny model can mathematically scale up to accurately predict the behavior of the massive prototype.</p>
+                
+                <h3>1. The Buckingham Pi Theorem</h3>
+                <p>The Buckingham Pi theorem is a formal methodology for reducing the number of physical variables in an experiment into a smaller set of dimensionless groups (called $\Pi$ terms). If a physical process involves $n$ variables (e.g., velocity, density, viscosity, length) expressed in $m$ fundamental dimensions (Mass, Length, Time), the theorem proves that the process can be perfectly described by exactly $n - m$ dimensionless groups.</p>
+                
+                <h3>2. Crucial Dimensionless Numbers</h3>
+                <p>These $\Pi$ terms usually represent ratios of competing physical forces:</p>
+                <ul>
+                    <li><strong>Reynolds Number ($Re = \frac{\rho V L}{\mu}$):</strong> The ratio of inertial forces to viscous forces. It dictates whether a flow will be smooth and laminar, or chaotic and turbulent.</li>
+                    <li><strong>Froude Number ($Fr = \frac{V}{\sqrt{gL}}$):</strong> The ratio of inertial forces to gravitational forces. Critical in open channel flows and naval architecture (ship wakes).</li>
+                    <li><strong>Mach Number ($Ma = \frac{V}{c}$):</strong> The ratio of flow velocity to the local speed of sound. It governs compressibility effects in aerodynamics.</li>
+                </ul>
+
+                <h3>3. Dynamic Similitude</h3>
+                <p>For a scale model to behave exactly like the prototype, three levels of similarity must be achieved: <strong>Geometric</strong> (the shapes are scaled perfectly), <strong>Kinematic</strong> (the velocity vectors scale proportionally), and <strong>Dynamic</strong>. Dynamic similarity is achieved when all relevant dimensionless numbers (like $Re$ and $Fr$) are identical between the model and the prototype. Only then can the force coefficients ($C_L, C_D$) measured in the lab be applied to the real-world design.</p>
+            </article>
+            <div id="sim-ch6" class="interactive-container">
+                <div class="sim-overlay">
+                    <h4>Towing Tank Similitude</h4>
+                    <div class="sim-controls">
+                        <label>Scale Factor ($\lambda$): 1:<span id="sim6-scale-val">20</span>
+                            <input type="range" id="sim6-scale" min="10" max="100" step="1" value="20">
+                        </label>
+                    </div>
+                    <div class="sim-stats">
+                        Prototype Speed: 15.0 m/s<br>
+                        Req. Model Speed: <span id="sim6-vm">3.35</span> m/s
+                    </div>
+                </div>
+                <canvas id="sim6-canvas"></canvas>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 7 -->
+            <header class="chapter-header" id="ch7">
+                <span class="chapter-badge">Chapter 7</span>
+                <h2>Internal Flow (Viscous Flow in Pipes)</h2>
+                <p class="chapter-subtitle">Friction, boundary layers, and head loss.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Internal flow involves fluid heavily constrained by solid boundaries, most commonly pipes and HVAC ducts. Because the fluid is entirely surrounded by walls, viscous effects dominate the entire flow field. The primary engineering goal in analyzing internal flow is calculating the pressure drop (head loss) across the system, which dictates the size and power of the pumps required to maintain flow.</p>
+                
+                <h3>1. Laminar vs. Turbulent Flow</h3>
+                <p>The nature of flow within a pipe is dictated by the Reynolds number ($Re_D = \frac{\rho V D}{\mu}$). At low velocities ($Re < 2300$), the flow is <strong>laminar</strong>. Fluid particles move in highly ordered, parallel layers with macroscopic mixing strictly absent. The velocity profile forms a perfect geometric parabola. However, at higher velocities ($Re > 4000$), the flow becomes <strong>turbulent</strong>. Random, chaotic macroscopic eddies form, causing intense mixing. The velocity profile blunts out, becoming much flatter across the pipe core with extremely steep velocity gradients right at the wall.</p>
+
+                <h3>2. The Darcy-Weisbach Equation and Major Losses</h3>
+                <p>The frictional pressure drop in a straight pipe segment (major loss) is universally calculated using the Darcy-Weisbach equation. This equation expresses head loss ($h_f$) in terms of pipe length ($L$), diameter ($D$), average velocity ($V$), and a dimensionless friction factor ($f$).</p>
+                <div class="math-formula">
+                    $$ h_f = f \frac{L}{D} \frac{V^2}{2g} $$
+                </div>
+                
+                <h3>3. The Moody Chart</h3>
+                <p>The friction factor $f$ is highly complex. For perfectly laminar flow, it is purely analytical: $f = 64/Re$. But for turbulent flow, $f$ depends on both the Reynolds number and the relative surface roughness of the pipe ($\epsilon / D$). Because the Colebrook-White equation for turbulent $f$ is implicit and cannot be solved directly, engineers historically relied on the <strong>Moody Chart</strong>â€”a massive logarithmic graph plotting $f$ against $Re$ and $\epsilon/D$. In the fully rough turbulent regime, viscous forces are overshadowed by the chaos caused by the rough wall asperities, and $f$ becomes completely independent of the Reynolds number.</p>
+            </article>
+            <div id="sim-ch7" class="interactive-container">
+                <div class="sim-overlay" style="max-width: 300px;">
+                    <h4>Pipe Friction & Velocity Profile</h4>
+                    <div class="sim-controls">
+                        <label>Reynolds Number ($Re$): 
+                            <input type="range" id="sim7-re" min="1000" max="100000" step="1000" value="2000">
+                            <span id="sim7-re-val">2000</span> <span id="sim7-regime">(Laminar)</span>
+                        </label>
+                        <label>Rel. Roughness ($\epsilon/D$): 
+                            <input type="range" id="sim7-rough" min="0" max="0.05" step="0.001" value="0.01">
+                            <span id="sim7-rough-val">0.010</span>
+                        </label>
+                    </div>
+                    <div class="sim-stats">
+                        Friction Factor ($f$): <span id="sim7-f">0.0320</span>
+                    </div>
+                </div>
+                <canvas id="sim7-canvas"></canvas>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 8 -->
+            <header class="chapter-header" id="ch8">
+                <span class="chapter-badge">Chapter 8</span>
+                <h2>External Flow</h2>
+                <p class="chapter-subtitle">Boundary layer theory, drag, and lift.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>External flow occurs when a fluid moves over an unbounded body, such as air flowing over an aircraft wing or water rushing past a submarine. Unlike internal flow, the viscous effects in external flow are largely confined to an extremely thin region adjacent to the body surface known as the <strong>Boundary Layer</strong>, first conceptualized by Ludwig Prandtl in 1904. Outside this micro-layer, the fluid essentially behaves as an ideal, inviscid (frictionless) stream.</p>
+
+                <h3>1. The Boundary Layer and Skin Friction</h3>
+                <p>Because of the no-slip condition, fluid at the immediate surface has zero velocity. The velocity rapidly ramps up across the boundary layer until it matches the freestream velocity ($U_\infty$). This intense velocity gradient ($\partial u/\partial y$) generates shear stress, resulting in <strong>Skin Friction Drag</strong>. Just like pipe flow, boundary layers can be laminar (smooth, but weak) or turbulent (chaotic, thick, but highly energetic). Paradoxically, aerodynamicists often trigger early turbulence over wings to prevent flow separation.</p>
+
+                <h3>2. Pressure Drag and Flow Separation</h3>
+                <p>As fluid flows over a curved bluff body (like a cylinder or a car), the pressure drops near the top, accelerating the fluid. However, as the fluid moves toward the rear of the body, it encounters an adverse pressure gradient (pressure is rising). The slow-moving fluid deep inside the boundary layer may lack the kinetic energy to push against this rising pressure. It stalls, stops, and literally reverses direction, tearing away from the surface. This is <strong>Flow Separation</strong>. It creates a massive low-pressure wake behind the object, resulting in massive <strong>Pressure (Form) Drag</strong>.</p>
+                <div class="math-formula">
+                    $$ F_D = C_D A \frac{\rho V^2}{2} $$
+                </div>
+                
+                <h3>3. Aerodynamic Lift</h3>
+                <p>Lift is generated by designing asymmetric shapes (airfoils) that manipulate the pressure field. An airfoil forces the fluid flowing over its top surface to accelerate faster than the fluid underneath. By Bernoulli's principle, this higher velocity corresponds to lower static pressure on the top surface. The resultant vertical pressure differential acts upwards on the wing, overcoming gravity.</p>
+            </article>
+            <div id="sim-ch8" class="interactive-container">
+                <div class="sim-overlay">
+                    <h4>Boundary Layer & Separation</h4>
+                    <div class="sim-controls">
+                        <label>Angle of Attack ($\alpha$): 
+                            <input type="range" id="sim8-aoa" min="0" max="30" step="1" value="5">
+                            <span id="sim8-aoa-val">5</span>&deg;
+                        </label>
+                        <label>Velocity ($U_\infty$): 
+                            <input type="range" id="sim8-vel" min="10" max="100" step="5" value="50">
+                            <span id="sim8-vel-val">50</span> m/s
+                        </label>
+                    </div>
+                    <div class="sim-stats">
+                        Lift Coeff ($C_L$): <span id="sim8-cl">0.5</span><br>
+                        Drag Coeff ($C_D$): <span id="sim8-cd">0.05</span><br>
+                        <span id="sim8-stall" style="color: var(--accent-mech); font-weight: bold; display: none;">STALL WARNING</span>
+                    </div>
+                </div>
+                <canvas id="sim8-canvas"></canvas>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 9 -->
+            <header class="chapter-header" id="ch9">
+                <span class="chapter-badge">Chapter 9</span>
+                <h2>Compressible Flow</h2>
+                <p class="chapter-subtitle">Shock waves and choking in high-speed gases.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Up until this point, we have assumed fluids are incompressible ($\rho \approx \text{constant}$). This is highly accurate for liquids, and even accurate for gases moving below 100 m/s. However, when gas velocities begin to approach the local speed of sound, drastic variations in density occur. The entire regime of fluid mechanics fundamentally shifts, and we must deeply integrate thermodynamics into our analyses.</p>
+
+                <h3>1. Mach Number and Flow Regimes</h3>
+                <p>The Mach number ($Ma$) is the ratio of local fluid velocity to the local speed of sound ($c = \sqrt{kRT}$). Flow behavior is categorized into distinct regimes:
+                <ul>
+                    <li><strong>Subsonic ($Ma < 0.8$):</strong> Density changes are negligible. The flow behaves predictably.</li>
+                    <li><strong>Transonic ($0.8 < Ma < 1.2$):</strong> The most dangerous and complex regime. Supersonic shock waves begin forming on localized regions of the aircraft while other parts remain subsonic, causing extreme buffeting and drag spikes.</li>
+                    <li><strong>Supersonic ($Ma > 1.2$):</strong> The entire flow field is faster than sound. Information (pressure waves) cannot propagate upstream.</li>
+                </ul></p>
+
+                <h3>2. Converging-Diverging (De Laval) Nozzles</h3>
+                <p>In subsonic flow, a converging pipe accelerates a fluid (Venturi effect). In supersonic flow, the rules invert: a converging pipe actually <em>decelerates</em> a supersonic fluid, and a diverging pipe <em>accelerates</em> it further. To accelerate a rocket exhaust from subsonic to supersonic speeds, we must use a Converging-Diverging (CD) nozzle. The fluid reaches exactly $Ma = 1$ at the narrowest throat. If the downstream pressure is lowered further, the flow will not accelerate any more at the throatâ€”this is called <strong>Choked Flow</strong>.</p>
+
+                <h3>3. Shock Waves</h3>
+                <p>When supersonic flow encounters an obstruction or a sudden change in geometry, it cannot smoothly adjust because pressure waves cannot travel upstream to "warn" the fluid. The adjustment occurs violently across an infinitesimally thin barrier known as a Normal Shock Wave. Across a shock wave, the fluid instantly decelerates to subsonic speeds, while temperature, pressure, and entropy spike dramatically, resulting in massive energy losses.</p>
+            </article>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 10 -->
+            <header class="chapter-header" id="ch10">
+                <span class="chapter-badge">Chapter 10</span>
+                <h2>Open Channel Flow</h2>
+                <p class="chapter-subtitle">Gravity-driven flows with a free surface.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Open channel flow involves liquids flowing with a free surface exposed to atmospheric pressure, such as rivers, canals, sewers, and aqueducts. Unlike pipe flow, which is driven by a pressure pump, open channel flow is driven entirely by the component of gravity acting along the slope of the channel bed. The defining complexity of open channel flow is that the cross-sectional flow area is completely free to alter its geometry (depth) based on flow conditions.</p>
+
+                <h3>1. Specific Energy and Critical Depth</h3>
+                <p>The Specific Energy ($E$) of an open channel is defined as the total mechanical energy head relative to the channel bottom itself, rather than a universal datum. It is the sum of the fluid depth ($y$) and the kinetic velocity head.</p>
+                <div class="math-formula">
+                    $$ E = y + \frac{V^2}{2g} = y + \frac{Q^2}{2gA^2} $$
+                </div>
+                <p>Plotting $E$ against depth $y$ yields a distinct curve showing that for any given specific energy, there are generally two possible depths that can sustain that flow: a deep, slow flow (subcritical) or a shallow, incredibly fast flow (supercritical). The tipping point between these regimes is the <strong>Critical Depth</strong>, which corresponds to the absolute minimum specific energy required to pass a given discharge $Q$.</p>
+
+                <h3>2. The Froude Number and Hydraulic Jumps</h3>
+                <p>The flow regime is classified by the Froude number ($Fr = V / \sqrt{gy}$), which represents the ratio of fluid velocity to the speed of shallow-water gravity waves. If $Fr < 1$, the flow is subcritical (tranquil). If $Fr > 1$, it is supercritical (torrential, rapids).</p>
+                <p>When supercritical flow is forced to slow down (perhaps by encountering a flatter slope or an obstruction), it cannot transition smoothly back to subcritical flow. It abruptly violently crashes into itself, forming a <strong>Hydraulic Jump</strong>. This standing wave is highly turbulent, full of air bubbles, and deliberately used by dam engineers to dissipate massive amounts of kinetic energy at the bottom of spillways, preventing disastrous downstream erosion.</p>
+            </article>
+            <div id="sim-ch10" class="interactive-container">
+                <div class="sim-overlay">
+                    <h4>Hydraulic Jump Analysis</h4>
+                    <div class="sim-controls">
+                        <label>Upstream Froude ($Fr_1$): 
+                            <input type="range" id="sim10-fr1" min="1.1" max="5.0" step="0.1" value="2.5">
+                            <span id="sim10-fr1-val">2.5</span>
+                        </label>
+                        <label>Upstream Depth ($y_1$): 
+                            <input type="range" id="sim10-y1" min="0.1" max="1.0" step="0.1" value="0.5">
+                            <span id="sim10-y1-val">0.5</span> m
+                        </label>
+                    </div>
+                    <div class="sim-stats">
+                        Downstream Depth ($y_2$): <span id="sim10-y2">1.54</span> m<br>
+                        Energy Loss ($\Delta E$): <span id="sim10-eloss">0.2</span> m
+                    </div>
+                </div>
+                <canvas id="sim10-canvas"></canvas>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 11 -->
+            <header class="chapter-header" id="ch11">
+                <span class="chapter-badge">Chapter 11</span>
+                <h2>Turbomachinery</h2>
+                <p class="chapter-subtitle">Pumps, turbines, and velocity triangles.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Turbomachinery represents the practical culmination of fluid mechanics. It involves devices that extract energy from a fluid (turbines) or impart energy to a fluid (pumps, compressors, fans). These machines rely on dynamically transferring momentum between rotating blades (rotors) and the fluid stream.</p>
+
+                <h3>1. Euler's Turbomachine Equation</h3>
+                <p>The theoretical power ($P$) generated by a turbine or required by a pump is determined by the change in angular momentum of the fluid as it passes through the spinning impeller. By tracking the tangential components of fluid velocity at the inner radius ($r_1$) and outer radius ($r_2$), we arrive at Euler's fundamental turbomachine equation.</p>
+                <div class="math-formula">
+                    $$ \text{Power} = \dot{m} \omega (r_2 V_{t2} - r_1 V_{t1}) $$
+                </div>
+                
+                <h3>2. Velocity Triangles</h3>
+                <p>Analyzing turbomachines requires mapping velocity vectors. At any point on a blade, there are three distinct velocities to consider: the absolute velocity of the fluid ($V$), the tangential rotational speed of the blade itself ($U = \omega r$), and the relative velocity of the fluid moving across the blade surface ($W$). These three vectors form a closed triangle ($V = U + W$). Designing a highly efficient pump impeller requires perfectly aligning the blade angles to match the relative velocity vector $W$, ensuring smooth, shock-free flow entry and exit.</p>
+
+                <h3>3. Cavitation</h3>
+                <p>A catastrophic failure mode in pumps and marine propellers is Cavitation. If a pump operates too fast or draws water from too deep, the absolute static pressure at the suction eye of the impeller can drop below the fluid's vapor pressure. The water literally begins to boil at room temperature, forming vapor bubbles. As these bubbles are swept into the high-pressure discharge side of the pump, they collapse inward with extreme violence. The resulting micro-jets generate localized pressures of thousands of atmospheres, rapidly eroding solid stainless-steel impellers and producing a noise akin to pumping gravel.</p>
+            </article>
+            <div id="sim-ch11" class="interactive-container">
+                <div class="sim-overlay">
+                    <h4>Centrifugal Pump Impeller</h4>
+                    <div class="sim-controls">
+                        <label>Impeller RPM: 
+                            <input type="range" id="sim11-rpm" min="500" max="3000" step="100" value="1500">
+                            <span id="sim11-rpm-val">1500</span>
+                        </label>
+                        <label>Blade Angle ($\beta_2$): 
+                            <input type="range" id="sim11-beta" min="10" max="90" step="5" value="30">
+                            <span id="sim11-beta-val">30</span>&deg;
+                        </label>
+                    </div>
+                    <div class="sim-stats">
+                        Theoretical Head ($H_{th}$): <span id="sim11-head">25.4</span> m<br>
+                        Flow Rate ($Q$): <span id="sim11-flow">0.15</span> m&sup3;/s
+                    </div>
+                </div>
+                <canvas id="sim11-canvas"></canvas>
+            </div>
+        </main>
+    </div>
+
+    <script src="fm-engine.js"></script>
+<script src="../../../core.js"></script>
+</body>
+</html>
