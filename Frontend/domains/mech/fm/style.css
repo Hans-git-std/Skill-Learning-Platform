@@ -1,0 +1,415 @@
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@300;400;500;600&family=Outfit:wght@500;700;800&display=swap');
+
+:root {
+    /* Light Mode Default */
+    --bg-primary: #ffffff;
+    --bg-secondary: #f4f4f5;
+    --bg-panel: #e4e4e7;
+    --text-primary: #09090b;
+    --text-secondary: #52525b;
+    --accent-neon: #0284c7;
+    --accent-purple: #6d28d9;
+    --accent-green: #059669;
+    --accent-warning: #d97706;
+    --accent-mech: #e11d48; /* Red tint for mechanical */
+    --border-color: #d4d4d8;
+    --font-heading: 'Outfit', sans-serif;
+    --font-body: 'Inter', sans-serif;
+    --font-mono: 'Fira Code', monospace;
+    --sidebar-width: 300px;
+}
+
+[data-theme="dark"] {
+    /* Dark Mode Overrides */
+    --bg-primary: #09090b;
+    --bg-secondary: #121214;
+    --bg-panel: #18181b;
+    --text-primary: #fafafa;
+    --text-secondary: #a1a1aa;
+    --accent-neon: #06b6d4; /* Cyan */
+    --accent-purple: #8b5cf6;
+    --accent-green: #10b981;
+    --accent-warning: #f59e0b;
+    --accent-mech: #f43f5e; /* Rose/Red for Mechanical */
+    --border-color: #27272a;
+}
+
+/* STRICT ZERO OVERFLOW RULES */
+html, body {
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: hidden !important;
+    margin: 0;
+    padding: 0;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    line-height: 1.7;
+    box-sizing: border-box;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+*, *::before, *::after {
+    box-sizing: inherit;
+    max-width: 100%;
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    line-height: 1.2;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+    word-wrap: break-word;
+}
+
+h2 { font-size: 2.25rem; letter-spacing: -0.02em; }
+h3 { font-size: 1.5rem; margin-top: 2.5rem; color: var(--accent-mech); }
+h4 { font-size: 1.25rem; margin-top: 1.5rem; color: var(--text-primary); }
+
+p { margin-bottom: 1.25rem; font-size: 1.1rem; color: var(--text-secondary); word-wrap: break-word; text-align: justify; }
+strong { color: var(--text-primary); font-weight: 600; }
+em { color: var(--accent-neon); font-style: italic; }
+
+code { 
+    font-family: var(--font-mono); 
+    background: var(--bg-panel);
+    padding: 0.2em 0.4em;
+    border-radius: 4px;
+    font-size: 0.9em;
+    color: var(--accent-purple);
+    word-wrap: break-word;
+}
+
+/* Formula Styling */
+.math-formula {
+    background: var(--bg-secondary);
+    border-left: 4px solid var(--accent-mech);
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+    border-radius: 0 8px 8px 0;
+    overflow-x: auto; /* Allow horizontal scroll ONLY inside the formula block if needed */
+    color: var(--text-primary);
+    font-size: 1.2rem;
+    display: flex;
+    justify-content: center;
+}
+
+.math-formula .MathJax {
+    max-width: 100%;
+}
+
+/* Layout */
+.top-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.nav-left {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.logo {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--text-primary);
+}
+
+.btn-retro {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+
+.btn-retro:hover {
+    background: var(--bg-panel);
+    border-color: var(--accent-mech);
+}
+
+.learning-environment {
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100vh - 70px);
+}
+
+@media (min-width: 1024px) {
+    .learning-environment {
+        flex-direction: row;
+    }
+}
+
+/* Sidebar */
+.chapter-sidebar {
+    width: 100%;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+    padding: 2rem;
+    position: relative;
+    z-index: 10;
+}
+
+@media (min-width: 1024px) {
+    .chapter-sidebar {
+        width: var(--sidebar-width);
+        flex-shrink: 0;
+        height: calc(100vh - 70px);
+        position: sticky;
+        top: 70px;
+        border-bottom: none;
+        border-right: 1px solid var(--border-color);
+        overflow-y: auto;
+    }
+}
+
+.chapter-sidebar h3 {
+    font-size: 1.2rem;
+    color: var(--text-primary);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 1.5rem;
+    margin-top: 0;
+}
+
+.chapter-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.chapter-list li {
+    margin-bottom: 0.5rem;
+}
+
+.chapter-list a {
+    display: block;
+    text-decoration: none;
+    color: var(--text-secondary);
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+.chapter-list a:hover {
+    background: var(--bg-panel);
+    color: var(--accent-mech);
+    transform: translateX(5px);
+}
+
+.chapter-list a.active {
+    background: rgba(244, 63, 94, 0.1);
+    color: var(--accent-mech);
+    border-left: 3px solid var(--accent-mech);
+}
+
+/* Main Content Area */
+.reading-core {
+    flex-grow: 1;
+    padding: 2rem 1.5rem;
+    width: 100%;
+    max-width: 100vw;
+}
+
+@media (min-width: 768px) {
+    .reading-core {
+        padding: 4rem;
+        max-width: 900px;
+        margin: 0 auto;
+    }
+}
+
+/* Chapter Headers */
+.chapter-header {
+    margin-bottom: 2.5rem;
+}
+
+.chapter-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    background: rgba(225, 29, 72, 0.15);
+    color: var(--accent-mech);
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 1rem;
+    border: 1px solid rgba(225, 29, 72, 0.3);
+}
+
+.chapter-subtitle {
+    font-size: 1.25rem;
+    color: var(--accent-neon);
+    font-weight: 500;
+}
+
+.chapter-divider {
+    border: 0;
+    height: 1px;
+    background: var(--border-color);
+    margin: 4rem 0;
+}
+
+/* Simulator Container Placeholder */
+.interactive-container {
+    width: 100%;
+    height: 400px;
+    background: var(--bg-panel);
+    border: 1px dashed var(--accent-mech);
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 3rem 0;
+    position: relative;
+    overflow: hidden; /* No overflow in simulator */
+}
+
+.simulator-placeholder-text {
+    font-family: var(--font-mono);
+    color: var(--text-secondary);
+    text-align: center;
+    padding: 2rem;
+}
+
+/* Simulator UI Overlays */
+.interactive-container canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+.sim-overlay {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    z-index: 2;
+    background: rgba(var(--bg-panel-rgb, 24, 24, 27), 0.85);
+    backdrop-filter: blur(5px);
+    border: 1px solid var(--border-color);
+    padding: 1rem;
+    border-radius: 8px;
+    pointer-events: auto;
+    max-width: 250px;
+}
+
+[data-theme="light"] .sim-overlay {
+    background: rgba(228, 228, 231, 0.85);
+}
+
+.sim-overlay h4 {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+    color: var(--accent-mech);
+}
+
+.sim-controls label {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+}
+
+.sim-controls select, .sim-controls input[type="range"] {
+    width: 100%;
+    margin-top: 0.25rem;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    padding: 0.2rem;
+    border-radius: 4px;
+}
+
+.sim-controls button {
+    width: 100%;
+    margin-top: 0.5rem;
+}
+
+.sim-stats {
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border-color);
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--text-primary);
+}
+
+/* Force stacked layout for Chapter 7 due to split-screen requirements */
+#sim-ch7 {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    height: auto;
+    min-height: 450px;
+}
+
+#sim-ch7 canvas {
+    position: relative;
+    height: 350px;
+    width: 100%;
+    flex-grow: 1;
+}
+
+#sim-ch7 .sim-overlay {
+    position: relative;
+    top: 0;
+    left: 0;
+    max-width: 100% !important;
+    width: 100%;
+    border-radius: 12px 12px 0 0;
+    border: none;
+    border-bottom: 1px solid var(--border-color);
+    background: var(--bg-panel);
+}
+
+/* Mobile Responsive Adjustments for ALL Simulators */
+@media (max-width: 768px) {
+    .interactive-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        height: auto;
+        min-height: 450px;
+    }
+    
+    .interactive-container canvas {
+        position: relative;
+        height: 350px;
+        width: 100%;
+        flex-grow: 1;
+    }
+    
+    .sim-overlay {
+        position: relative;
+        top: 0;
+        left: 0;
+        max-width: 100% !important;
+        width: 100%;
+        border-radius: 12px 12px 0 0;
+        border: none;
+        border-bottom: 1px solid var(--border-color);
+        background: var(--bg-panel);
+    }
+}
