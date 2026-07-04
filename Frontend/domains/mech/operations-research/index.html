@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SCME | Operations Research Deep Dive</title>
+    <!-- MathJax for rendering formulas -->
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']]
+            }
+        };
+    </script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="stylesheet" href="../../cs/style.css"> <!-- Link to global/CS base if necessary -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="top-nav">
+        <div class="nav-left">
+            <h1 class="logo">SCME.</h1>
+            <a href="../index.html" class="btn-retro back-btn">← Mech Hub</a>
+        </div>
+        <button id="theme-toggle" class="btn-retro">Toggle Theme</button>
+    </nav>
+
+    <div class="learning-environment">
+        <aside class="chapter-sidebar">
+            <h3>Operations Research</h3>
+            <ul class="chapter-list">
+                <li><a href="#ch1" class="active">1. OR & Modeling</a></li>
+                <li><a href="#ch2">2. LP: Graphical</a></li>
+                <li><a href="#ch3">3. LP: Simplex</a></li>
+                <li><a href="#ch4">4. Transportation</a></li>
+                <li><a href="#ch5">5. Assignment</a></li>
+                <li><a href="#ch6">6. PERT & CPM</a></li>
+                <li><a href="#ch7">7. Queuing Theory</a></li>
+                <li><a href="#ch8">8. Inventory Models</a></li>
+                <li><a href="#ch9">9. Game Theory</a></li>
+                <li><a href="#ch10">10. Dynamic Prog.</a></li>
+                <li><a href="#ch11">11. Integer Prog.</a></li>
+                <li><a href="#ch12">12. Simulation</a></li>
+            </ul>
+        </aside>
+
+        <main class="reading-core">
+            <!-- CHAPTER 1 -->
+            <header class="chapter-header" id="ch1">
+                <span class="chapter-badge">Chapter 1</span>
+                <h2>Introduction to Operations Research & Modeling</h2>
+                <p class="chapter-subtitle">Mathematical frameworks for mechanical optimization.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Operations Research (OR) represents the analytical method of problem-solving and decision-making that is highly valuable in the management of organizations. In mechanical engineering and manufacturing, OR transforms chaotic variables—like machine downtime, material costs, and labor hours—into strict mathematical models that can be algorithmically minimized or maximized.</p>
+                
+                <h3>1. The Anatomy of a Mathematical Model</h3>
+                <p>Every OR model in a manufacturing context contains three critical components:</p>
+                <ul>
+                    <li><strong>Decision Variables ($x_j$):</strong> The quantifiable unknowns. E.g., the number of CNC machines to run, or the number of units of Part A to produce.</li>
+                    <li><strong>Objective Function ($Z$):</strong> The goal of the model. We either want to Maximize Profit or Minimize Cost.</li>
+                    <li><strong>Constraints:</strong> The physical, financial, or mechanical limitations of the system, expressed as linear inequalities. E.g., the factory only has 500 hours of lathe time available.</li>
+                </ul>
+                
+                <div class="formula-container">
+                    <span class="formula-title">General Linear Programming Model</span>
+                    <p>Maximize or Minimize:</p>
+                    <p>$$ Z = \sum_{j=1}^{n} c_j x_j $$</p>
+                    <p>Subject to constraints:</p>
+                    <p>$$ \sum_{j=1}^{n} a_{ij} x_j \leq b_i \quad \text{for } i = 1, 2, ..., m $$</p>
+                    <p>And non-negativity restrictions:</p>
+                    <p>$$ x_j \geq 0 \quad \text{for } j = 1, 2, ..., n $$</p>
+                    <p>Where $c_j$ represents the profit/cost coefficient, $a_{ij}$ is the technological coefficient (e.g., hours required per unit), and $b_i$ is the total resource availability.</p>
+                </div>
+                
+                <blockquote>
+                    <strong>Mechanical Context:</strong> If $x_1$ is the number of Engine Blocks produced, and they require 5 hours of casting time, while the foundry only operates 120 hours a week, the constraint is strictly $5x_1 \leq 120$. Violating this constraint means breaking the laws of physics or factory capacity.
+                </blockquote>
+            </article>
+            <div id="sim-ch1" class="interactive-container">
+                <div class="engine-controls">
+                    <button id="ch1-btn-reset" class="btn-retro secondary-btn">Reset Layout</button>
+                    <button id="ch1-btn-optimize" class="btn-retro primary-btn">Auto-Optimize Layout</button>
+                </div>
+                <div class="architecture-layout">
+                    <div class="sys-component">
+                        <h4>Factory Floor Layout (Tap to Swap)</h4>
+                        <div class="factory-grid" id="ch1-factory-grid">
+                            <!-- JS will inject machines and grid -->
+                        </div>
+                        <div class="data-interpretations" style="margin-top: 1rem;">
+                            <div class="data-box"><span class="data-label">Material Handling Cost</span><span class="data-val" id="ch1-val-cost">$0</span></div>
+                            <div class="data-box"><span class="data-label">Total Distance</span><span class="data-val" id="ch1-val-dist">0m</span></div>
+                        </div>
+                        <p class="engine-caption">Drag machines to reorganize the floor. The engine continuously calculates the cost of moving parts between them based on a proximity penalty.</p>
+                    </div>
+                </div>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 2 -->
+            <header class="chapter-header" id="ch2">
+                <span class="chapter-badge">Chapter 2</span>
+                <h2>Linear Programming: Graphical Method</h2>
+                <p class="chapter-subtitle">Visualizing constraints in two dimensions.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>When a mechanical engineering problem is restricted to exactly two decision variables ($x_1$ and $x_2$), we can solve it purely using Euclidean geometry. The Graphical Method involves plotting the constraints on a Cartesian coordinate system to form a <strong>Feasible Region</strong>—the convex polygon representing all possible physically valid production states.</p>
+                
+                <h3>1. Convexity and the Extreme Point Theorem</h3>
+                <p>A fundamental theorem of Linear Programming states that if an optimal solution exists, it <em>must</em> occur at one of the vertices (extreme points) of the feasible region. The feasible region itself is always a convex set, meaning a line segment drawn between any two points in the region will lie entirely inside the region.</p>
+                
+                <div class="formula-container">
+                    <span class="formula-title">Iso-Profit / Iso-Cost Lines</span>
+                    <p>To find the optimal vertex, we evaluate the objective function $Z = c_1 x_1 + c_2 x_2$ by setting $Z$ to an arbitrary constant $k$:</p>
+                    <p>$$ x_2 = -\frac{c_1}{c_2}x_1 + \frac{k}{c_2} $$</p>
+                    <p>This creates a line with a constant slope $m = -\frac{c_1}{c_2}$. By increasing $k$, we translate this line parallel to itself outward (for maximization) or inward (for minimization). The very last vertex the line touches before leaving the feasible region is the absolute optimal solution.</p>
+                </div>
+            </article>
+            <div id="sim-ch2" class="interactive-container">
+                <div class="engine-controls">
+                    <label style="color:var(--text-secondary); margin-right: 0.5rem;">C1 (Resource A):</label>
+                    <input type="range" id="ch2-c1-slider" min="10" max="100" value="50">
+                    <label style="color:var(--text-secondary); margin-left: 1rem; margin-right: 0.5rem;">C2 (Resource B):</label>
+                    <input type="range" id="ch2-c2-slider" min="10" max="100" value="60">
+                </div>
+                <div class="architecture-layout simulator-split">
+                    <div class="sys-component" style="flex: 2; position: relative; width: 100%;">
+                        <h4>Feasible Region Geometry</h4>
+                        <div class="canvas-container" style="width: 100%; max-width: 500px; margin: 0 auto; aspect-ratio: 4/3;">
+                            <canvas id="ch2-canvas" style="width:100%; height:100%; border: 1px solid var(--border-color); background: var(--bg-primary); border-radius: 8px;"></canvas>
+                        </div>
+                        <p class="engine-caption">The shaded area is the convex feasible region. The moving green line represents the Objective Function $Z$ translating outward to find the optimal vertex.</p>
+                    </div>
+                    <div class="sys-component" style="flex: 1; min-width: 200px; width: 100%;">
+                        <h4>Optimal Solution</h4>
+                        <div class="data-box" style="margin-bottom: 1rem;"><span class="data-label">Max Profit ($Z$)</span><span class="data-val" id="ch2-val-z" style="color:var(--accent-tertiary)">0</span></div>
+                        <div class="data-box" style="margin-bottom: 1rem;"><span class="data-label">Produce $x_1$</span><span class="data-val" id="ch2-val-x1">0</span></div>
+                        <div class="data-box"><span class="data-label">Produce $x_2$</span><span class="data-val" id="ch2-val-x2">0</span></div>
+                    </div>
+                </div>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 3 -->
+            <header class="chapter-header" id="ch3">
+                <span class="chapter-badge">Chapter 3</span>
+                <h2>Linear Programming: Simplex Method</h2>
+                <p class="chapter-subtitle">The matrix algorithm for N-dimensional hyperspaces.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Real-world manufacturing plants do not produce just two products. They produce thousands, operating in an $N$-dimensional hyperspace where graphical visualization is impossible. To navigate this hyperspace, George Dantzig invented the Simplex Algorithm in 1947.</p>
+                
+                <h3>1. Standardization and Slack Variables</h3>
+                <p>Before applying Simplex, inequalities must be converted to equalities by introducing <strong>Slack Variables ($s_i$)</strong> for $\leq$ constraints (representing unused mechanical resources like idle machine time) or <strong>Surplus Variables</strong> for $\geq$ constraints.</p>
+                
+                <p>$$ a_{11}x_1 + a_{12}x_2 + s_1 = b_1 $$</p>
+                
+                <h3>2. The Pivot Operation</h3>
+                <p>The Simplex algorithm operates via matrix row reductions (Gaussian elimination) on a tableau. It iteratively moves from one extreme point of the $N$-dimensional polyhedron to an adjacent, more optimal extreme point.</p>
+                
+                <div class="formula-container">
+                    <span class="formula-title">Optimality & Feasibility Conditions (Maximization)</span>
+                    <p><strong>Entering Variable:</strong> Select the non-basic variable with the most negative coefficient in the $Z$-row (the highest rate of profit increase).</p>
+                    <p><strong>Leaving Variable (Minimum Ratio Test):</strong> To ensure we don't violate capacity constraints, we calculate:</p>
+                    <p>$$ \theta = \min_{i} \left( \frac{\text{RHS}_i}{a_{ik}} \right) \quad \text{for } a_{ik} > 0 $$</p>
+                    <p>Where $k$ is the column of the entering variable. The row with the minimum $\theta$ dictates the variable that must leave the basis.</p>
+                </div>
+            </article>
+            <div id="sim-ch3" class="interactive-container">
+                <div class="engine-controls">
+                    <button id="ch3-btn-step" class="btn-retro primary-btn">Next Pivot Step</button>
+                    <button id="ch3-btn-reset" class="btn-retro secondary-btn">Reset Tableau</button>
+                </div>
+                <div class="architecture-layout">
+                    <div class="sys-component" style="width: 100%; overflow-x: auto;">
+                        <h4>Simplex Matrix Tableau</h4>
+                        <table class="simplex-table" id="ch3-tableau">
+                            <!-- JS injects table -->
+                        </table>
+                        <div id="ch3-status" style="margin-top:1rem; font-weight:bold; color:var(--accent-warning);">Iteration 0: Initial Basic Feasible Solution</div>
+                    </div>
+                </div>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 4 -->
+            <header class="chapter-header" id="ch4">
+                <span class="chapter-badge">Chapter 4</span>
+                <h2>Transportation Problem</h2>
+                <p class="chapter-subtitle">Optimizing supply chain logistics.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>The Transportation Problem is a specialized LP model designed to determine the lowest-cost routing of a product from multiple sources (factories) to multiple destinations (warehouses). Because of its unique bipartite network structure, solving it with standard Simplex is highly inefficient.</p>
+                
+                <h3>1. Initial Basic Feasible Solution (IBFS)</h3>
+                <p>To begin optimization, we need a starting point. There are three primary methods:</p>
+                <ul>
+                    <li><strong>Northwest Corner Rule:</strong> Blindly allocates starting from the top-left cell. Fast, but usually terrible cost.</li>
+                    <li><strong>Least Cost Method:</strong> Greedily allocates to the cell with the lowest shipping cost. Better, but ignores opportunity costs.</li>
+                    <li><strong>Vogel's Approximation Method (VAM):</strong> Calculates "penalties" (the difference between the lowest and second-lowest cost in each row/col). It allocates to the row/col with the highest penalty, heavily avoiding worst-case scenarios.</li>
+                </ul>
+                
+                <div class="formula-container">
+                    <span class="formula-title">MODI Method (U-V Method) for Optimality</span>
+                    <p>For an $m \times n$ matrix, a solution is non-degenerate if it has exactly $m + n - 1$ basic cells (allocated routes). We define dual variables $u_i$ and $v_j$ such that for all basic cells:</p>
+                    <p>$$ c_{ij} = u_i + v_j $$</p>
+                    <p>After solving for all $u$ and $v$ (setting $u_1 = 0$), we calculate the opportunity cost $\Delta_{ij}$ for all unoccupied cells:</p>
+                    <p>$$ \Delta_{ij} = c_{ij} - (u_i + v_j) $$</p>
+                    <p>If any $\Delta_{ij} < 0$, the current routing is not optimal, and a closed-loop shift of units must be performed to lower the total shipping cost.</p>
+                </div>
+            </article>
+            <div id="sim-ch4" class="interactive-container">
+                <div class="engine-controls">
+                    <select id="ch4-method" class="btn-retro">
+                        <option value="nw">Northwest Corner</option>
+                        <option value="lc">Least Cost Method</option>
+                        <option value="vam">Vogel's Approx (VAM)</option>
+                    </select>
+                    <button id="ch4-btn-solve" class="btn-retro primary-btn">Simulate Logistics</button>
+                </div>
+                <div class="architecture-layout">
+                    <div class="sys-component" style="position:relative; width: 100%;">
+                        <h4>Supply Chain Network</h4>
+                        <div class="supply-map" id="ch4-map">
+                            <!-- Graph nodes and edges -->
+                        </div>
+                        <div class="data-interpretations" style="margin-top: 1rem;">
+                            <div class="data-box"><span class="data-label">Total Shipping Cost</span><span class="data-val" id="ch4-val-cost" style="color:var(--accent-warning)">$0</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 5 -->
+            <header class="chapter-header" id="ch5">
+                <span class="chapter-badge">Chapter 5</span>
+                <h2>Assignment Problem</h2>
+                <p class="chapter-subtitle">One-to-one optimization via the Hungarian Method.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>The Assignment Problem is a severely degenerate case of the Transportation problem where $m = n$ (e.g., 5 machinists and 5 CNC lathes) and every supply and demand equals exactly 1. Because of this high degeneracy, even the MODI method fails efficiently. We use the <strong>Hungarian Algorithm</strong>.</p>
+                
+                <h3>1. The Hungarian Algorithm Mechanics</h3>
+                <p>The algorithm relies on a brilliant mathematical theorem: If you add or subtract a constant from every element in a row or column of a cost matrix, the optimal assignment for the modified matrix is exactly the same as the original matrix.</p>
+                
+                <ol>
+                    <li><strong>Row Reduction:</strong> Subtract the minimum element in each row from all elements in that row.</li>
+                    <li><strong>Column Reduction:</strong> Subtract the minimum element in each column from all elements in that column.</li>
+                    <li><strong>Line Covering:</strong> Draw the minimum number of horizontal and vertical lines $L$ to cover all zeros in the matrix.</li>
+                </ol>
+                
+                <div class="formula-container">
+                    <span class="formula-title">Optimality Test</span>
+                    <p>If $L = n$ (where $n$ is the matrix dimension), an optimal assignment exists at the zero locations.</p>
+                    <p>If $L < n$, the solution is not optimal. Find the smallest uncovered element ($k$). Subtract $k$ from all uncovered elements, and add $k$ to all elements located at the intersections of the covering lines. Repeat the line covering step.</p>
+                </div>
+            </article>
+            <div id="sim-ch5" class="interactive-container">
+                <div class="engine-controls">
+                    <button id="ch5-btn-step" class="btn-retro primary-btn">Hungarian Algorithm Step</button>
+                    <button id="ch5-btn-reset" class="btn-retro secondary-btn">Reset Matrix</button>
+                </div>
+                <div class="architecture-layout simulator-split">
+                    <div class="sys-component" style="flex: 1; position: relative;">
+                        <h4>Cost Matrix (Machines vs Jobs)</h4>
+                        <div style="position:relative; display:inline-block;">
+                            <table class="simplex-table" id="ch5-matrix">
+                                <!-- Matrix injected via JS -->
+                            </table>
+                            <canvas id="ch5-canvas-lines" style="position:absolute; top:0; left:0; pointer-events:none;"></canvas>
+                        </div>
+                    </div>
+                    <div class="sys-component" style="flex: 1;">
+                        <h4>Bipartite Graph Network</h4>
+                        <canvas id="ch5-canvas-graph" style="width:100%; height:250px; border: 1px solid var(--border-color); background: var(--bg-primary); border-radius: 8px;"></canvas>
+                        <p class="engine-caption" id="ch5-status" style="color:var(--accent-warning); margin-top:1rem; font-weight:bold;">Step 0: Initial Cost Matrix</p>
+                    </div>
+                </div>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 6 -->
+            <header class="chapter-header" id="ch6">
+                <span class="chapter-badge">Chapter 6</span>
+                <h2>Network Models: PERT & CPM</h2>
+                <p class="chapter-subtitle">Mastering time and critical path dependencies.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Large-scale mechanical projects (like designing a new turbine) consist of hundreds of interdependent tasks. <strong>CPM (Critical Path Method)</strong> assumes deterministic task times, while <strong>PERT (Program Evaluation and Review Technique)</strong> handles probabilistic, uncertain task times.</p>
+                
+                <h3>1. Forward and Backward Passes</h3>
+                <p>By mapping tasks as nodes or arrows, we calculate the absolute limits of the project schedule:</p>
+                <ul>
+                    <li><strong>Earliest Start (ES) & Earliest Finish (EF):</strong> Calculated by a forward pass through the network. $EF = ES + \text{duration}$.</li>
+                    <li><strong>Latest Start (LS) & Latest Finish (LF):</strong> Calculated by a backward pass from the project end. $LS = LF - \text{duration}$.</li>
+                </ul>
+                
+                <div class="formula-container">
+                    <span class="formula-title">PERT Probabilistic Time Estimates</span>
+                    <p>Because R&D tasks are uncertain, PERT uses three time estimates: Optimistic ($t_o$), Most Likely ($t_m$), and Pessimistic ($t_p$).</p>
+                    <p><strong>Expected Time ($t_e$):</strong></p>
+                    <p>$$ t_e = \frac{t_o + 4t_m + t_p}{6} $$</p>
+                    <p><strong>Variance ($\sigma^2$):</strong></p>
+                    <p>$$ \sigma^2 = \left( \frac{t_p - t_o}{6} \right)^2 $$</p>
+                    <p><strong>Slack (Float):</strong> $S = LS - ES = LF - EF$. Any task where $S = 0$ is on the <strong>Critical Path</strong>. A delay of 1 day on a critical task delays the entire project by 1 day.</p>
+                </div>
+            </article>
+            <div id="sim-ch6" class="interactive-container">
+                <div class="engine-controls">
+                    <label style="color:var(--text-secondary); margin-right: 0.5rem;">Delay Task C:</label>
+                    <input type="range" id="ch6-delay-slider" min="0" max="10" value="0">
+                    <span id="ch6-delay-val" style="color:var(--accent-warning); font-weight:bold; margin-left:10px;">+0 Days</span>
+                </div>
+                <div class="architecture-layout simulator-split">
+                    <div class="sys-component" style="flex: 2;">
+                        <h4>PERT Network Diagram</h4>
+                        <canvas id="ch6-network-canvas" style="width:100%; height:250px; border: 1px solid var(--border-color); background: var(--bg-primary); border-radius: 8px;"></canvas>
+                        <p class="engine-caption">Red path indicates the Critical Path ($S = 0$).</p>
+                    </div>
+                    <div class="sys-component" style="flex: 1;">
+                        <h4>Project Timeline</h4>
+                        <div class="data-box" style="margin-bottom: 1rem;"><span class="data-label">Expected Completion</span><span class="data-val" id="ch6-val-time" style="color:var(--accent-tertiary)">15 Days</span></div>
+                        <div class="data-box"><span class="data-label">Critical Path</span><span class="data-val" id="ch6-val-path" style="font-size:1.2rem;">A → C → E</span></div>
+                    </div>
+                </div>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 7 -->
+            <header class="chapter-header" id="ch7">
+                <span class="chapter-badge">Chapter 7</span>
+                <h2>Queuing Theory (Waiting Lines)</h2>
+                <p class="chapter-subtitle">The stochastic mathematics of bottlenecks.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Queuing theory is the mathematical study of waiting lines. In a factory, a "customer" might be a raw steel billet, and the "server" is a CNC milling machine. If arrival rates exceed service rates even temporarily due to random variation, massive bottlenecks form.</p>
+                
+                <h3>1. Kendall's Notation (A/B/c)</h3>
+                <p>Queues are classified using Kendall's notation. The most common mechanical engineering model is the <strong>M/M/1</strong> queue: Markovian (Poisson) arrivals, Markovian (Exponential) service times, and 1 server.</p>
+                
+                <div class="formula-container">
+                    <span class="formula-title">M/M/1 Queue Equations</span>
+                    <p>Let $\lambda$ = mean arrival rate, and $\mu$ = mean service rate.</p>
+                    <p><strong>System Utilization Factor ($\rho$):</strong> The probability the server is busy.</p>
+                    <p>$$ \rho = \frac{\lambda}{\mu} \quad (\text{Note: } \rho \text{ must be } < 1 \text{ for stability}) $$</p>
+                    <p><strong>Average number of units in the system ($L_s$):</strong></p>
+                    <p>$$ L_s = \frac{\lambda}{\mu - \lambda} $$</p>
+                    <p><strong>Average time a unit spends in the queue ($W_q$):</strong></p>
+                    <p>$$ W_q = \frac{\lambda}{\mu(\mu - \lambda)} $$</p>
+                </div>
+                
+                <blockquote>
+                    <strong>The Danger of High Utilization:</strong> Looking at the $L_s$ equation, as $\lambda$ approaches $\mu$ (utilization approaches 100%), the denominator approaches zero, meaning the queue length approaches <strong>infinity</strong>. Running a factory machine at 99% utilization with stochastic variation guarantees a catastrophic bottleneck.
+                </blockquote>
+            </article>
+            <div id="sim-ch7" class="interactive-container">
+                <div class="engine-controls">
+                    <label style="color:var(--text-secondary);">Arrival Rate $\lambda$:</label>
+                    <input type="range" id="ch7-lambda" min="1" max="19" value="10">
+                    <label style="color:var(--text-secondary); margin-left:1rem;">Service Rate $\mu$:</label>
+                    <input type="range" id="ch7-mu" min="10" max="25" value="15">
+                    <button id="ch7-btn-toggle" class="btn-retro primary-btn" style="margin-left:1rem;">Pause Engine</button>
+                </div>
+                <div class="architecture-layout simulator-split">
+                    <div class="sys-component" style="flex: 2;">
+                        <h4>Live Queue Visualization</h4>
+                        <div id="ch7-queue-area" style="width:100%; height:120px; background:var(--bg-primary); border:2px solid var(--border-color); border-radius:8px; display:flex; align-items:center; padding:10px; overflow:hidden; position:relative;">
+                            <div style="position:absolute; right:20px; width:60px; height:60px; background:var(--accent-primary); border-radius:8px; display:flex; justify-content:center; align-items:center; color:white; font-weight:bold;">CNC</div>
+                            <!-- Queue items injected here -->
+                        </div>
+                        <div style="display:flex; justify-content:space-between; margin-top:1rem;">
+                            <div class="data-box" style="flex:1; margin-right:0.5rem;"><span class="data-label">Utilization ($\rho$)</span><span class="data-val" id="ch7-val-rho">0%</span></div>
+                            <div class="data-box" style="flex:1; margin-left:0.5rem;"><span class="data-label">Avg Wait ($W_q$)</span><span class="data-val" id="ch7-val-wq">0m</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 8 -->
+            <header class="chapter-header" id="ch8">
+                <span class="chapter-badge">Chapter 8</span>
+                <h2>Inventory Control Models</h2>
+                <p class="chapter-subtitle">Balancing holding costs and ordering costs.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Inventory represents tied-up capital. Mechanical supply chains must decide exactly how much raw material to order, and when. Ordering too frequently incurs high setup/ordering costs. Ordering too much incurs high warehousing and depreciation holding costs. The intersection of these two curves is the absolute minimum cost point.</p>
+                
+                <div class="formula-container">
+                    <span class="formula-title">Economic Order Quantity (EOQ) Model</span>
+                    <p>The standard Wilson EOQ model assumes deterministic, constant demand.</p>
+                    <ul>
+                        <li>$D$ = Annual Demand (units/year)</li>
+                        <li>$S$ = Setup or Ordering Cost (per order)</li>
+                        <li>$H$ = Holding Cost (per unit per year)</li>
+                    </ul>
+                    <p><strong>Optimal Order Quantity ($Q^*$):</strong></p>
+                    <p>$$ Q^* = \sqrt{\frac{2DS}{H}} $$</p>
+                    <p><strong>Total Annual Inventory Cost ($TC$):</strong></p>
+                    <p>$$ TC = \left( \frac{D}{Q} \right)S + \left( \frac{Q}{2} \right)H + PD $$</p>
+                    <p>Where $P$ is the unit purchase price. At the EOQ point, the annual ordering cost exactly equals the annual holding cost.</p>
+                </div>
+            </article>
+            <div id="sim-ch8" class="interactive-container">
+                <div class="engine-controls">
+                    <label style="color:var(--text-secondary);">Demand ($D$):</label>
+                    <input type="range" id="ch8-demand" min="500" max="5000" value="1000" step="100">
+                    <label style="color:var(--text-secondary); margin-left:1rem;">Setup Cost ($S$):</label>
+                    <input type="range" id="ch8-setup" min="10" max="500" value="100" step="10">
+                    <label style="color:var(--text-secondary); margin-left:1rem;">Holding Cost ($H$):</label>
+                    <input type="range" id="ch8-holding" min="1" max="50" value="5" step="1">
+                </div>
+                <div class="architecture-layout simulator-split">
+                    <div class="sys-component" style="flex: 2;">
+                        <h4>EOQ Sawtooth Inventory Graph</h4>
+                        <canvas id="ch8-graph-canvas" style="width:100%; height:250px; border: 1px solid var(--border-color); background: var(--bg-primary); border-radius: 8px;"></canvas>
+                    </div>
+                    <div class="sys-component" style="flex: 1;">
+                        <h4>Optimal Strategy</h4>
+                        <div class="data-box" style="margin-bottom: 1rem;"><span class="data-label">Opt Order Qty ($Q^*$)</span><span class="data-val" id="ch8-val-q" style="color:var(--accent-tertiary)">200 units</span></div>
+                        <div class="data-box"><span class="data-label">Total Ann Cost</span><span class="data-val" id="ch8-val-tc">$1000</span></div>
+                    </div>
+                </div>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 9 -->
+            <header class="chapter-header" id="ch9">
+                <span class="chapter-badge">Chapter 9</span>
+                <h2>Game Theory</h2>
+                <p class="chapter-subtitle">Strategic decision making under competition.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>When multiple manufacturing firms compete in a market, one firm's optimization depends entirely on the strategic choices of the others. Game theory provides the mathematical framework for identifying rational strategies in competitive environments.</p>
+                
+                <h3>1. Pure Strategies and Saddle Points</h3>
+                <p>In a two-person zero-sum game, Player A attempts to maximize their minimum guaranteed payoff (Maximin criterion), while Player B attempts to minimize their maximum potential loss (Minimax criterion). If Maximin equals Minimax, the game has a <strong>Saddle Point</strong>, and both players have a deterministic "Pure Strategy".</p>
+                
+                <div class="formula-container">
+                    <span class="formula-title">Mixed Strategies (No Saddle Point)</span>
+                    <p>If no saddle point exists, players must randomize their choices using probabilities to prevent the opponent from predicting their move. For a $2 \times 2$ payoff matrix:</p>
+                    <p>$$ \begin{bmatrix} a_{11} & a_{12} \\ a_{21} & a_{22} \end{bmatrix} $$</p>
+                    <p>The optimal probability $p_1$ for Player A to choose Strategy 1 is derived by equating expected payoffs against Player B's strategies:</p>
+                    <p>$$ p_1 = \frac{a_{22} - a_{21}}{(a_{11} + a_{22}) - (a_{12} + a_{21})} $$</p>
+                    <p>And $p_2 = 1 - p_1$. The resulting expected Value of the Game ($V$) becomes the mathematical Nash Equilibrium.</p>
+                </div>
+            </article>
+            <div id="sim-ch9" class="interactive-container">
+                <div class="engine-controls">
+                    <button id="ch9-btn-solve" class="btn-retro primary-btn">Calculate Nash Equilibrium</button>
+                    <button id="ch9-btn-random" class="btn-retro secondary-btn">Randomize Payoffs</button>
+                </div>
+                <div class="architecture-layout simulator-split">
+                    <div class="sys-component" style="flex: 1;">
+                        <h4>Payoff Matrix (Firm A vs Firm B)</h4>
+                        <table class="simplex-table" id="ch9-matrix" style="width:100%;">
+                            <tr><th></th><th>B: Strategy 1</th><th>B: Strategy 2</th></tr>
+                            <tr><th>A: Strat 1</th><td><input type="number" id="ch9-a11" value="4" class="matrix-input"></td><td><input type="number" id="ch9-a12" value="1" class="matrix-input"></td></tr>
+                            <tr><th>A: Strat 2</th><td><input type="number" id="ch9-a21" value="2" class="matrix-input"></td><td><input type="number" id="ch9-a22" value="5" class="matrix-input"></td></tr>
+                        </table>
+                    </div>
+                    <div class="sys-component" style="flex: 1;">
+                        <h4>Optimal Strategy Probabilities</h4>
+                        <canvas id="ch9-prob-canvas" style="width:100%; height:150px; background:var(--bg-primary); border-radius:8px; border:1px solid var(--border-color);"></canvas>
+                        <p class="engine-caption" id="ch9-status" style="margin-top:1rem; font-weight:bold; color:var(--accent-warning);">Enter values to find Saddle Point or Mixed Strategy.</p>
+                    </div>
+                </div>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 10 -->
+            <header class="chapter-header" id="ch10">
+                <span class="chapter-badge">Chapter 10</span>
+                <h2>Dynamic Programming</h2>
+                <p class="chapter-subtitle">Recursive optimization for multi-stage processes.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Unlike Linear Programming, Dynamic Programming (DP) doesn't use a standard mathematical formulation. It is a generalized approach that breaks a massive, complex decision into a sequence of smaller, overlapping sub-problems (stages). It is heavily used in mechanical engineering for equipment replacement timelines and multi-stage machining operations.</p>
+                
+                <h3>1. Richard Bellman's Principle of Optimality</h3>
+                <p>The core of DP is Bellman's Principle: <em>"An optimal policy has the property that whatever the initial state and initial decision are, the remaining decisions must constitute an optimal policy with regard to the state resulting from the first decision."</em></p>
+                
+                <div class="formula-container">
+                    <span class="formula-title">Recursive DP Equation</span>
+                    <p>For a minimization problem (e.g., shortest route or lowest cost), the recursive relationship linking stage $n$ to stage $n+1$ is:</p>
+                    <p>$$ f_n^*(s) = \min_{x_n} [ c_n(s, x_n) + f_{n+1}^*(x_n) ] $$</p>
+                    <p>Where:</p>
+                    <ul>
+                        <li>$s$: Current state at stage $n$</li>
+                        <li>$x_n$: The decision made at stage $n$</li>
+                        <li>$c_n(s, x_n)$: Immediate cost of decision $x_n$ at state $s$</li>
+                        <li>$f_{n+1}^*(x_n)$: The known optimal cost from the resulting state to the end of the process.</li>
+                    </ul>
+                    <p>By solving backwards from the final stage to the first stage, DP guarantees a global optimum without calculating every possible path (avoiding combinatorial explosion).</p>
+                </div>
+            </article>
+            <div id="sim-ch10" class="interactive-container">
+                <div class="engine-controls">
+                    <button id="ch10-btn-solve" class="btn-retro primary-btn">Solve Backward (DP)</button>
+                    <button id="ch10-btn-reset" class="btn-retro secondary-btn">Reset Graph</button>
+                </div>
+                <div class="architecture-layout simulator-split">
+                    <div class="sys-component" style="flex: 2; position: relative;">
+                        <h4>Machine Replacement Decision Tree</h4>
+                        <canvas id="ch10-dp-canvas" style="width:100%; height:250px; border: 1px solid var(--border-color); background: var(--bg-primary); border-radius: 8px;"></canvas>
+                        <p class="engine-caption">Nodes represent Age of Machine at Year $n$. Edges represent Keep (K) or Replace (R) decisions. DP solves from Year 5 backwards.</p>
+                    </div>
+                </div>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 11 -->
+            <header class="chapter-header" id="ch11">
+                <span class="chapter-badge">Chapter 11</span>
+                <h2>Integer Programming</h2>
+                <p class="chapter-subtitle">Solving for discrete realities.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>In standard Linear Programming, the solution variables ($x_j$) are continuous real numbers. However, you cannot purchase 4.3 lathes, nor can you assign 2.7 technicians to a project. <strong>Integer Programming (IP)</strong> enforces strict constraints that variables must be whole integers. Paradoxically, forcing variables to be integers makes the problem exponentially harder to solve algorithmically.</p>
+                
+                <h3>1. The Branch and Bound Algorithm</h3>
+                <p>We cannot simply round continuous LP solutions to the nearest integer, as this frequently violates constraints or results in highly sub-optimal solutions. Instead, we use Branch and Bound.</p>
+                
+                <ol>
+                    <li><strong>Relaxation:</strong> Solve the continuous LP model (ignoring integer constraints). If the solution naturally yields integers, you are done.</li>
+                    <li><strong>Branching:</strong> If a variable (e.g., $x_1 = 4.7$) is fractional, we split the problem into two mutually exclusive sub-problems (branches) by adding new constraints: $x_1 \leq 4$ and $x_1 \geq 5$.</li>
+                    <li><strong>Bounding:</strong> We solve the new sub-problems. The objective value of the continuous relaxation serves as an upper bound. As integer solutions are found, they serve as a lower bound. If a branch's upper bound is worse than a known integer lower bound, we "fathom" (kill) the branch, drastically pruning the search tree.</li>
+                </ol>
+                
+                <div class="formula-container">
+                    <span class="formula-title">Gomory's Cutting Plane Method</span>
+                    <p>An alternative to Branch and Bound. It introduces secondary constraints (cuts) that slice away fractional parts of the feasible region without eliminating any integer feasible points. The constraint takes the form:</p>
+                    <p>$$ -\sum_{j} (a_{ij} - \lfloor a_{ij} \rfloor) x_j \leq -(b_i - \lfloor b_i \rfloor) $$</p>
+                </div>
+            </article>
+            <div id="sim-ch11" class="interactive-container">
+                <div class="engine-controls">
+                    <button id="ch11-btn-branch" class="btn-retro primary-btn">Branch Subproblem</button>
+                    <button id="ch11-btn-reset" class="btn-retro secondary-btn">Reset to LP Relaxation</button>
+                </div>
+                <div class="architecture-layout simulator-split">
+                    <div class="sys-component" style="flex: 2;">
+                        <h4>Integer Space Feasible Region</h4>
+                        <canvas id="ch11-ip-canvas" style="width:100%; height:250px; border: 1px solid var(--border-color); background: var(--bg-primary); border-radius: 8px;"></canvas>
+                        <p class="engine-caption">The dots represent valid integer solutions. Branching slices away the continuous optimal space to force integers.</p>
+                    </div>
+                    <div class="sys-component" style="flex: 1;">
+                        <h4>Branch Tree</h4>
+                        <div id="ch11-tree-status" style="font-family:var(--font-mono); font-size:0.9rem; background:var(--bg-panel); padding:1rem; border-radius:6px; min-height:150px;">
+                            Node 0 (LP): Z=14.5<br>&nbsp;&nbsp;x1=2.5, x2=3
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 12 -->
+            <header class="chapter-header" id="ch12">
+                <span class="chapter-badge">Chapter 12</span>
+                <h2>Decision Theory & Simulation</h2>
+                <p class="chapter-subtitle">Quantifying risk through Monte Carlo methods.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>When mechanical systems face extreme uncertainty—such as stochastic machine breakdown times or volatile supply chain delays—analytic models often fail. Decision theory and Simulation allow engineers to evaluate risk probabilistically.</p>
+                
+                <h3>1. Expected Monetary Value (EMV)</h3>
+                <p>Under risk (where probabilities of states of nature are known), decisions are evaluated using EMV. For an alternative $A_i$ with states of nature $S_j$ having probabilities $P_j$:</p>
+                <p>$$ EMV(A_i) = \sum_{j} [ P_j \times \text{Payoff}(A_i, S_j) ] $$</p>
+                <p>The optimal decision is the alternative that maximizes EMV.</p>
+                
+                <h3>2. Monte Carlo Simulation</h3>
+                <p>When probability distributions are complex (e.g., a Weibull distribution for fatigue failure combined with a Normal distribution for repair times), analytical EMV is intractable. Monte Carlo simulation solves this brute-force.</p>
+                
+                <div class="formula-container">
+                    <span class="formula-title">Inverse Transform Method (Monte Carlo)</span>
+                    <p>To simulate random variables from any distribution, we generate uniformly distributed random numbers $U \in [0, 1]$ and use the inverse of the Cumulative Distribution Function (CDF), denoted $F^{-1}$.</p>
+                    <p>$$ X = F^{-1}(U) $$</p>
+                    <p>For example, to simulate an exponentially distributed machine failure time with mean $1/\lambda$:</p>
+                    <p>$$ X = -\frac{1}{\lambda} \ln(1 - U) $$</p>
+                    <p>By running thousands of these deterministic samples ($X_1, X_2, \dots, X_{1000}$), we build a massive simulated dataset, allowing us to accurately observe the mean behavior, variance, and extreme tail risks of the mechanical system without ever building a physical prototype.</p>
+                </div>
+            </article>
+            <div id="sim-ch12" class="interactive-container">
+                <div class="engine-controls">
+                    <select id="ch12-dist" class="btn-retro">
+                        <option value="normal">Normal Distribution</option>
+                        <option value="exponential">Exponential Dist.</option>
+                    </select>
+                    <button id="ch12-btn-sim" class="btn-retro primary-btn">Run 1,000 Iterations</button>
+                </div>
+                <div class="architecture-layout simulator-split">
+                    <div class="sys-component" style="flex: 2;">
+                        <h4>Machine Failure Monte Carlo Simulation</h4>
+                        <canvas id="ch12-mc-canvas" style="width:100%; height:250px; border: 1px solid var(--border-color); background: var(--bg-primary); border-radius: 8px;"></canvas>
+                    </div>
+                    <div class="sys-component" style="flex: 1;">
+                        <h4>Risk Profile</h4>
+                        <div class="data-box" style="margin-bottom: 1rem;"><span class="data-label">Expected Failure Time</span><span class="data-val" id="ch12-val-mean" style="color:var(--accent-tertiary)">-</span></div>
+                        <div class="data-box"><span class="data-label">95% Confidence Risk</span><span class="data-val" id="ch12-val-risk" style="color:var(--accent-warning)">-</span></div>
+                    </div>
+                </div>
+            </div>
+            
+        </main>
+    </div>
+
+    <!-- Core interactive scripts -->
+    <script src="core.js"></script>
+    <script src="simulators-1.js"></script>
+    <script src="simulators-2.js"></script>
+    <script src="simulators-3.js"></script>
+</body>
+</html>
