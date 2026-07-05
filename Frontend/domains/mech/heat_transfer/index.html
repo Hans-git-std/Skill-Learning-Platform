@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SCME | Heat Transfer</title>
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- MathJax for rendering formulas -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']]
+        }
+      };
+    </script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <!-- Three.js and modules for 3D Simulators -->
+    <script async src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"></script>
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://unpkg.com/three@0.154.0/build/three.module.js",
+          "three/addons/": "https://unpkg.com/three@0.154.0/examples/jsm/"
+        }
+      }
+    </script>
+</head>
+<body>
+    <nav class="top-nav">
+        <div class="nav-left">
+            <h1 class="logo">SCME.</h1>
+            <a href="../../mech/index.html" class="btn-retro back-btn">← ME Hub</a>
+        </div>
+        <button id="theme-toggle" class="btn-retro">Toggle Theme</button>
+    </nav>
+
+    <div class="learning-environment">
+        <aside class="chapter-sidebar">
+            <h3>Heat Transfer</h3>
+            <ul class="chapter-list">
+                <li><a href="#ch1" class="active">1. Introduction & Modes</a></li>
+                <li><a href="#ch2">2. 1D Steady Conduction</a></li>
+                <li><a href="#ch3">3. Extended Surfaces</a></li>
+                <li><a href="#ch4">4. Transient Conduction</a></li>
+                <li><a href="#ch5">5. Convection Fundamentals</a></li>
+                <li><a href="#ch6">6. Forced Convection</a></li>
+                <li><a href="#ch7">7. Natural Convection</a></li>
+                <li><a href="#ch8">8. Boiling & Condensation</a></li>
+                <li><a href="#ch9">9. Heat Exchangers</a></li>
+                <li><a href="#ch10">10. Radiation Transfer</a></li>
+            </ul>
+        </aside>
+
+        <main class="reading-core">
+            
+            <!-- CHAPTER 1 -->
+            <header class="chapter-header" id="ch1">
+                <span class="chapter-badge">Chapter 1</span>
+                <h2>Introduction and Modes of Heat Transfer</h2>
+                <p class="chapter-subtitle">The fundamental physical mechanisms of thermal energy transit.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Heat transfer is the engineering science dedicated to predicting the rate of thermal energy transfer between materials due to a temperature difference. While thermodynamics deals primarily with equilibrium states and the absolute amounts of energy required to move from one state to another, it is inherently incapable of predicting the <strong>rate</strong> at which this process occurs. Heat transfer bridges this critical gap, providing the temporal dimension necessary for designing practical thermal systems ranging from microchip cooling to industrial power plants.</p>
+                
+                <h3>1. Conduction: Fourier's Law</h3>
+                <p>Conduction is the transfer of energy from more energetic to less energetic particles of a substance due to interactions between the particles. In gases and liquids, conduction is due to the collisions and diffusion of molecules during their random motion. In solids, it is attributed to atomic lattice vibrations (phonons) and, in the case of metals, the translational motion of free electrons.</p>
+                <p>The rate equation for conduction is given by <strong>Fourier's Law</strong>. For a one-dimensional, steady-state condition in the x-direction, the conductive heat flux $q''_x$ (heat transfer rate per unit area, $\text{W/m}^2$) is strictly proportional to the temperature gradient $dT/dx$ in that direction.</p>
+                <div class="math-formula">
+                    $$ q''_x = -k \frac{dT}{dx} $$
+                </div>
+                <p>The constant of proportionality, $k$, is the <strong>thermal conductivity</strong> ($\text{W/m}\cdot\text{K}$), a transport property that provides an indication of the rate at which energy is transferred by the diffusion process. The negative sign is a consequence of the Second Law of Thermodynamics: heat must flow in the direction of decreasing temperature.</p>
+
+                <h3>2. Convection: Newton's Law of Cooling</h3>
+                <p>Convection refers to heat transfer that occurs between a surface and a moving fluid when they are at different temperatures. It is comprised of two mechanisms: random molecular motion (diffusion, as in conduction) and macroscopic bulk motion of the fluid. The presence of bulk motion severely complicates the analysis but significantly enhances the heat transfer rate.</p>
+                <p>The appropriate rate equation for convection is <strong>Newton's Law of Cooling</strong>.</p>
+                <div class="math-formula">
+                    $$ q'' = h(T_s - T_\infty) $$
+                </div>
+                <p>Here, $q''$ is the convective heat flux, $T_s$ is the surface temperature, and $T_\infty$ is the fluid free-stream temperature. The parameter $h$ ($\text{W/m}^2\cdot\text{K}$) is the <strong>convection heat transfer coefficient</strong>. Unlike thermal conductivity, $h$ is not a property of the fluid. It is a highly complex parameter that depends on fluid properties (density, viscosity, thermal conductivity, specific heat), surface geometry, and the nature of the fluid motion (laminar or turbulent).</p>
+
+                <h3>3. Radiation: Stefan-Boltzmann Law</h3>
+                <p>Thermal radiation is energy emitted by matter that is at a non-zero temperature. Unlike conduction and convection, radiation does not require the presence of a material medium; it is actually most efficient in a perfect vacuum. The energy is transported by electromagnetic waves (or photons).</p>
+                <p>The maximum rate at which radiation can be emitted from a surface is given by the <strong>Stefan-Boltzmann Law</strong>, which defines an idealized surface known as a blackbody.</p>
+                <div class="math-formula">
+                    $$ E_b = \sigma T_s^4 $$
+                </div>
+                <p>where $\sigma = 5.67 \times 10^{-8} \text{ W/m}^2\cdot\text{K}^4$ is the Stefan-Boltzmann constant, and $T_s$ is the absolute temperature of the surface in Kelvin. For real surfaces, the emission is less than that of a blackbody and is characterized by a surface property called emissivity, $\varepsilon$ (where $0 \le \varepsilon \le 1$), such that $E = \varepsilon \sigma T_s^4$.</p>
+            </article>
+
+            <!-- SIMULATOR PLACEHOLDER CH 1 -->
+            <div id="sim-ch1" class="interactive-container">
+                <div class="sim-overlay">
+                    <h4>The 3D Heat Room (All Modes)</h4>
+                    <div class="sim-controls">
+                        <label>Active Mode:
+                            <select id="ch1-mode-select">
+                                <option value="all">All Modes Combined</option>
+                                <option value="conduction">Conduction (Window)</option>
+                                <option value="convection">Convection (Radiator)</option>
+                                <option value="radiation">Radiation (Fireplace)</option>
+                            </select>
+                        </label>
+                        <button id="ch1-toggle-vectors" class="btn-retro">Toggle Flux Vectors</button>
+                    </div>
+                    <div class="sim-stats">
+                        Total $Q_{out}$: <span id="ch1-qout">0.0</span> W<br>
+                        Avg Room Temp: <span id="ch1-temp">293.0</span> K
+                    </div>
+                </div>
+                <!-- 3D Canvas will be injected here via JS -->
+            </div>
+            
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 2 -->
+            <header class="chapter-header" id="ch2">
+                <span class="chapter-badge">Chapter 2</span>
+                <h2>1D Steady-State Heat Conduction</h2>
+                <p class="chapter-subtitle">Thermal resistance networks and the Heat Diffusion Equation.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>In analyzing one-dimensional, steady-state conduction systems with no internal heat generation, the temperature gradient is constant. The profound utility of this idealized case is that we can draw direct analogies to Ohm's Law for electrical circuits. This allows us to solve incredibly complex multi-layered composite wall systems using simple algebraic resistance networks.</p>
+
+                <h3>1. The Heat Diffusion Equation</h3>
+                <p>To fully understand conduction, we must start from the generalized heat diffusion equation, derived from the conservation of energy on a differential control volume. In Cartesian coordinates for a material with constant thermal conductivity $k$:</p>
+                <div class="math-formula">
+                    $$ \frac{\partial^2 T}{\partial x^2} + \frac{\partial^2 T}{\partial y^2} + \frac{\partial^2 T}{\partial z^2} + \frac{\dot{q}}{k} = \frac{1}{\alpha}\frac{\partial T}{\partial t} $$
+                </div>
+                <p>Where $\dot{q}$ is volumetric heat generation ($\text{W/m}^3$) and $\alpha = k / (\rho c_p)$ is the thermal diffusivity. Under 1D ($y, z$ derivatives are zero), steady-state ($\partial T / \partial t = 0$), and no heat generation ($\dot{q} = 0$) conditions, this massive PDE reduces to simply $d^2T/dx^2 = 0$. Integrating this twice yields a linear temperature profile: $T(x) = C_1x + C_2$.</p>
+
+                <h3>2. Thermal Resistance Analogy</h3>
+                <p>Applying boundary temperatures $T_{s,1}$ and $T_{s,2}$ to our linear profile across a wall of thickness $L$, we find the heat rate is $q_x = \frac{k A}{L}(T_{s,1} - T_{s,2})$. We can rearrange this to resemble Ohm's Law ($I = V/R$):</p>
+                <div class="math-formula">
+                    $$ q_x = \frac{\Delta T}{R_{t,\text{cond}}} \quad \text{where} \quad R_{t,\text{cond}} = \frac{L}{k A} $$
+                </div>
+                <p>This allows us to handle convection simply by adding a convective resistance: $R_{t,\text{conv}} = 1 / (hA)$. For a composite wall separating two fluids, the total heat transfer is driven by the overall temperature difference divided by the sum of all thermal resistances in series.</p>
+
+                <h3>3. Cylindrical and Spherical Systems</h3>
+                <p>In radial systems like insulated pipes or spherical vessels, the area $A$ is no longer constant but increases with radius $r$. For a cylinder of length $L$, $A = 2\pi r L$. Integrating Fourier's Law with this varying area leads to a logarithmic temperature profile, rather than a linear one, and a different resistance formulation.</p>
+                <div class="math-formula">
+                    $$ R_{t,\text{cyl}} = \frac{\ln(r_2/r_1)}{2\pi L k} \quad , \quad R_{t,\text{sph}} = \frac{1}{4\pi k}\left(\frac{1}{r_1} - \frac{1}{r_2}\right) $$
+                </div>
+                <p>This non-linear geometry leads to the concept of <strong>Critical Radius of Insulation</strong>, where adding insulation to a small pipe initially <em>increases</em> heat loss due to the rapidly growing surface area overcoming the conductive resistance.</p>
+            </article>
+
+            <!-- SIMULATOR PLACEHOLDER CH 2 -->
+            <div id="sim-ch2" class="interactive-container">
+                <div class="sim-overlay">
+                    <h4>Composite Wall Builder</h4>
+                    <div class="sim-controls">
+                        <label>Add Layer:
+                            <select id="ch2-layer-material">
+                                <option value="copper">Copper (k=400)</option>
+                                <option value="brick">Brick (k=0.7)</option>
+                                <option value="insulation">Fiberglass (k=0.04)</option>
+                            </select>
+                        </label>
+                        <button id="ch2-add-layer" class="btn-retro">+</button>
+                    </div>
+                    <div class="sim-stats">
+                        Total $R_{th}$: <span id="ch2-rth">0.00</span> K/W<br>
+                        Heat Flux $q''$: <span id="ch2-flux">0.0</span> W/m²
+                    </div>
+                </div>
+            </div>
+            
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 3 -->
+            <header class="chapter-header" id="ch3">
+                <span class="chapter-badge">Chapter 3</span>
+                <h2>Heat Generation and Extended Surfaces</h2>
+                <p class="chapter-subtitle">Fins, heat sinks, and internal volumetric generation.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>When a system has internal heat generation (e.g., electrical resistance heating, nuclear fission, or chemical reactions), the heat flux is no longer constant across the domain. Furthermore, when convective heat transfer is insufficient (due to low $h$ or small $\Delta T$), engineers drastically increase the surface area by adding extended surfaces, commonly known as fins.</p>
+
+                <h3>1. Systems with Internal Heat Generation</h3>
+                <p>Revisiting the 1D steady-state heat diffusion equation with a generation term $\dot{q}$, we have $d^2T/dx^2 + \dot{q}/k = 0$. Integrating this yields a parabolic temperature profile within a plane wall. The maximum temperature occurs at the plane of symmetry. Accurately mapping these temperatures is critical to prevent thermal runaway or material melting in internal components like CPU dies or uranium fuel rods.</p>
+
+                <h3>2. The Fin Equation</h3>
+                <p>Fins are used extensively in air-cooled engines, electronics cooling, and radiators. The analysis of a fin assumes 1D conduction along its length while simultaneously losing heat to the ambient fluid via convection. Applying an energy balance to a differential slice of a fin of constant cross-sectional area $A_c$ and perimeter $P$ yields the fin equation:</p>
+                <div class="math-formula">
+                    $$ \frac{d^2T}{dx^2} - m^2(T - T_\infty) = 0 \quad \text{where} \quad m^2 = \frac{hP}{kA_c} $$
+                </div>
+                <p>Letting $\theta(x) = T(x) - T_\infty$ (the excess temperature), the general solution is $\theta(x) = C_1 e^{mx} + C_2 e^{-mx}$. The constants are determined by the tip boundary condition. Four common tip conditions exist: convective tip, adiabatic tip (assumed perfectly insulated), prescribed temperature, and infinite fin (where $T \to T_\infty$ as $x \to \infty$).</p>
+
+                <h3>3. Fin Efficiency and Effectiveness</h3>
+                <p>To evaluate fin performance, we define <strong>Fin Efficiency ($\eta_f$)</strong> as the ratio of the actual heat transfer rate from the fin to the ideal heat transfer rate if the entire fin were maintained at the base temperature $T_b$. Because there is a temperature drop along the fin due to conduction resistance, $\eta_f$ is always less than 1.</p>
+                <div class="math-formula">
+                    $$ \eta_f = \frac{q_f}{h A_f(T_b - T_\infty)} $$
+                </div>
+                <p><strong>Fin Effectiveness ($\varepsilon_f$)</strong>, on the other hand, is the ratio of the fin heat transfer rate to the heat transfer rate that would exist without the fin. We install fins only when $\varepsilon_f \ge 2$, meaning they at least double the heat transfer. The use of highly conductive materials (aluminum, copper) is crucial for maximizing fin performance.</p>
+            </article>
+
+            <!-- SIMULATOR PLACEHOLDER CH 3 -->
+            <div id="sim-ch3" class="interactive-container">
+                <div class="sim-overlay">
+                    <h4>3D Heat Sink Optimizer</h4>
+                    <div class="sim-controls">
+                        <label>Profile:
+                            <select id="ch3-profile">
+                                <option value="rectangular">Rectangular Array</option>
+                                <option value="pin">Pin Fin Array</option>
+                            </select>
+                        </label>
+                        <label>Length (L):
+                            <input type="range" id="ch3-length" min="0.01" max="0.1" step="0.01" value="0.05">
+                        </label>
+                    </div>
+                    <div class="sim-stats">
+                        Efficiency $\eta_f$: <span id="ch3-eff">0.00</span>%<br>
+                        $Q_{total}$: <span id="ch3-qtot">0.0</span> W
+                    </div>
+                </div>
+            </div>
+
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 4 -->
+            <header class="chapter-header" id="ch4">
+                <span class="chapter-badge">Chapter 4</span>
+                <h2>Transient (Unsteady) Heat Conduction</h2>
+                <p class="chapter-subtitle">Time-dependent thermal responses and quenching dynamics.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>In many practical engineering problems—such as the heat treatment of metals (quenching), cooking, or startup of a turbine—the temperature of a body varies with time. Transient conduction problems are inherently more complex as they depend on both time and space: $T = f(x, y, z, t)$. However, under specific conditions, we can drastically simplify the mathematics.</p>
+
+                <h3>1. The Lumped Capacitance Method</h3>
+                <p>The simplest approach to transient conduction is the <strong>Lumped Capacitance Method</strong>. This method assumes that the internal temperature of a body remains entirely spatially uniform at any given instant during the transient process. The temperature is only a function of time: $T = f(t)$. This implies that the internal conduction resistance is negligible compared to the external convection resistance.</p>
+                <p>Applying an overall energy balance ($\dot{E}_{in} - \dot{E}_{out} = \dot{E}_{st}$) to a cooling solid yields a first-order differential equation. Solving it gives a decaying exponential temperature response:</p>
+                <div class="math-formula">
+                    $$ \frac{T(t) - T_\infty}{T_i - T_\infty} = \exp\left[-\left(\frac{hA_s}{\rho V c}\right)t\right] $$
+                </div>
+                <p>Where $\tau_t = (\rho V c) / (hA_s)$ is the thermal time constant. A small thermal time constant indicates a rapid response to changes in the thermal environment.</p>
+
+                <h3>2. Validity of Lumped Capacitance: The Biot Number</h3>
+                <p>To determine if the lumped capacitance assumption is valid, we use the dimensionless <strong>Biot Number ($Bi$)</strong>, which represents the ratio of internal conduction resistance to external convection resistance.</p>
+                <div class="math-formula">
+                    $$ Bi = \frac{h L_c}{k} $$
+                </div>
+                <p>Where $L_c$ is the characteristic length (Volume / Surface Area). The universally accepted criterion is that the lumped capacitance method is highly accurate if <strong>$Bi < 0.1$</strong>. If $Bi$ is large, significant temperature gradients exist within the body, and the core will cool much slower than the surface.</p>
+
+                <h3>3. Spatial Effects and Semi-Infinite Solids</h3>
+                <p>When $Bi \ge 0.1$, we must solve the full partial differential equations. For standard geometries (infinite cylinder, sphere, plane wall), the solutions take the form of infinite series involving Bessel functions. Historically, these were solved graphically using <strong>Heisler Charts</strong>, expressing spatial temperature as a function of the Fourier number ($Fo = \alpha t / L_c^2$), which acts as dimensionless time.</p>
+                <p>For a semi-infinite solid (e.g., the Earth's crust reacting to a sudden surface temperature change, or a thick steel plate during the first few milliseconds of laser heating), the penetration depth of the thermal wave is proportional to $\sqrt{\alpha t}$, utilizing the Gaussian error function ($\text{erfc}$) in its exact solution.</p>
+            </article>
+
+            <!-- SIMULATOR PLACEHOLDER CH 4 -->
+            <div id="sim-ch4" class="interactive-container">
+                <div class="sim-overlay">
+                    <h4>Interactive Quenching Lab</h4>
+                    <div class="sim-controls">
+                        <label>Material:
+                            <select id="ch4-material">
+                                <option value="copper">Copper (Bi < 0.1)</option>
+                                <option value="steel">Carbon Steel (Bi ~ 0.5)</option>
+                                <option value="glass">Glass (Bi > 10)</option>
+                            </select>
+                        </label>
+                        <button id="ch4-quench" class="btn-retro">Drop in Water</button>
+                    </div>
+                    <div class="sim-stats">
+                        Time: <span id="ch4-time">0.0</span> s<br>
+                        Center Temp: <span id="ch4-temp">1000</span> K
+                    </div>
+                </div>
+            </div>
+
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 5 -->
+            <header class="chapter-header" id="ch5">
+                <span class="chapter-badge">Chapter 5</span>
+                <h2>Fundamentals of Convection & Boundary Layers</h2>
+                <p class="chapter-subtitle">Unpacking the complexities of fluid motion and thermal transport.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Convection is heavily dependent on the macroscopic motion of fluid flow. To calculate the convective heat transfer coefficient ($h$), we must understand the precise velocity and temperature distributions within the fluid immediately adjacent to the solid surface. This introduces the concept of the boundary layer, the thin region where viscous forces and thermal gradients are dominant.</p>
+
+                <h3>1. The Velocity Boundary Layer</h3>
+                <p>When a fluid flows over a stationary flat plate, the fluid particles making contact with the plate assume zero velocity due to the no-slip condition. These particles retard the motion of adjacent fluid layers, creating a velocity gradient. The <strong>velocity boundary layer thickness ($\delta$)</strong> is typically defined as the distance $y$ from the surface where the local velocity $u = 0.99u_\infty$ (the free-stream velocity). Viscous shear stresses are highly concentrated within this layer.</p>
+
+                <h3>2. The Thermal Boundary Layer</h3>
+                <p>Similarly, if the fluid and the surface are at different temperatures, a thermal boundary layer will develop. Fluid particles at the surface achieve thermal equilibrium with the plate ($T = T_s$). These particles exchange energy with the adjacent fluid layers, creating a temperature gradient. The <strong>thermal boundary layer thickness ($\delta_t$)</strong> is defined as the distance where $(T - T_s)/(T_\infty - T_s) = 0.99$.</p>
+                <p>Crucially, at the exact surface ($y=0$), the fluid is strictly stationary (no-slip). Therefore, heat transfer from the plate into the fluid at $y=0$ occurs <strong>purely by conduction</strong>. We can equate Fourier's Law at the surface to Newton's Law of Cooling:</p>
+                <div class="math-formula">
+                    $$ -k_f \left.\frac{\partial T}{\partial y}\right|_{y=0} = h(T_s - T_\infty) \implies h = \frac{-k_f \left.\frac{\partial T}{\partial y}\right|_{y=0}}{T_s - T_\infty} $$
+                </div>
+                <p>This proves that $h$ is entirely dependent on the steepness of the temperature gradient at the wall.</p>
+
+                <h3>3. Dimensionless Parameters: Re, Pr, and Nu</h3>
+                <p>Convection analysis relies on dimensionless groups. The <strong>Reynolds Number ($Re_x$)</strong> dictates whether the flow is laminar or turbulent by representing the ratio of inertial forces to viscous forces. Turbulent boundary layers feature intense mixing, drastically increasing the temperature gradient at the wall, thereby massively increasing $h$.</p>
+                <p>The <strong>Prandtl Number ($Pr = \nu / \alpha$)</strong> provides the ratio of momentum diffusivity to thermal diffusivity. It controls the relative thickness of the velocity and thermal boundary layers ($\delta / \delta_t \approx Pr^{1/3}$). Liquid metals have $Pr \ll 1$ (thermal layer is much thicker), while oils have $Pr \gg 1$ (velocity layer is much thicker).</p>
+                <p>Finally, the <strong>Nusselt Number ($Nu$)</strong> is the dimensionless temperature gradient at the surface. It represents the ratio of convective to conductive heat transfer across the fluid layer. Our ultimate goal in convection is finding $Nu$, because $h = Nu \cdot k_f / L$.</p>
+            </article>
+
+            <!-- SIMULATOR PLACEHOLDER CH 5 -->
+            <div id="sim-ch5" class="interactive-container">
+                <div class="sim-overlay">
+                    <h4>Virtual Wind Tunnel</h4>
+                    <div class="sim-controls">
+                        <label>Fluid Velocity:
+                            <input type="range" id="ch5-vel" min="1" max="50" step="1" value="10">
+                        </label>
+                        <label>Prandtl Number:
+                            <select id="ch5-pr">
+                                <option value="0.7">Air (Pr = 0.7)</option>
+                                <option value="7.0">Water (Pr = 7.0)</option>
+                                <option value="0.01">Liquid Metal (Pr = 0.01)</option>
+                            </select>
+                        </label>
+                    </div>
+                    <div class="sim-stats">
+                        $Re_L$: <span id="ch5-re">0</span><br>
+                        Avg $h$: <span id="ch5-h">0.0</span> W/m²K
+                    </div>
+                </div>
+            </div>
+
+            <hr class="chapter-divider">
+
+            <!-- Continue similarly for Chapters 6-10 with detailed text and simulator placeholders -->
+            <!-- CHAPTER 6 -->
+            <header class="chapter-header" id="ch6">
+                <span class="chapter-badge">Chapter 6</span>
+                <h2>Forced Convection: Internal and External Flow</h2>
+                <p class="chapter-subtitle">Applying empirical correlations to pipe flow and aerodynamics.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>While the exact Navier-Stokes and Energy equations can be solved analytically for simple laminar flows over a flat plate (the Blasius solution), engineering applications mostly involve complex geometries and fully turbulent flow where analytical solutions are mathematically impossible. Instead, we rely heavily on empirical correlations based on decades of rigorous experimental data.</p>
+                
+                <h3>1. External Flow over Cylinders and Spheres</h3>
+                <p>When a fluid flows crossways over a cylinder or sphere, a boundary layer forms at the stagnation point and grows until flow separation occurs on the rear side, creating a highly turbulent wake region. Heat transfer is highest at the stagnation point, decreases as the boundary layer grows, and then spikes again in the chaotic wake.</p>
+                <p>A widely used, all-encompassing empirical correlation for the average Nusselt number over a circular cylinder is the Churchill-Bernstein equation, which is valid across an massive range of Reynolds and Prandtl numbers:</p>
+                <div class="math-formula">
+                    $$ \overline{Nu}_D = 0.3 + \frac{0.62 Re_D^{1/2} Pr^{1/3}}{\left[ 1 + (0.4/Pr)^{2/3} \right]^{1/4}} \left[ 1 + \left( \frac{Re_D}{282000} \right)^{5/8} \right]^{4/5} $$
+                </div>
+
+                <h3>2. Internal Flow in Pipes and Tubes</h3>
+                <p>Internal flow behaves fundamentally differently than external flow. The boundary layers from the pipe walls grow until they meet at the centerline, creating a "fully developed" flow region. Once hydrodynamically and thermally fully developed, the dimensionless temperature profile ceases to change, and the local heat transfer coefficient $h$ becomes perfectly constant down the rest of the pipe.</p>
+                <p>For internal pipe flow, transitioning to turbulence is generally desired to enhance heat transfer, despite the penalty of increased pumping power (pressure drop). For fully developed turbulent pipe flow ($Re_D > 10,000$), the most ubiquitous correlation in engineering is the Dittus-Boelter equation:</p>
+                <div class="math-formula">
+                    $$ Nu_D = 0.023 Re_D^{0.8} Pr^{n} $$
+                </div>
+                <p>Where $n = 0.4$ if the fluid is being heated (surface hotter than fluid), and $n = 0.3$ if the fluid is being cooled. For accurate energy balance calculations across a pipe, the fluid's mean (bulk) temperature must be tracked along the length $x$. Since $T_m(x)$ changes exponentially when subject to a constant surface temperature $T_s$, engineers use the Log Mean Temperature Difference (LMTD) method rather than a simple arithmetic average to calculate the total heat transfer rate.</p>
+            </article>
+
+            <div id="sim-ch6" class="interactive-container">
+                <div class="sim-overlay">
+                    <h4>Pipe Flow Visualizer</h4>
+                    <div class="sim-controls">
+                        <label>Flow Rate ($Re_D$):
+                            <input type="range" id="ch6-re" min="1000" max="50000" step="1000" value="2000">
+                        </label>
+                    </div>
+                    <div class="sim-stats">
+                        Regime: <span id="ch6-regime">Laminar</span><br>
+                        $Nu_D$: <span id="ch6-nu">4.36</span>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="chapter-divider">
+            
+            <!-- CHAPTER 7 -->
+            <header class="chapter-header" id="ch7">
+                <span class="chapter-badge">Chapter 7</span>
+                <h2>Natural (Free) Convection</h2>
+                <p class="chapter-subtitle">Buoyancy-driven thermal transport and density gradients.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>In forced convection, fluid motion is externally imposed by a pump or fan. In natural (free) convection, the fluid motion is self-generated strictly by density differences within the fluid occurring due to temperature gradients. The heavier (colder) fluid descends, displacing the lighter (hotter) fluid upwards, creating a continuous buoyancy-driven plume.</p>
+
+                <h3>1. Buoyancy and the Grashof Number</h3>
+                <p>The volumetric thermal expansion coefficient, $\beta = -\frac{1}{\rho}\left(\frac{\partial \rho}{\partial T}\right)_P$, quantifies how much a fluid's density changes with temperature at constant pressure. For an ideal gas, $\beta = 1/T$ (where $T$ is absolute temperature in Kelvin). This expansion generates the required buoyant force.</p>
+                <p>The flow regime in natural convection is governed by the <strong>Grashof Number ($Gr$)</strong>, which replaces the Reynolds number. It represents the ratio of buoyancy forces to viscous forces.</p>
+                <div class="math-formula">
+                    $$ Gr_L = \frac{g \beta (T_s - T_\infty) L_c^3}{\nu^2} $$
+                </div>
+                <p>Where $g$ is gravitational acceleration, $\nu$ is kinematic viscosity, and $L_c$ is the characteristic length. A high Grashof number indicates strong buoyant forces and potential transition to turbulence.</p>
+
+                <h3>2. The Rayleigh Number</h3>
+                <p>To determine the heat transfer rates in free convection, empirical correlations overwhelmingly use the <strong>Rayleigh Number ($Ra$)</strong>, which is simply the product of the Grashof and Prandtl numbers: $Ra_L = Gr_L \cdot Pr$.</p>
+                <p>For a vertical heated plate, the transition from a smooth laminar boundary layer to a chaotic turbulent boundary layer typically occurs at a critical Rayleigh number of approximately $10^9$. For $Ra > 10^9$, the boundary layer breaks down, generating large-scale eddies that significantly boost the convective heat transfer coefficient. Natural convection correlations generally take the form $\overline{Nu} = C \cdot Ra^n$, where $n=1/4$ for laminar flow and $n=1/3$ for turbulent flow.</p>
+            </article>
+
+            <div id="sim-ch7" class="interactive-container">
+                <div class="sim-overlay">
+                    <h4>Buoyancy Plume Tracker</h4>
+                    <div class="sim-controls">
+                        <label>$\Delta T$ (Surface - Ambient):
+                            <input type="range" id="ch7-dt" min="5" max="100" step="5" value="20">
+                        </label>
+                    </div>
+                    <div class="sim-stats">
+                        $Ra_L$: <span id="ch7-ra">0</span><br>
+                        Flow: <span id="ch7-flow">Laminar</span>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="chapter-divider">
+            
+            <!-- CHAPTER 8 -->
+            <header class="chapter-header" id="ch8">
+                <span class="chapter-badge">Chapter 8</span>
+                <h2>Boiling and Condensation</h2>
+                <p class="chapter-subtitle">Two-phase heat transfer and massive latent energy exchange.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Boiling and condensation represent convection with a phase change. The incredible power of these processes lies in latent heat—the massive amount of energy absorbed or released when breaking or forming molecular bonds between liquid and vapor phases. Consequently, heat transfer coefficients ($h$) in phase-change systems are orders of magnitude higher than those in single-phase convection, making them indispensable in nuclear reactors, HVAC systems, and high-performance computing.</p>
+
+                <h3>1. The Pool Boiling Curve</h3>
+                <p>When a heated surface is submerged in a quiescent pool of liquid at its saturation temperature (e.g., a wire in $100^\circ\text{C}$ water), the behavior is dictated by the excess temperature $\Delta T_e = T_s - T_{\text{sat}}$. Nukiyama's famous pool boiling curve identifies four distinct regimes:</p>
+                <ul>
+                    <li><strong>Free Convection Boiling ($\Delta T_e < 5^\circ\text{C}$):</strong> Insufficient superheat to nucleate bubbles. Heat is transferred purely by free convection to the free surface where evaporation occurs.</li>
+                    <li><strong>Nucleate Boiling ($5^\circ\text{C} < \Delta T_e < 30^\circ\text{C}$):</strong> Bubbles form at nucleation sites (microscopic pits on the surface), detach, and rise. The intense agitation caused by bubble growth and departure drastically increases $h$. This is the highly desired operating regime for industrial boilers.</li>
+                    <li><strong>Transition Boiling ($30^\circ\text{C} < \Delta T_e < 120^\circ\text{C}$):</strong> The bubbles form so rapidly they begin to merge into a vapor film, which acts as a thermal insulator. Heat flux actually <em>decreases</em> as surface temperature increases—an unstable and dangerous region.</li>
+                    <li><strong>Film Boiling ($\Delta T_e > 120^\circ\text{C}$):</strong> The surface is completely blanketed by a continuous vapor film. Heat must conduct and radiate through this vapor layer, drastically lowering $h$.</li>
+                </ul>
+
+                <h3>2. Critical Heat Flux (CHF) and Burnout</h3>
+                <p>The peak of the nucleate boiling curve is the <strong>Critical Heat Flux ($q''_{max}$)</strong>. If a system operating near CHF slightly exceeds it (e.g., turning a dial up on an electric heater), the system instantly jumps from nucleate boiling to film boiling. The massive loss of heat transfer capability causes the surface temperature to skyrocket from perhaps $130^\circ\text{C}$ directly to $1000^\circ\text{C}+$. This phenomenon, known as "burnout" or Departure from Nucleate Boiling (DNB), will physically melt the heating element or nuclear fuel rod, leading to catastrophic failure.</p>
+                <div class="math-formula">
+                    $$ q''_{max} = C_{cr} h_{fg} \sqrt{\rho_v}\left[ \sigma g (\rho_l - \rho_v) \right]^{1/4} $$
+                </div>
+            </article>
+
+            <div id="sim-ch8" class="interactive-container">
+                <div class="sim-overlay">
+                    <h4>Boiling Curve Explorer</h4>
+                    <div class="sim-controls">
+                        <label>Excess Temp ($\Delta T_e$):
+                            <input type="range" id="ch8-temp" min="1" max="150" step="1" value="15">
+                        </label>
+                    </div>
+                    <div class="sim-stats">
+                        Regime: <span id="ch8-regime">Nucleate</span><br>
+                        Heat Flux: <span id="ch8-flux">0.0</span> MW/m²
+                    </div>
+                </div>
+            </div>
+
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 9 -->
+            <header class="chapter-header" id="ch9">
+                <span class="chapter-badge">Chapter 9</span>
+                <h2>Heat Exchangers</h2>
+                <p class="chapter-subtitle">Design, analysis, and effectiveness of thermal routing systems.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Heat exchangers are devices built to facilitate the transfer of thermal energy between two or more fluids at different temperatures, while keeping them physically separated by a solid wall. They are the workhorses of the chemical, aerospace, automotive, and power generation industries.</p>
+
+                <h3>1. Overall Heat Transfer Coefficient ($U$)</h3>
+                <p>The performance of any heat exchanger is heavily reliant on the overall heat transfer coefficient, $U$. It incorporates the convective resistance of the hot fluid, the conductive resistance of the separating wall, and the convective resistance of the cold fluid. Over time, surfaces accumulate deposits (scale, rust, algae), introducing a thermal "fouling factor" ($R_f$) that severely degrades $U$ and necessitates periodic cleaning.</p>
+                <div class="math-formula">
+                    $$ \frac{1}{UA} = \frac{1}{(hA)_{hot}} + R_{f,hot} + R_{wall} + R_{f,cold} + \frac{1}{(hA)_{cold}} $$
+                </div>
+
+                <h3>2. The Log Mean Temperature Difference (LMTD) Method</h3>
+                <p>Because the temperatures of both fluids change exponentially as they flow through the exchanger, the driving temperature difference $\Delta T$ varies with position. Integrating the local heat transfer rate over the entire area yields the Log Mean Temperature Difference ($\Delta T_{\text{lm}}$).</p>
+                <div class="math-formula">
+                    $$ q = U A \Delta T_{\text{lm}} \quad \text{where} \quad \Delta T_{\text{lm}} = \frac{\Delta T_1 - \Delta T_2}{\ln(\Delta T_1 / \Delta T_2)} $$
+                </div>
+                <p>The LMTD is trivial to use for simple Parallel-flow and Counter-flow concentric tube heat exchangers, provided you know all four inlet and outlet temperatures. Counter-flow is thermodynamically vastly superior, as it allows the cold fluid outlet to actually exit <em>hotter</em> than the hot fluid outlet—a physical impossibility in parallel-flow.</p>
+
+                <h3>3. The Effectiveness-NTU Method</h3>
+                <p>When the outlet temperatures are unknown (e.g., predicting the performance of an off-the-shelf exchanger), the LMTD method requires tedious iterative guessing. The $\varepsilon$-NTU method circumvents this by defining <strong>Effectiveness ($\varepsilon$)</strong> as the ratio of actual heat transfer to the theoretical maximum possible heat transfer ($q_{max}$).</p>
+                <p>The Number of Transfer Units (NTU) is a dimensionless parameter characterizing the physical size and capability of the exchanger: $\text{NTU} = UA / C_{min}$, where $C_{min}$ is the smaller of the two fluid heat capacity rates ($\dot{m}c_p$). Effectiveness relations $\varepsilon = f(\text{NTU}, C_{min}/C_{max})$ allow for direct, iteration-free sizing and performance prediction.</p>
+            </article>
+
+            <div id="sim-ch9" class="interactive-container">
+                <div class="sim-overlay">
+                    <h4>3D HX Routing Matrix</h4>
+                    <div class="sim-controls">
+                        <label>Flow Type:
+                            <select id="ch9-type">
+                                <option value="counter">Counter-Flow</option>
+                                <option value="parallel">Parallel-Flow</option>
+                            </select>
+                        </label>
+                        <button id="ch9-play" class="btn-retro">Simulate Fluids</button>
+                    </div>
+                    <div class="sim-stats">
+                        Effectiveness $\varepsilon$: <span id="ch9-eff">0.0</span>%<br>
+                        $T_{cold,out}$: <span id="ch9-tc">0.0</span> K
+                    </div>
+                </div>
+            </div>
+
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 10 -->
+            <header class="chapter-header" id="ch10">
+                <span class="chapter-badge">Chapter 10</span>
+                <h2>Radiation Heat Transfer</h2>
+                <p class="chapter-subtitle">Electromagnetic wave transport, view factors, and enclosures.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Thermal radiation is fundamentally different from conduction and convection. It is the propagation of electromagnetic waves (specifically in the infrared spectrum) emitted by matter due to changes in the electronic configurations of its atoms or molecules. Since it is governed by Maxwell's equations and quantum mechanics, it requires no medium and is scaled by temperature to the fourth power ($T^4$), meaning radiation violently dominates at high temperatures (furnaces, combustion chambers, deep space applications).</p>
+
+                <h3>1. Blackbody Physics and Planck's Law</h3>
+                <p>A <strong>blackbody</strong> is a theoretical perfect emitter and absorber of radiation. It absorbs all incident radiation regardless of wavelength or direction. Planck's Law defines the spectral emissive power of a blackbody as a function of wavelength ($\lambda$) and temperature, forming the classic bell-shaped curve.</p>
+                <p>Wien's Displacement Law states that the peak emission wavelength shifts inversely with temperature: $\lambda_{max} T = 2898 \text{ \mu m}\cdot\text{K}$. This is why a piece of iron transitioning from $500^\circ\text{C}$ to $1500^\circ\text{C}$ glows dull red, then bright orange, then white-hot as the emission peak shifts from deep infrared directly into the visible light spectrum.</p>
+
+                <h3>2. Real Surfaces: Emissivity and Gray Bodies</h3>
+                <p>Real surfaces emit less than a blackbody. The ratio of real emission to blackbody emission at the same temperature is the <strong>emissivity ($\varepsilon$)</strong>. Similarly, real surfaces reflect a portion of incident energy, defined by absorptivity ($\alpha$) and reflectivity ($\rho$). By Kirchhoff's law, for a surface in thermal equilibrium, spectral emissivity equals spectral absorptivity ($\varepsilon_\lambda = \alpha_\lambda$). To drastically simplify engineering calculations, we invoke the "Gray Body" assumption, which assumes $\varepsilon$ and $\alpha$ are independent of wavelength.</p>
+
+                <h3>3. View Factors and Network Exchange</h3>
+                <p>When calculating radiant exchange between two surfaces, we must account for their spatial orientation. The <strong>View Factor (or Shape Factor) $F_{ij}$</strong> is the fraction of radiation leaving surface $i$ that directly strikes surface $j$. View factors are purely geometric functions requiring complex double-area integrals, though they obey the reciprocity relation: $A_i F_{ij} = A_j F_{ji}$.</p>
+                <p>For an enclosure of $N$ opaque, diffuse, gray surfaces, we utilize a radiosity network analogy. Radiosity ($J_i$) represents the total radiant energy leaving a surface (emitted + reflected). We construct an electrical circuit analogy with surface resistances $(1-\varepsilon_i)/(\varepsilon_i A_i)$ mapping to $J_i$, and spatial resistances $1/(A_i F_{ij})$ linking different surfaces, allowing us to solve matrix equations for net heat transfer in complex furnaces or spacecraft payload bays.</p>
+                <div class="math-formula">
+                    $$ q_i = \sum_{j=1}^{N} \frac{J_i - J_j}{(A_i F_{ij})^{-1}} = \frac{E_{b,i} - J_i}{(1-\varepsilon_i)/(\varepsilon_i A_i)} $$
+                </div>
+            </article>
+
+            <div id="sim-ch10" class="interactive-container">
+                <div class="sim-overlay">
+                    <h4>View Factor Ray-Tracer</h4>
+                    <div class="sim-controls">
+                        <label>Orientation:
+                            <select id="ch10-orient">
+                                <option value="parallel">Parallel Plates</option>
+                                <option value="perp">Perpendicular Plates</option>
+                            </select>
+                        </label>
+                        <button id="ch10-trace" class="btn-retro">Emit Rays</button>
+                    </div>
+                    <div class="sim-stats">
+                        View Factor $F_{12}$: <span id="ch10-f12">0.00</span><br>
+                        Net $Q_{rad}$: <span id="ch10-qrad">0.0</span> W
+                    </div>
+                </div>
+            </div>
+            
+        </main>
+    </div>
+
+    <!-- The simulator logic will be implemented in Step 3 -->
+    <script type="module" src="heat-transfer-engine.js"></script>
+    <script>
+        // Basic Theme Toggle Logic
+        const themeBtn = document.getElementById('theme-toggle');
+        themeBtn.addEventListener('click', () => {
+            const html = document.documentElement;
+            if (html.getAttribute('data-theme') === 'dark') {
+                html.removeAttribute('data-theme');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+            }
+        });
+        
+        // Basic Sidebar Navigation Highlight
+        const sections = document.querySelectorAll('.chapter-header');
+        const navLinks = document.querySelectorAll('.chapter-list a');
+        
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (scrollY >= (sectionTop - 150)) {
+                    current = section.getAttribute('id');
+                }
+            });
+            
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === `#${current}`) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
