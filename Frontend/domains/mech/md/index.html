@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SCME | Machine Design</title>
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- MathJax for rendering formulas -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']]
+        }
+      };
+    </script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+    <nav class="top-nav">
+        <div class="nav-left">
+            <h1 class="logo">SCME.</h1>
+            <a href="../../mech/index.html" class="btn-retro back-btn">← ME Hub</a>
+        </div>
+        <button id="theme-toggle" class="btn-retro">Toggle Theme</button>
+    </nav>
+
+    <div class="learning-environment">
+        <aside class="chapter-sidebar">
+            <h3>Machine Design</h3>
+            <ul class="chapter-list">
+                <li><a href="#ch1" class="active">1. Intro & Materials</a></li>
+                <li><a href="#ch2">2. Static Load & Failure Theories</a></li>
+                <li><a href="#ch3">3. Fluctuating Load (Fatigue)</a></li>
+                <li><a href="#ch4">4. Shafts, Keys & Couplings</a></li>
+                <li><a href="#ch5">5. Threaded Joints & Screws</a></li>
+                <li><a href="#ch6">6. Welded & Riveted Joints</a></li>
+                <li><a href="#ch7">7. Mechanical Springs</a></li>
+                <li><a href="#ch8">8. Bearings & Lubrication</a></li>
+                <li><a href="#ch9">9. Gear Drives</a></li>
+                <li><a href="#ch10">10. Clutches & Brakes</a></li>
+                <li><a href="#ch11">11. Flexible Drives</a></li>
+            </ul>
+        </aside>
+
+        <main class="reading-core">
+            
+            <!-- CHAPTER 1 -->
+            <header class="chapter-header" id="ch1">
+                <span class="chapter-badge">Chapter 1</span>
+                <h2>Introduction to Machine Design & Engineering Materials</h2>
+                <p class="chapter-subtitle">The foundation of mechanical synthesis and material selection.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Machine Design is the process of creating new mechanical systems or improving existing ones. It is not merely an analytical exercise but an iterative synthesis of science, art, and manufacturing constraints. An engineer must define the mechanism's kinematics, perform dynamic force analysis, and finally size every component to ensure survival over its intended lifespan without failure, yielding, or excessive deflection.</p>
+                
+                <h3>1. The Stress-Strain Paradigm</h3>
+                <p>The entire field is anchored by the mechanical properties of materials. When a physical body is subjected to external loads, internal resisting forces develop, distributed over the cross-sectional area. We define this intensity of internal resisting force as <strong>Stress ($\sigma$)</strong>, and the resulting geometric deformation as <strong>Strain ($\epsilon$)</strong>.</p>
+                <div class="math-formula">
+                    $$ \sigma = \frac{P}{A} \quad \text{and} \quad \epsilon = \frac{\Delta L}{L_0} $$
+                </div>
+                
+                <h3>2. Hooke's Law and The Modulus of Elasticity</h3>
+                <p>For most engineering metals in the elastic region, stress is strictly proportional to strain. This is Hooke's Law. The constant of proportionality is Young's Modulus ($E$), which defines the intrinsic stiffness of the atomic bonds.</p>
+                <div class="math-formula">
+                    $$ \sigma = E \epsilon $$
+                </div>
+                <p>When loading exceeds the <strong>Yield Strength ($S_y$)</strong>, the material undergoes irreversible plastic deformation via dislocation glide within its crystal lattice. If loaded further, it reaches the <strong>Ultimate Tensile Strength ($S_{ut}$)</strong>, where massive localized necking begins, rapidly leading to fracture.</p>
+
+                <h3>3. Ductility vs. Brittleness</h3>
+                <p><strong>Ductile materials</strong> (like mild steel and aluminum) yield significantly before failing. They absorb immense energy (Toughness) and give visual warning before fracture. <strong>Brittle materials</strong> (like cast iron and ceramics) fail catastrophically and suddenly, with virtually zero plastic deformation. In Machine Design, ductile materials are generally preferred because their ability to yield locally redistributes stress concentrations, saving the component from premature failure.</p>
+            </article>
+            <div id="sim-ch1" class="interactive-container">
+                <!-- Step 3 Placeholder -->
+                <div class="sim-overlay">
+                    <h4>Virtual Tensile Testing Machine (3D)</h4>
+                    <p style="color: var(--md-primary);">Simulator engine pending Step 3 injection...</p>
+                </div>
+                <canvas id="sim1-canvas"></canvas>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 2 -->
+            <header class="chapter-header" id="ch2">
+                <span class="chapter-badge">Chapter 2</span>
+                <h2>Design against Static Load & Theories of Failure</h2>
+                <p class="chapter-subtitle">Multi-axial stress states and the Factor of Safety.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Real-world components are rarely subjected to simple, uniaxial tension. A transmission shaft simultaneously experiences torsion (causing shear stress) and bending (causing normal stress). To determine if a complex 3D stress state will cause failure, we must distill it into <strong>Principal Stresses</strong> using eigenvalue analysis or Mohr's Circle, and then compare it to the material's basic tensile test data using a <strong>Theory of Failure</strong>.</p>
+                
+                <h3>1. Principal Stresses and Mohr's Circle</h3>
+                <p>At any point in a loaded body, there exists a specific orientation of planes upon which the shear stress is absolutely zero. The normal stresses acting on these pristine planes are the Principal Stresses ($\sigma_1, \sigma_2, \sigma_3$). In a 2D state of plane stress, the maximum and minimum principal stresses are calculated analytically as:</p>
+                <div class="math-formula">
+                    $$ \sigma_{1,2} = \frac{\sigma_x + \sigma_y}{2} \pm \sqrt{\left(\frac{\sigma_x - \sigma_y}{2}\right)^2 + \tau_{xy}^2} $$
+                </div>
+                <p>The maximum in-plane shear stress ($\tau_{max}$) is exactly the radius of Mohr's Circle: $\tau_{max} = \frac{\sigma_1 - \sigma_2}{2}$.</p>
+
+                <h3>2. Maximum Shear Stress Theory (Tresca)</h3>
+                <p>For ductile materials, yielding is fundamentally a shear-driven phenomenon (slip planes). The Tresca theory postulates that a component will yield when the absolute maximum shear stress in the complex state reaches the maximum shear stress that caused yielding in a simple tension test ($S_y / 2$).</p>
+                <div class="math-formula">
+                    $$ \tau_{max} \ge \frac{S_y}{2N} \implies \sigma_1 - \sigma_3 = \frac{S_y}{N} $$
+                </div>
+                <p>Where $N$ is the <strong>Factor of Safety (FoS)</strong>. Tresca creates a conservative hexagonal failure envelope. If your stress coordinates fall outside the hexagon, your part is destroyed.</p>
+
+                <h3>3. Distortion Energy Theory (Von Mises)</h3>
+                <p>The Von Mises theory is more mathematically rigorous and aligns better with physical experimental data for ductile metals. It argues that yielding occurs when the angular distortion energy per unit volume exceeds the distortion energy at yield in a tensile test. It derives an equivalent "Von Mises Stress" ($\sigma'$) that must remain below $S_y/N$.</p>
+                <div class="math-formula">
+                    $$ \sigma' = \sqrt{\sigma_1^2 - \sigma_1\sigma_2 + \sigma_2^2} \le \frac{S_y}{N} $$
+                </div>
+                <p>This forms an elliptical failure envelope, allowing for slightly more aggressive, efficient designs than Tresca.</p>
+            </article>
+            <div id="sim-ch2" class="interactive-container">
+                <!-- Step 3 Placeholder -->
+                <div class="sim-overlay">
+                    <h4>Interactive Failure Envelope Explorer</h4>
+                    <p style="color: var(--md-primary);">Simulator engine pending Step 3 injection...</p>
+                </div>
+                <canvas id="sim2-canvas"></canvas>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 3 -->
+            <header class="chapter-header" id="ch3">
+                <span class="chapter-badge">Chapter 3</span>
+                <h2>Design against Fluctuating (Fatigue) Load</h2>
+                <p class="chapter-subtitle">The silent killer of machinery.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Over 80% of all mechanical failures are caused by Fatigue. If you bend a paperclip back and forth, it breaks, even though you never applied enough force to exceed its static Ultimate Tensile Strength. <strong>Fatigue</strong> is the initiation and propagation of microscopic cracks under cyclic, fluctuating stresses over thousands or millions of cycles.</p>
+
+                <h3>1. The S-N Curve and Endurance Limit</h3>
+                <p>August Wöhler formalized fatigue analysis using the S-N (Stress-Life) curve, plotting alternating stress amplitude ($S_a$) against the log of the number of cycles to failure ($N$). For ferrous materials like steel, the curve eventually flattens out. This horizontal asymptote is the <strong>Endurance Limit ($S_e'$).</strong> If the cyclic stress remains below $S_e'$, the component theoretically has an infinite life.</p>
+                <p>However, the laboratory endurance limit ($S_e'$) must be heavily derated for real-world components using Marin factors, accounting for surface finish, size, reliability, and temperature:</p>
+                <div class="math-formula">
+                    $$ S_e = k_a k_b k_c k_d k_e k_f S_e' $$
+                </div>
+
+                <h3>2. Mean Stress Effects: Goodman and Soderberg</h3>
+                <p>Most real-world loads are not perfectly reversed; they fluctuate around a non-zero mean stress ($\sigma_m$). A tensile mean stress literally pulls micro-cracks open, drastically accelerating fatigue failure. To design for both alternating stress ($\sigma_a$) and mean stress ($\sigma_m$), we use empirical failure diagrams.</p>
+                <p>The <strong>Modified Goodman Line</strong> connects the endurance limit ($S_e$) on the alternating axis to the Ultimate Strength ($S_{ut}$) on the mean axis. The <strong>Soderberg Line</strong> is far more conservative, connecting $S_e$ to the Yield Strength ($S_y$). The design equation for the Goodman criterion is:</p>
+                <div class="math-formula">
+                    $$ \frac{\sigma_a}{S_e} + \frac{\sigma_m}{S_{ut}} = \frac{1}{N} $$
+                </div>
+                <p>If the calculated coordinate $(\sigma_m, \sigma_a)$ falls below the Goodman line, the design is safe for infinite life.</p>
+            </article>
+            <div id="sim-ch3" class="interactive-container">
+                <!-- Step 3 Placeholder -->
+                <div class="sim-overlay">
+                    <h4>Dynamic Goodman Diagram Builder</h4>
+                    <p style="color: var(--md-primary);">Simulator engine pending Step 3 injection...</p>
+                </div>
+                <canvas id="sim3-canvas"></canvas>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 4 -->
+            <header class="chapter-header" id="ch4">
+                <span class="chapter-badge">Chapter 4</span>
+                <h2>Design of Shafts, Keys, and Couplings</h2>
+                <p class="chapter-subtitle">Power transmission and combined loading.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>A shaft is a rotating machine element used to transmit power. It is supported by bearings and typically houses gears, pulleys, or sprockets. Because it transmits torque while supporting the radial loads of the gears/belts, a shaft is almost universally subjected to a vicious combination of <strong>Torsional Shear Stress</strong> and <strong>Bending Normal Stress</strong>.</p>
+                
+                <h3>1. ASME Code for Shaft Design</h3>
+                <p>The maximum shear stress theory is the historical standard for shaft design. The bending moment ($M$) creates normal stress ($\sigma = \frac{32M}{\pi d^3}$), and the torque ($T$) creates shear stress ($\tau = \frac{16T}{\pi d^3}$). Plugging these into the principal stress equations, the ASME code introduces shock and fatigue factors for bending ($K_b$) and torsion ($K_t$) to derive the critical shaft diameter ($d$):</p>
+                <div class="math-formula">
+                    $$ d^3 = \frac{16}{\pi \tau_{allow}} \sqrt{(K_b M)^2 + (K_t T)^2} $$
+                </div>
+                <p>The term $\sqrt{(K_b M)^2 + (K_t T)^2}$ is often called the <em>Equivalent Twisting Moment ($T_{eq}$)</em>.</p>
+
+                <h3>2. Keys and Keyways</h3>
+                <p>To transmit torque from the shaft to the hub of a gear, a Key is inserted into a slot (keyway) cut into both members. Keys fail in two primary modes: <strong>Shearing</strong> along the mid-plane, and <strong>Crushing</strong> (compressive bearing failure) against the sides of the keyway. The length of a standard square key is determined by equating the torque capacity in shear to the torque capacity in crushing.</p>
+                <div class="math-formula">
+                    $$ T = (\tau_{key} \cdot w \cdot L) \cdot \frac{d}{2} \quad \text{(Shear)} $$
+                    $$ T = (\sigma_{c,key} \cdot \frac{h}{2} \cdot L) \cdot \frac{d}{2} \quad \text{(Crushing)} $$
+                </div>
+                <p>Note: Cutting a keyway introduces massive stress concentrations (Notch Sensitivity), heavily reducing the fatigue life of the shaft.</p>
+            </article>
+            <div id="sim-ch4" class="interactive-container">
+                <!-- Step 3 Placeholder -->
+                <div class="sim-overlay">
+                    <h4>Real-time 3D Shaft Stress Mapping</h4>
+                    <p style="color: var(--md-primary);">Simulator engine pending Step 3 injection...</p>
+                </div>
+                <canvas id="sim4-canvas"></canvas>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 5 -->
+            <header class="chapter-header" id="ch5">
+                <span class="chapter-badge">Chapter 5</span>
+                <h2>Threaded Joints and Power Screws</h2>
+                <p class="chapter-subtitle">Translating rotation into immense linear force.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Threaded fasteners (bolts, nuts) are used for temporary joints, while Power Screws (screw jacks, lead screws) are designed to convert rotary motion into massive linear motion and force transmission. The mechanics of both are identical, modeled physically as a block sliding up or down an inclined plane wrapped around a cylinder.</p>
+
+                <h3>1. Torque Required to Lift a Load</h3>
+                <p>When a torque ($T_R$) is applied to raise a load ($W$), it must overcome both the downward component of the load along the thread's helix angle ($\alpha$) and the sliding friction force ($\mu = \tan \phi$). For a square thread of mean diameter ($d_m$), the raising torque is:</p>
+                <div class="math-formula">
+                    $$ T_R = \frac{W d_m}{2} \tan(\alpha + \phi) + T_c $$
+                </div>
+                <p>Where $T_c$ is the additional frictional torque at the thrust collar bearing supporting the load. The torque required to lower the load is $T_L = \frac{W d_m}{2} \tan(\phi - \alpha)$.</p>
+
+                <h3>2. Self-Locking and Efficiency</h3>
+                <p>A crucial safety feature of most screw jacks is the <strong>Self-Locking Condition</strong>. If the torque is removed, the heavy load should not be able to spin the screw backward and crash to the ground. Mathematically, the screw will back-drive (overhaul) if the helix angle is greater than the friction angle ($\alpha > \phi$). Therefore, to be self-locking, we require $\alpha \le \phi$, or $\mu \ge \tan \alpha$.</p>
+                <p>However, there is a brutal engineering tradeoff: High friction guarantees safety (self-locking), but it destroys efficiency. The efficiency of a square threaded screw is the ratio of ideal work to actual work:</p>
+                <div class="math-formula">
+                    $$ \eta = \frac{T_{ideal}}{T_{actual}} = \frac{\tan \alpha}{\tan(\alpha + \phi)} $$
+                </div>
+                <p>A strictly self-locking screw can never mathematically exceed 50% efficiency. Over half your input energy is entirely lost to heat.</p>
+            </article>
+            <div id="sim-ch5" class="interactive-container">
+                <!-- Step 3 Placeholder -->
+                <div class="sim-overlay">
+                    <h4>Power Screw Lifting Mechanism (3D)</h4>
+                    <p style="color: var(--md-primary);">Simulator engine pending Step 3 injection...</p>
+                </div>
+                <canvas id="sim5-canvas"></canvas>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 6 -->
+            <header class="chapter-header" id="ch6">
+                <span class="chapter-badge">Chapter 6</span>
+                <h2>Welded and Riveted Joints</h2>
+                <p class="chapter-subtitle">Permanent fastening and eccentric load vectors.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Unlike threaded fasteners, welds and rivets are permanent structural connections. Rivets rely on shear strength across their cross-section, while welds rely on fusion mechanics. In heavy machinery and civil structures, the most complex scenario occurs when these joints are subjected to an <strong>Eccentric Load</strong>—a force that does not pass through the center of gravity of the joint group, generating a massive twisting moment.</p>
+
+                <h3>1. Strength of Fillet Welds</h3>
+                <p>The most common weld type is the fillet weld. Because the root of the weld is notoriously difficult to inspect and often contains micro-cracks, engineers assume failure will occur in pure shear along the minimum cross-sectional area, known as the <strong>Throat</strong>. For a weld with leg size $h$, the throat thickness is $t = h \cos(45^\circ) = 0.707h$. The load capacity of a parallel fillet weld of length $L$ is:</p>
+                <div class="math-formula">
+                    $$ P = \tau_{allow} \cdot (0.707h \cdot L) $$
+                </div>
+
+                <h3>2. Eccentric Loading on Rivet Groups</h3>
+                <p>When a bracket riveted to a column holds a load $P$ at an eccentricity $e$, the rivet group must resist both a direct downward force and a rotational twisting moment ($M = P \cdot e$). The total shear vector on any individual rivet is the vector sum of two components:</p>
+                <ul>
+                    <li><strong>Primary Shear ($P_1$):</strong> The direct load is shared equally among all $n$ rivets. $P_1 = P/n$, pointing directly downward.</li>
+                    <li><strong>Secondary Shear ($P_2$):</strong> The moment creates a rotational shear force perpendicular to the radial distance ($r$) from the Center of Gravity to the specific rivet. The magnitude is proportional to distance: $P_2 = \frac{M \cdot r_i}{\sum r^2}$.</li>
+                </ul>
+                <p>The rivet furthest from the center of gravity, with the smallest angle between the primary and secondary vectors, will experience the absolute maximum resultant force ($R = \sqrt{P_1^2 + P_2^2 + 2P_1P_2\cos\theta}$) and is the critical point of failure.</p>
+            </article>
+            <div id="sim-ch6" class="interactive-container">
+                <!-- Step 3 Placeholder -->
+                <div class="sim-overlay">
+                    <h4>Eccentric Load Vector Analyzer</h4>
+                    <p style="color: var(--md-primary);">Simulator engine pending Step 3 injection...</p>
+                </div>
+                <canvas id="sim6-canvas"></canvas>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 7 -->
+            <header class="chapter-header" id="ch7">
+                <span class="chapter-badge">Chapter 7</span>
+                <h2>Mechanical Springs</h2>
+                <p class="chapter-subtitle">Energy storage and torsional shear within coils.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>A spring is an elastic machine element designed to temporarily store mechanical energy and release it as required, absorbing shocks or maintaining contact between machine parts. While springs come in many forms (leaf, Belleville, torsion), the workhorse of the industry is the <strong>Helical Compression Spring</strong>.</p>
+
+                <h3>1. Stress in Helical Springs (The Wahl Factor)</h3>
+                <p>Counterintuitively, a helical spring under axial compression is actually experiencing pure <strong>Torsional Shear Stress</strong> in its wire. Pushing down on the spring twists the wire around its own axis. The base shear stress is derived from torsion ($\tau = \frac{16 T}{\pi d^3}$, where $T = \frac{F D}{2}$).</p>
+                <p>However, because the wire is coiled into a tight helix, the inner surface of the coil is shorter than the outer surface. This severe curvature forces the stress to migrate heavily toward the inside edge of the wire. A.M. Wahl developed a correction factor ($K_W$) to account for this curvature and the direct shear load:</p>
+                <div class="math-formula">
+                    $$ \tau_{max} = K_W \frac{8 F D}{\pi d^3} \quad \text{where} \quad K_W = \frac{4C - 1}{4C - 4} + \frac{0.615}{C} $$
+                </div>
+                <p>Where $C = D/d$ is the Spring Index (ratio of mean coil diameter to wire diameter).</p>
+
+                <h3>2. Deflection and Stiffness</h3>
+                <p>The spring rate or stiffness ($k$) defines how much force is required for a unit deflection ($\delta$). Using Castigliano's theorem for strain energy in torsion, the deflection equation involves the shear modulus ($G$) and the number of active coils ($N_a$):</p>
+                <div class="math-formula">
+                    $$ \delta = \frac{8 F D^3 N_a}{G d^4} \implies k = \frac{F}{\delta} = \frac{G d^4}{8 D^3 N_a} $$
+                </div>
+
+                <h3>3. Spring Surge (Resonance)</h3>
+                <p>In high-speed machinery like automotive engine valves, the spring is compressed and released thousands of times per minute. If the operating frequency approaches the spring's natural frequency, a compression wave travels up and down the coils (Surge). This resonance amplifies stresses massively, shattering the spring. Designers must ensure the natural frequency is at least 15 to 20 times higher than the operating frequency.</p>
+            </article>
+            <div id="sim-ch7" class="interactive-container">
+                <!-- Step 3 Placeholder -->
+                <div class="sim-overlay">
+                    <h4>Animated Helical Spring Dynamics</h4>
+                    <p style="color: var(--md-primary);">Simulator engine pending Step 3 injection...</p>
+                </div>
+                <canvas id="sim7-canvas"></canvas>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 8 -->
+            <header class="chapter-header" id="ch8">
+                <span class="chapter-badge">Chapter 8</span>
+                <h2>Bearings and Lubrication</h2>
+                <p class="chapter-subtitle">Hydrodynamics and the eradication of solid friction.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Bearings support rotating shafts and transmit loads to the machine housing while minimizing frictional resistance. They are broadly classified into Rolling Contact (ball/roller) and Sliding Contact (journal) bearings. The ultimate goal of a sliding journal bearing is to completely levitate a 10-ton steel shaft on a microscopic film of oil, preventing any metal-to-metal contact. This is the miracle of <strong>Hydrodynamic Lubrication</strong>.</p>
+
+                <h3>1. Tower's Discovery and the Oil Wedge</h3>
+                <p>In the 1880s, Beauchamp Tower discovered that a rapidly rotating shaft floating in an oil bath acts as a powerful viscous pump. Due to the viscosity of the oil (its tendency to stick to the shaft), the spinning shaft drags oil into the narrowing clearance space beneath it. This geometrical constriction forces the oil into a highly pressurized "wedge." The pressure generated in this microscopic fluid wedge is sufficient to lift the massive shaft entirely off the bearing casing.</p>
+
+                <h3>2. Petroff's Equation and The Sommerfeld Number</h3>
+                <p>Petroff derived an equation for the frictional torque assuming a concentric shaft, but Reynolds completely modeled the asymmetric pressure distribution mathematically. The dimensionless parameter that dictates hydrodynamic bearing design is the <strong>Sommerfeld Number ($S$)</strong> or Bearing Characteristic Number:</p>
+                <div class="math-formula">
+                    $$ S = \left( \frac{r}{c} \right)^2 \frac{\mu N_s}{P} $$
+                </div>
+                <p>Where $r/c$ is the radial clearance ratio, $\mu$ is absolute viscosity, $N_s$ is shaft speed (rev/s), and $P$ is bearing pressure. A large Sommerfeld number implies a thick, safe oil film. If speed ($N_s$) drops too low, or load ($P$) spikes, the film ruptures, resulting in catastrophic boundary friction and bearing seizure.</p>
+
+                <h3>3. Rolling Contact Bearings ($L_{10}$ Life)</h3>
+                <p>Ball bearings bypass sliding friction via rolling elements. However, the contact area between a steel ball and the race is a microscopic point (Hertzian contact stress). This extreme cyclic stress causes subsurface micro-cracking and eventual spalling (fatigue flaking). Therefore, ball bearings have a finite life. The $L_{10}$ life rating represents the number of revolutions that 90% of a batch of identical bearings will survive before the first sign of fatigue failure:</p>
+                <div class="math-formula">
+                    $$ L_{10} = \left( \frac{C}{P_{eq}} \right)^k \times 10^6 \text{ revolutions} $$
+                </div>
+                <p>Where $C$ is the dynamic load capacity, $P_{eq}$ is the equivalent radial load, and $k=3$ for ball bearings ($k=10/3$ for roller bearings).</p>
+            </article>
+            <div id="sim-ch8" class="interactive-container">
+                <!-- Step 3 Placeholder -->
+                <div class="sim-overlay">
+                    <h4>Hydrodynamic Oil Wedge Visualizer</h4>
+                    <p style="color: var(--md-primary);">Simulator engine pending Step 3 injection...</p>
+                </div>
+                <canvas id="sim8-canvas"></canvas>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 9 -->
+            <header class="chapter-header" id="ch9">
+                <span class="chapter-badge">Chapter 9</span>
+                <h2>Gear Drives (Spur and Helical)</h2>
+                <p class="chapter-subtitle">Conjugate action, the involute curve, and bending stress.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Gears are the most robust, precise method of transmitting power and altering torque/speed ratios between shafts. To maintain a perfectly constant angular velocity ratio, the gear teeth must obey the <strong>Law of Gearing</strong>: the common normal at the point of contact must always pass through the fixed pitch point. The only mathematically practical curve that satisfies this condition while allowing for slight manufacturing center-distance variations is the <strong>Involute Curve</strong>.</p>
+
+                <h3>1. Involute Geometry and Interference</h3>
+                <p>An involute is the curve traced by a point on a taut string unwinding from a cylinder (the base circle). When involute teeth mesh, the contact point travels along a straight "Line of Action" defined by the Pressure Angle ($\phi$, typically $20^\circ$).</p>
+                <p>A major design constraint is <strong>Interference</strong>. If the driving pinion has too few teeth, the tip of the driven gear's tooth will violently gouge into the non-involute root of the pinion. Manufacturers solve this by "undercutting" the root, but this dangerously weakens the tooth. The mathematical minimum number of teeth on a pinion to prevent interference is typically 18 for a standard $20^\circ$ full-depth system.</p>
+
+                <h3>2. The Lewis Bending Equation</h3>
+                <p>Wilfred Lewis (1892) modeled a gear tooth as a cantilever beam subjected to a point load at its tip. The tangential component of the transmitted force ($W_t$) generates a massive bending moment at the root of the tooth. By geometrically defining the weakest section using a parabolic inscribed beam, Lewis derived the foundational equation for gear strength:</p>
+                <div class="math-formula">
+                    $$ \sigma_b = \frac{W_t}{b m Y} \quad \text{or} \quad W_t = \sigma_{allow} \cdot b \cdot m \cdot Y $$
+                </div>
+                <p>Where $b$ is face width, $m$ is the metric module ($d/N$), and $Y$ is the dimensionless Lewis Form Factor (dependent solely on the number of teeth). Because the pinion is smaller, its teeth have a sharper root base (lower $Y$ factor) and undergo more fatigue cycles per minute. <strong>In identical material sets, the pinion is always the weaker component and must be the basis of the design.</strong></p>
+
+                <h3>3. Dynamic and Wear Loads (Buckingham)</h3>
+                <p>The Lewis equation only accounts for static transmitted load. In reality, tiny machining errors in the tooth profile cause impact shocks as the gears mesh at high speeds. Earle Buckingham developed equations to calculate this dynamic load ($W_d$), which must be resisted by the bending strength, and a surface wear load ($W_w$) which must be resisted by the material's surface hardness (Brinell Hardness Number) to prevent pitting.</p>
+            </article>
+            <div id="sim-ch9" class="interactive-container">
+                <!-- Step 3 Placeholder -->
+                <div class="sim-overlay">
+                    <h4>Interactive Gear Meshing & Interference Monitor</h4>
+                    <p style="color: var(--md-primary);">Simulator engine pending Step 3 injection...</p>
+                </div>
+                <canvas id="sim9-canvas"></canvas>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 10 -->
+            <header class="chapter-header" id="ch10">
+                <span class="chapter-badge">Chapter 10</span>
+                <h2>Clutches and Brakes</h2>
+                <p class="chapter-subtitle">Friction mechanics, energy dissipation, and wear theories.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Clutches and brakes operate on the exact same physical principle: the exploitation of Coulomb friction to transfer or dissipate kinetic energy. A clutch locks a moving shaft to a stationary (or slower) shaft to initiate motion. A brake locks a moving shaft to the fixed machine chassis to halt motion. The engineering challenge is managing the brutal localized heat generation and predicting the torque capacity based on the wear profile of the friction lining.</p>
+
+                <h3>1. Disk Clutches: Uniform Pressure vs. Uniform Wear</h3>
+                <p>When an axial force ($F$) clamps a clutch disk against a flywheel, the torque ($T$) it can transmit depends on the friction radius. However, calculating the effective friction radius relies on two conflicting assumptions:</p>
+                
+                <p><strong>A. Uniform Pressure Theory (New Clutches):</strong><br>
+                When a clutch is brand new, the friction surfaces are perfectly flat and stiff. We assume the clamping pressure ($p$) is uniform across the entire face. Because velocity increases with radius ($v = \omega r$), the outer edges experience more friction work and wear down faster than the inner edges.
+                <div class="math-formula">
+                    $$ T_{UP} = \frac{2}{3} \mu F \left( \frac{r_o^3 - r_i^3}{r_o^2 - r_i^2} \right) $$
+                </div></p>
+
+                <p><strong>B. Uniform Wear Theory (Worn Clutches):</strong><br>
+                After a brief break-in period, the faster-wearing outer edges recede. To maintain contact, the pressure must redistribute, becoming highest at the inner radius and lowest at the outer radius. The product of pressure and velocity ($p \cdot v$) becomes constant across the face, leading to uniform wear. This is the conservative, standard design assumption.
+                <div class="math-formula">
+                    $$ T_{UW} = \frac{1}{2} \mu F (r_o + r_i) = \mu F R_{mean} $$
+                </div></p>
+
+                <h3>2. Multi-Plate Clutches and Heat Dissipation</h3>
+                <p>If a single disk clutch requires a radius too large for the machine casing (e.g., inside a motorcycle gearbox), designers stack multiple friction plates. If there are $n_1$ driving disks and $n_2$ driven disks, there are $n = n_1 + n_2 - 1$ active pairs of friction surfaces, multiplying the torque capacity linearly: $T = n \mu F R_{mean}$.</p>
+                <p>During the slip phase of engagement, massive kinetic energy is converted into heat ($\Delta E = \frac{1}{2} I \omega^2$). The clutch housing must have sufficient mass and surface area to absorb and dissipate this thermal shock without burning the asbestos/ceramic lining or warping the steel pressure plates.</p>
+            </article>
+            <div id="sim-ch10" class="interactive-container">
+                <!-- Step 3 Placeholder -->
+                <div class="sim-overlay">
+                    <h4>Disk Clutch Friction Engine</h4>
+                    <p style="color: var(--md-primary);">Simulator engine pending Step 3 injection...</p>
+                </div>
+                <canvas id="sim10-canvas"></canvas>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 11 -->
+            <header class="chapter-header" id="ch11">
+                <span class="chapter-badge">Chapter 11</span>
+                <h2>Flexible Drives (Belts, Ropes, and Chains)</h2>
+                <p class="chapter-subtitle">Long-distance power transmission and centrifugal tension.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>When power must be transmitted over large center distances where gears would be excessively heavy and expensive, engineers use flexible drives. Belts rely on friction wrapping around pulleys, while chains rely on mechanical engagement over sprockets. Belts offer the unique advantage of absorbing shock loads and vibrations through elastic stretch, protecting the driving motor from sudden jams.</p>
+
+                <h3>1. Flat Belts and the Belt Equation</h3>
+                <p>A belt wraps around a pulley over an angle of contact ($\theta$). As the driving pulley pulls the belt, tension builds on one side (the Tight side, $T_1$) and relaxes on the other (the Slack side, $T_2$). The maximum ratio of these tensions is governed by the friction coefficient ($\mu$) and the wrap angle (in radians) according to the fundamental belt equation:</p>
+                <div class="math-formula">
+                    $$ \frac{T_1}{T_2} = e^{\mu \theta} $$
+                </div>
+                <p>The power transmitted by the belt is simply the net driving force multiplied by the belt velocity: $P = (T_1 - T_2) \cdot v$.</p>
+
+                <h3>2. V-Belts and Wedging Action</h3>
+                <p>Flat belts can easily slip if tension drops. V-belts have a trapezoidal cross-section that seats tightly into a matching groove on the sheave. As tension increases, the belt is wedged deeper into the groove, multiplying the normal force against the sidewalls. This drastically increases the effective coefficient of friction ($\mu_{eff} = \mu / \sin\beta$, where $2\beta$ is the groove angle), allowing V-belts to transmit much higher torques without slipping.</p>
+
+                <h3>3. Centrifugal Tension at High Speeds</h3>
+                <p>As belt velocity ($v$) increases, the mass of the belt traveling in a circular path around the pulley generates a massive outward centrifugal force. This creates an internal "Centrifugal Tension" ($T_c = m v^2$) throughout the entire belt loop.</p>
+                <p>This centrifugal tension consumes a portion of the belt's maximum allowable strength, leaving less capacity for transmitting actual power torque ($T_1 = T_{max} - T_c$). At a critical optimum velocity (where $T_c = T_{max}/3$), the power transmission peaks. If the belt is spun any faster, centrifugal forces begin to literally lift the belt off the pulley, destroying the friction grip, and power transmission rapidly plummets toward zero.</p>
+            </article>
+            <div id="sim-ch11" class="interactive-container">
+                <!-- Step 3 Placeholder -->
+                <div class="sim-overlay">
+                    <h4>High-Speed Belt Drive Dynamics</h4>
+                    <p style="color: var(--md-primary);">Simulator engine pending Step 3 injection...</p>
+                </div>
+                <canvas id="sim11-canvas"></canvas>
+            </div>
+            
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../../../core.js"></script>
+    <script src="md-engine.js"></script> <!-- Will be generated in Step 3 -->
+</body>
+</html>
