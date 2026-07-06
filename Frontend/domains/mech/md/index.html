@@ -75,8 +75,22 @@
             <div id="sim-ch1" class="interactive-container">
                 <!-- Step 3 Placeholder -->
                 <div class="sim-overlay">
-                    <h4>Virtual Tensile Testing Machine (3D)</h4>
-                    <p style="color: var(--md-primary);">Simulator engine pending Step 3 injection...</p>
+                    <h4>Virtual Tensile Testing Machine</h4>
+                    <div class="sim-controls">
+                        <label>Material: 
+                            <select id="sim1-mat">
+                                <option value="steel">Mild Steel (Ductile)</option>
+                                <option value="aluminum">Aluminum Alloy</option>
+                                <option value="castiron">Cast Iron (Brittle)</option>
+                            </select>
+                        </label>
+                        <button id="sim1-run" class="btn-retro">Run Tensile Test</button>
+                    </div>
+                    <div class="sim-stats">
+                        Stress ($\sigma$): <span id="sim1-stress">0</span> MPa<br>
+                        Strain ($\epsilon$): <span id="sim1-strain">0.00</span><br>
+                        <span id="sim1-status" style="color: var(--accent-mech-light);">Idle</span>
+                    </div>
                 </div>
                 <canvas id="sim1-canvas"></canvas>
             </div>
@@ -115,8 +129,26 @@
             <div id="sim-ch2" class="interactive-container">
                 <!-- Step 3 Placeholder -->
                 <div class="sim-overlay">
-                    <h4>Interactive Failure Envelope Explorer</h4>
-                    <p style="color: var(--md-primary);">Simulator engine pending Step 3 injection...</p>
+                    <h4>Failure Envelope Explorer</h4>
+                    <div class="sim-controls">
+                        <label>Normal Stress X ($\sigma_x$): 
+                            <input type="range" id="sim2-sx" min="-200" max="300" value="150">
+                            <span id="sim2-sx-val">150</span> MPa
+                        </label>
+                        <label>Normal Stress Y ($\sigma_y$): 
+                            <input type="range" id="sim2-sy" min="-200" max="300" value="50">
+                            <span id="sim2-sy-val">50</span> MPa
+                        </label>
+                        <label>Shear Stress ($\tau_{xy}$): 
+                            <input type="range" id="sim2-txy" min="-150" max="150" value="80">
+                            <span id="sim2-txy-val">80</span> MPa
+                        </label>
+                    </div>
+                    <div class="sim-stats">
+                        $\sigma_1$: <span id="sim2-s1">0</span> MPa | $\sigma_2$: <span id="sim2-s2">0</span> MPa<br>
+                        Von Mises: <span id="sim2-vm">0</span> MPa<br>
+                        Status: <span id="sim2-status" style="color: var(--accent-green);">SAFE</span>
+                    </div>
                 </div>
                 <canvas id="sim2-canvas"></canvas>
             </div>
@@ -148,9 +180,23 @@
             </article>
             <div id="sim-ch3" class="interactive-container">
                 <!-- Step 3 Placeholder -->
-                <div class="sim-overlay">
-                    <h4>Dynamic Goodman Diagram Builder</h4>
-                    <p style="color: var(--md-primary);">Simulator engine pending Step 3 injection...</p>
+                <div class="sim-overlay sim-overlay-right">
+                    <h4>Fatigue Diagram Builder</h4>
+                    <div class="sim-controls">
+                        <label>Mean Stress ($\sigma_m$): 
+                            <input type="range" id="sim3-sm" min="0" max="500" value="200">
+                            <span id="sim3-sm-val">200</span> MPa
+                        </label>
+                        <label>Alternating Stress ($\sigma_a$): 
+                            <input type="range" id="sim3-sa" min="0" max="400" value="150">
+                            <span id="sim3-sa-val">150</span> MPa
+                        </label>
+                    </div>
+                    <div class="sim-stats">
+                        Goodman FoS: <span id="sim3-goodman">0.0</span><br>
+                        Soderberg FoS: <span id="sim3-soderberg">0.0</span><br>
+                        Result: <span id="sim3-status" style="color: var(--accent-mech-light);">Calculating...</span>
+                    </div>
                 </div>
                 <canvas id="sim3-canvas"></canvas>
             </div>
@@ -183,8 +229,26 @@
             <div id="sim-ch4" class="interactive-container">
                 <!-- Step 3 Placeholder -->
                 <div class="sim-overlay">
-                    <h4>Real-time 3D Shaft Stress Mapping</h4>
-                    <p style="color: var(--md-primary);">Simulator engine pending Step 3 injection...</p>
+                    <h4>Shaft Stress Heatmap</h4>
+                    <div class="sim-controls">
+                        <label>Bending Moment ($M$): 
+                            <input type="range" id="sim4-m" min="0" max="1500" value="500">
+                            <span id="sim4-m-val">500</span> Nm
+                        </label>
+                        <label>Torque ($T$): 
+                            <input type="range" id="sim4-t" min="0" max="1500" value="800">
+                            <span id="sim4-t-val">800</span> Nm
+                        </label>
+                        <label>Shaft Diameter ($d$): 
+                            <input type="range" id="sim4-d" min="20" max="100" value="50">
+                            <span id="sim4-d-val">50</span> mm
+                        </label>
+                    </div>
+                    <div class="sim-stats">
+                        Max Bending ($\sigma_b$): <span id="sim4-sb">0</span> MPa<br>
+                        Max Shear ($\tau$): <span id="sim4-tau">0</span> MPa<br>
+                        Von Mises Stress: <span id="sim4-vm">0</span> MPa
+                    </div>
                 </div>
                 <canvas id="sim4-canvas"></canvas>
             </div>
@@ -217,8 +281,26 @@
             <div id="sim-ch5" class="interactive-container">
                 <!-- Step 3 Placeholder -->
                 <div class="sim-overlay">
-                    <h4>Power Screw Lifting Mechanism (3D)</h4>
-                    <p style="color: var(--md-primary);">Simulator engine pending Step 3 injection...</p>
+                    <h4>Power Screw Lifting Mechanism</h4>
+                    <div class="sim-controls">
+                        <label>Load ($W$): 
+                            <input type="range" id="sim5-w" min="1000" max="10000" value="5000">
+                            <span id="sim5-w-val">5000</span> N
+                        </label>
+                        <label>Mean Dia ($d_m$): 
+                            <input type="range" id="sim5-d" min="10" max="50" value="25">
+                            <span id="sim5-d-val">25</span> mm
+                        </label>
+                        <label>Friction ($\mu$): 
+                            <input type="range" id="sim5-mu" min="0.05" max="0.30" step="0.01" value="0.15">
+                            <span id="sim5-mu-val">0.15</span>
+                        </label>
+                    </div>
+                    <div class="sim-stats">
+                        Raising Torque: <span id="sim5-tr">0</span> N-m<br>
+                        Efficiency ($\eta$): <span id="sim5-eff">0</span>%<br>
+                        Status: <span id="sim5-status" style="color: var(--accent-green);">SELF-LOCKING</span>
+                    </div>
                 </div>
                 <canvas id="sim5-canvas"></canvas>
             </div>
@@ -249,9 +331,23 @@
             </article>
             <div id="sim-ch6" class="interactive-container">
                 <!-- Step 3 Placeholder -->
-                <div class="sim-overlay">
+                <div class="sim-overlay sim-overlay-right">
                     <h4>Eccentric Load Vector Analyzer</h4>
-                    <p style="color: var(--md-primary);">Simulator engine pending Step 3 injection...</p>
+                    <div class="sim-controls">
+                        <label>Load ($P$): 
+                            <input type="range" id="sim6-p" min="10" max="100" value="50">
+                            <span id="sim6-p-val">50</span> kN
+                        </label>
+                        <label>Eccentricity ($e$): 
+                            <input type="range" id="sim6-e" min="50" max="300" value="150">
+                            <span id="sim6-e-val">150</span> mm
+                        </label>
+                    </div>
+                    <div class="sim-stats">
+                        Primary Shear ($P_1$): <span id="sim6-p1">0</span> kN<br>
+                        Secondary Shear ($P_2$): <span id="sim6-p2">0</span> kN<br>
+                        Max Resultant ($R$): <span id="sim6-r" style="color: var(--accent-mech-light);">0</span> kN
+                    </div>
                 </div>
                 <canvas id="sim6-canvas"></canvas>
             </div>
@@ -287,7 +383,25 @@
                 <!-- Step 3 Placeholder -->
                 <div class="sim-overlay">
                     <h4>Animated Helical Spring Dynamics</h4>
-                    <p style="color: var(--md-primary);">Simulator engine pending Step 3 injection...</p>
+                    <div class="sim-controls">
+                        <label>Force ($F$): 
+                            <input type="range" id="sim7-f" min="0" max="500" value="250">
+                            <span id="sim7-f-val">250</span> N
+                        </label>
+                        <label>Wire Dia ($d$): 
+                            <input type="range" id="sim7-d" min="2" max="10" value="5">
+                            <span id="sim7-d-val">5</span> mm
+                        </label>
+                        <label>Coil Dia ($D$): 
+                            <input type="range" id="sim7-D" min="20" max="100" value="50">
+                            <span id="sim7-D-val">50</span> mm
+                        </label>
+                    </div>
+                    <div class="sim-stats">
+                        Wahl Factor ($K_W$): <span id="sim7-kw">0</span><br>
+                        Max Shear ($\tau$): <span id="sim7-tau">0</span> MPa<br>
+                        Deflection ($\delta$): <span id="sim7-def">0</span> mm
+                    </div>
                 </div>
                 <canvas id="sim7-canvas"></canvas>
             </div>
@@ -323,7 +437,21 @@
                 <!-- Step 3 Placeholder -->
                 <div class="sim-overlay">
                     <h4>Hydrodynamic Oil Wedge Visualizer</h4>
-                    <p style="color: var(--md-primary);">Simulator engine pending Step 3 injection...</p>
+                    <div class="sim-controls">
+                        <label>Shaft Speed ($N_s$): 
+                            <input type="range" id="sim8-n" min="0" max="3000" value="1500">
+                            <span id="sim8-n-val">1500</span> RPM
+                        </label>
+                        <label>Bearing Load ($P$): 
+                            <input type="range" id="sim8-p" min="1000" max="10000" value="3000">
+                            <span id="sim8-p-val">3000</span> N
+                        </label>
+                    </div>
+                    <div class="sim-stats">
+                        Sommerfeld No ($S$): <span id="sim8-s">0</span><br>
+                        Film Thickness: <span id="sim8-h0">0</span> $\mu$m<br>
+                        Status: <span id="sim8-status"></span>
+                    </div>
                 </div>
                 <canvas id="sim8-canvas"></canvas>
             </div>
@@ -355,8 +483,26 @@
             <div id="sim-ch9" class="interactive-container">
                 <!-- Step 3 Placeholder -->
                 <div class="sim-overlay">
-                    <h4>Interactive Gear Meshing & Interference Monitor</h4>
-                    <p style="color: var(--md-primary);">Simulator engine pending Step 3 injection...</p>
+                    <h4>Interactive Gear Meshing & Interference</h4>
+                    <div class="sim-controls">
+                        <label>Pinion Teeth ($N_p$): 
+                            <input type="range" id="sim9-np" min="10" max="40" value="18">
+                            <span id="sim9-np-val">18</span>
+                        </label>
+                        <label>Gear Teeth ($N_g$): 
+                            <input type="range" id="sim9-ng" min="20" max="80" value="36">
+                            <span id="sim9-ng-val">36</span>
+                        </label>
+                        <label>Module ($m$): 
+                            <input type="range" id="sim9-m" min="2" max="10" value="4">
+                            <span id="sim9-m-val">4</span> mm
+                        </label>
+                    </div>
+                    <div class="sim-stats">
+                        Pinion Dia ($d_p$): <span id="sim9-dp">0</span> mm<br>
+                        Gear Dia ($d_g$): <span id="sim9-dg">0</span> mm<br>
+                        Status: <span id="sim9-status"></span>
+                    </div>
                 </div>
                 <canvas id="sim9-canvas"></canvas>
             </div>
@@ -394,7 +540,25 @@
                 <!-- Step 3 Placeholder -->
                 <div class="sim-overlay">
                     <h4>Disk Clutch Friction Engine</h4>
-                    <p style="color: var(--md-primary);">Simulator engine pending Step 3 injection...</p>
+                    <div class="sim-controls">
+                        <label>Inner Radius ($r_i$): 
+                            <input type="range" id="sim10-ri" min="50" max="150" value="80">
+                            <span id="sim10-ri-val">80</span> mm
+                        </label>
+                        <label>Outer Radius ($r_o$): 
+                            <input type="range" id="sim10-ro" min="100" max="250" value="150">
+                            <span id="sim10-ro-val">150</span> mm
+                        </label>
+                        <label>Clamping Force ($F$): 
+                            <input type="range" id="sim10-f" min="1000" max="5000" value="2000">
+                            <span id="sim10-f-val">2000</span> N
+                        </label>
+                    </div>
+                    <div class="sim-stats">
+                        Torque (Uniform Wear): <span id="sim10-tuw">0</span> N-m<br>
+                        Torque (Uniform Pres): <span id="sim10-tup">0</span> N-m<br>
+                        $\Delta T$ Difference: <span id="sim10-diff" style="color: var(--accent-mech-light);">0</span>%
+                    </div>
                 </div>
                 <canvas id="sim10-canvas"></canvas>
             </div>
@@ -427,13 +591,34 @@
                 <!-- Step 3 Placeholder -->
                 <div class="sim-overlay">
                     <h4>High-Speed Belt Drive Dynamics</h4>
-                    <p style="color: var(--md-primary);">Simulator engine pending Step 3 injection...</p>
+                    <div class="sim-controls">
+                        <label>Belt Velocity ($v$): 
+                            <input type="range" id="sim11-v" min="5" max="50" value="20">
+                            <span id="sim11-v-val">20</span> m/s
+                        </label>
+                        <label>Max Tension ($T_{max}$): 
+                            <input type="range" id="sim11-t" min="500" max="2000" value="1000">
+                            <span id="sim11-t-val">1000</span> N
+                        </label>
+                        <label>Belt Mass ($m$): 
+                            <input type="range" id="sim11-m" min="0.1" max="1.5" step="0.1" value="0.5">
+                            <span id="sim11-m-val">0.5</span> kg/m
+                        </label>
+                    </div>
+                    <div class="sim-stats">
+                        Centrifugal Tension ($T_c$): <span id="sim11-tc" style="color: var(--warning);">0</span> N<br>
+                        Power ($P$): <span id="sim11-p">0</span> kW<br>
+                        Belt Grip: <span id="sim11-status"></span>
+                    </div>
                 </div>
                 <canvas id="sim11-canvas"></canvas>
             </div>
             
         </main>
     </div>
+    
+    <!-- Footer container for core.js to inject into -->
+    <div id="global-footer"></div>
 
     <!-- Scripts -->
     <script src="../../../core.js"></script>
