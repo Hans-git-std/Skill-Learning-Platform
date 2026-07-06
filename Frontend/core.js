@@ -40,10 +40,16 @@ document.addEventListener("DOMContentLoaded", () => {
         </footer>
     `;
     
-    const footerContainer = document.getElementById("global-footer");
-    if (footerContainer) {
-        footerContainer.innerHTML = footerHTML;
+    let footerContainer = document.getElementById("global-footer");
+    
+    // Auto-inject the container at the end of the body if the HTML file forgot to include it
+    if (!footerContainer) {
+        footerContainer = document.createElement("div");
+        footerContainer.id = "global-footer";
+        document.body.appendChild(footerContainer);
     }
+    
+    footerContainer.innerHTML = footerHTML;
 
     // --- 2. Dynamic Theming Logic ---
     const themeToggleBtn = document.getElementById("theme-toggle");
