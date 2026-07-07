@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SCME | Theory of Machines</title>
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- MathJax for rendering formulas -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']]
+        }
+      };
+    </script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+    <nav class="top-nav">
+        <div class="nav-left">
+            <h1 class="logo">SCME.</h1>
+            <a href="../../mech/index.html" class="btn-retro back-btn">&larr; ME Hub</a>
+        </div>
+        <button id="theme-toggle" class="btn-retro">Toggle Theme</button>
+    </nav>
+
+    <div class="learning-environment">
+        <aside class="chapter-sidebar">
+            <h3>Theory of Machines</h3>
+            <ul class="chapter-list">
+                <li><a href="#ch1" class="active">1. Intro & Kinematics</a></li>
+                <li><a href="#ch2">2. Velocity Analysis</a></li>
+                <li><a href="#ch3">3. Acceleration Analysis</a></li>
+                <li><a href="#ch4">4. Cams & Followers</a></li>
+                <li><a href="#ch5">5. Gears & Trains</a></li>
+                <li><a href="#ch6">6. Friction & Clutches</a></li>
+                <li><a href="#ch7">7. Brakes & Dynos</a></li>
+                <li><a href="#ch8">8. Governors</a></li>
+                <li><a href="#ch9">9. Balancing of Masses</a></li>
+                <li><a href="#ch10">10. Gyroscopic Effects</a></li>
+            </ul>
+        </aside>
+
+        <main class="reading-core">
+            
+            <!-- CHAPTER 1 -->
+            <header class="chapter-header" id="ch1">
+                <span class="chapter-badge">Chapter 1</span>
+                <h2>Introduction to Mechanisms and Kinematics</h2>
+                <p class="chapter-subtitle">Degrees of freedom, pairs, and Grashof's foundational law.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>The Theory of Machines (TOM) bridges the gap between pure abstract mathematics (kinematics) and applied physical forces (dynamics). A <strong>mechanism</strong> is an assembly of rigid bodies designed to transform an input motion into a highly specific, desirable output motion. When this mechanism is further designed to transmit significant force and perform physical work, it becomes a <strong>machine</strong>.</p>
+                
+                <h3>1. Links and Kinematic Pairs</h3>
+                <p>Every mechanism consists of individual rigid bodies called <em>links</em> (or elements). When two links are connected such that their relative motion is perfectly constrained in a predictable manner, they form a <strong>Kinematic Pair</strong>. These pairs are primarily classified by the nature of their contact:</p>
+                <ul>
+                    <li><strong>Lower Pairs:</strong> Feature surface or area contact. Because the contact stress is distributed over an area, these pairs can transmit massive loads. Examples include turning (revolute) pairs, sliding (prismatic) pairs, and screw pairs.</li>
+                    <li><strong>Higher Pairs:</strong> Feature point or line contact, resulting in extreme Hertzian contact stresses. Examples include rolling cylinders, cam-and-follower systems, and meshing gear teeth.</li>
+                </ul>
+
+                <h3>2. Degrees of Freedom (Mobility) and Gruebler's Equation</h3>
+                <p>The <em>Degree of Freedom (DOF)</em> or mobility of a mechanism defines the exact number of independent input parameters (e.g., motors or manual cranks) required to uniquely define the position of every single link in the system at any given moment. For a planar mechanism, this is mathematically predicted using Kutzbach's criterion (a modification of Gruebler's equation):</p>
+                <div class="math-formula">
+                    $$ F = 3(n - 1) - 2j_1 - j_2 $$
+                </div>
+                <p>Where $n$ is the total number of links (including the fixed frame), $j_1$ is the number of lower pairs (1 DOF joints like pins or sliders), and $j_2$ is the number of higher pairs (2 DOF joints like cams). If $F=1$, the system is a constrained kinematic chain (a true mechanism). If $F=0$, it is a rigid structure (a truss). If $F < 0$, it is a statically indeterminate, over-constrained structure.</p>
+
+                <h3>3. The Four-Bar Linkage and Grashof's Law</h3>
+                <p>The simplest planar closed-loop mechanism is the four-bar linkage, consisting of a fixed frame, a crank, a coupler, and a rocker. <strong>Grashof's Law</strong> states that for at least one link to be capable of making a full continuous $360^\circ$ rotation, the sum of the shortest ($s$) and longest ($l$) link lengths must be less than or equal to the sum of the remaining two link lengths ($p$ and $q$):</p>
+                <div class="math-formula">
+                    $$ s + l \le p + q $$
+                </div>
+                <p>If this inequality is satisfied, the linkage is "Grashof". By choosing which link to fix to the ground (inversion), we can create incredibly diverse mechanisms: a Crank-Rocker, a Double-Crank (Drag Link), or a Double-Rocker.</p>
+            </article>
+            <div id="sim-ch1" class="interactive-container">
+                <div class="sim-overlay">
+                    <h4>3D Four-Bar Grashof Explorer</h4>
+                    <div class="sim-controls">
+                        <label>Link 1 (Ground): <input type="range" id="sim1-l1" min="20" max="150" value="100"></label>
+                        <label>Link 2 (Crank): <input type="range" id="sim1-l2" min="10" max="80" value="40"></label>
+                        <label>Link 3 (Coupler): <input type="range" id="sim1-l3" min="50" max="200" value="120"></label>
+                        <label>Link 4 (Rocker): <input type="range" id="sim1-l4" min="50" max="150" value="80"></label>
+                        <button id="sim1-animate" class="btn-retro">Toggle Animation</button>
+                    </div>
+                    <div class="sim-stats">
+                        Condition: <span id="sim1-grashof">Grashof (s+l &le; p+q)</span><br>
+                        Type: <span id="sim1-type" style="color: var(--accent-neon);">Crank-Rocker</span>
+                    </div>
+                </div>
+                <canvas id="sim1-canvas"></canvas>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 2 -->
+            <header class="chapter-header" id="ch2">
+                <span class="chapter-badge">Chapter 2</span>
+                <h2>Velocity Analysis of Mechanisms</h2>
+                <p class="chapter-subtitle">Relative velocities and the Instantaneous Center of Rotation.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Once a mechanism is geometrically synthesized, the next critical step is Kinematic Analysis, starting with velocity. We must ensure that the output link achieves the desired speed without forcing other links into absurd velocities that would shatter the machine. Velocity analysis is strictly instantaneous; the velocity vectors change drastically at every millisecond as the mechanism progresses through its cycle.</p>
+
+                <h3>1. The Relative Velocity Method</h3>
+                <p>If we have two points $A$ and $B$ on the same rigid link, the physical distance between them cannot change. Therefore, the relative velocity of $B$ with respect to $A$ ($\mathbf{v}_{BA}$) must be strictly perpendicular to the line connecting them. Its magnitude is simply the product of the link's angular velocity ($\omega$) and the distance $AB$.</p>
+                <div class="math-formula">
+                    $$ \mathbf{v}_B = \mathbf{v}_A + \mathbf{v}_{BA} \quad \text{where} \quad |\mathbf{v}_{BA}| = \omega \cdot AB $$
+                </div>
+                <p>By establishing a velocity polygon—drawing vectors tail-to-head—we can graphically solve for the unknown angular velocities of complex floating links (like the coupler in a four-bar mechanism). This polygon is an exact scaled representation of the actual velocity vectors at that specific instant.</p>
+
+                <h3>2. Instantaneous Center (I-Center) of Rotation</h3>
+                <p>A more intuitive, though sometimes geometrically tedious, approach is the I-Center method. Any body undergoing complex planar motion (simultaneous translation and rotation) can be analyzed as if it were in pure rotation about a single, highly specific point in space known as the Instantaneous Center. For a mechanism with $n$ links, the total number of I-Centers is defined by combinations:</p>
+                <div class="math-formula">
+                    $$ N = \frac{n(n - 1)}{2} $$
+                </div>
+                <p>For example, a four-bar linkage ($n=4$) has exactly 6 I-Centers. Locating these relies heavily on <strong>Kennedy's Theorem</strong>, which dictates that for any three bodies in relative planar motion, their three mutual I-Centers must lie on exactly the same perfectly straight line. Once the I-Center $I_{13}$ of a floating coupler link is located, the absolute velocity of any point $P$ on that coupler is simply $v_P = \omega_3 \cdot (I_{13}P)$.</p>
+
+                <h3>3. Mechanical Advantage and Transmission Angle</h3>
+                <p>Velocity analysis directly yields the Mechanical Advantage (MA) of the system via the principle of virtual work: $MA = F_{out} / F_{in} = v_{in} / v_{out}$. A mechanism designed to exert massive force (like a rock crusher) will purposely have an extremely low output velocity. Additionally, the <strong>Transmission Angle ($\mu$)</strong>—the angle between the output link and the coupler—must be closely monitored. If $\mu$ drops below $40^\circ$, the mechanism risks locking up due to excessive friction in the sliding joints.</p>
+            </article>
+            <div id="sim-ch2" class="interactive-container">
+                <div class="sim-overlay">
+                    <h4>Dynamic Velocity Vector Field</h4>
+                    <div class="sim-controls">
+                        <label>Crank Angle ($\theta$): <input type="range" id="sim2-theta" min="0" max="360" value="45"></label>
+                        <label>Input Speed ($\omega_2$): <input type="range" id="sim2-omega" min="10" max="100" value="50"> rad/s</label>
+                    </div>
+                    <div class="sim-stats">
+                        Coupler Vel ($v_B$): <span id="sim2-vb">0.0</span> m/s<br>
+                        Trans Angle ($\mu$): <span id="sim2-mu" style="color: var(--accent-warning);">0.0&deg;</span>
+                    </div>
+                </div>
+                <canvas id="sim2-canvas"></canvas>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 3 -->
+            <header class="chapter-header" id="ch3">
+                <span class="chapter-badge">Chapter 3</span>
+                <h2>Acceleration Analysis & Coriolis Component</h2>
+                <p class="chapter-subtitle">Dynamic inertia mapping and the elusive Coriolis effect.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>While velocity dictates operational speed, <strong>Acceleration dictates stress</strong>. According to d'Alembert's principle and Newton's second law ($F=ma$), acceleration generates inertial forces. If we do not map the acceleration of every massive link accurately, the internal bearings and pins will sheer instantly under dynamic loads, regardless of how slowly the machine operates.</p>
+
+                <h3>1. Normal and Tangential Acceleration</h3>
+                <p>Like velocity, acceleration is evaluated using relative vector equations: $\mathbf{a}_B = \mathbf{a}_A + \mathbf{a}_{BA}$. However, for any point rotating about another, the relative acceleration vector splits into two distinct, orthogonal components:</p>
+                <ul>
+                    <li><strong>Centripetal (Normal) Acceleration ($\mathbf{a}^n_{BA}$):</strong> Points strictly parallel to the link, directed toward the center of rotation. It exists purely because the direction of the velocity vector is changing. Its magnitude is entirely dependent on velocity: $a^n_{BA} = \frac{v_{BA}^2}{AB} = \omega^2 \cdot AB$.</li>
+                    <li><strong>Tangential Acceleration ($\mathbf{a}^t_{BA}$):</strong> Points strictly perpendicular to the link. It exists only if the magnitude of the velocity is changing (i.e., angular acceleration $\alpha$). Its magnitude is $a^t_{BA} = \alpha \cdot AB$.</li>
+                </ul>
+                <p>Because normal acceleration depends only on velocity (which is known from Chapter 2), it can be calculated immediately. Tangential components contain the unknown $\alpha$ terms, which are solved by closing the acceleration polygon.</p>
+
+                <h3>2. The Coriolis Acceleration Component</h3>
+                <p>A unique and mathematically aggressive phenomenon occurs when a slider moves along a link that is simultaneously rotating. A classic example is the quick-return mechanism in a shaper machine or a centrifugal pump impeller. Because the slider is moving radially outward into regions of ever-increasing tangential velocity, an extra acceleration component is generated perpendicular to the sliding path.</p>
+                <div class="math-formula">
+                    $$ \mathbf{a}_{coriolis} = 2 (\mathbf{\omega} \times \mathbf{v}_{sliding}) $$
+                </div>
+                <p>The magnitude is $2 \omega v$, and its direction is found by taking the sliding velocity vector and rotating it exactly $90^\circ$ in the direction of the angular velocity $\omega$. This Coriolis acceleration explains why rivers undercut their banks differently in the Northern Hemisphere, why hurricanes spin, and why mechanical sliders experience severe side-loading forces that cause rapid asymmetric wear on their guide rails.</p>
+            </article>
+            <div id="sim-ch3" class="interactive-container">
+                <div class="sim-overlay sim-overlay-right">
+                    <h4>Coriolis Visualization Rig</h4>
+                    <div class="sim-controls">
+                        <label>Disc Angular Vel ($\omega$): <input type="range" id="sim3-omega" min="-10" max="10" value="5"> rad/s</label>
+                        <label>Slider Radial Vel ($v$): <input type="range" id="sim3-v" min="-5" max="5" value="2"> m/s</label>
+                    </div>
+                    <div class="sim-stats">
+                        Normal Accel: <span id="sim3-an">0.0</span> m/s&sup2;<br>
+                        Coriolis Accel ($2v\omega$): <span id="sim3-acor" style="color: var(--accent-mech);">0.0</span> m/s&sup2;
+                    </div>
+                </div>
+                <canvas id="sim3-canvas"></canvas>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 4 -->
+            <header class="chapter-header" id="ch4">
+                <span class="chapter-badge">Chapter 4</span>
+                <h2>Cams and Followers</h2>
+                <p class="chapter-subtitle">Synthesizing exact arbitrary motion profiles.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Linkages (like the four-bar) are excellent for transmitting power, but they are terrible at generating highly specific, arbitrary, or paused (dwell) motions. <strong>Cams</strong> are higher-pair mechanisms designed to synthesize literally any mathematical displacement curve imaginable. A cam (usually rotating at constant speed) drives a follower (translating or oscillating). They are the mechanical "brain" of automation, controlling everything from automotive engine valves to complex textile weaving machines.</p>
+
+                <h3>1. Follower Motion Programs (Kinematics)</h3>
+                <p>Designing a cam begins not with its physical shape, but with the desired displacement diagram ($y$ vs. $\theta$) of the follower. The choice of mathematical curve governs the velocity ($v = dy/dt$), acceleration ($a = d^2y/dt^2$), and jerk ($j = d^3y/dt^3$) of the follower. Massive acceleration spikes cause destructive inertial forces, while infinite jerk (a sudden change in acceleration) causes devastating impact shock waves that will shatter the cam.</p>
+                <ul>
+                    <li><strong>Uniform Velocity:</strong> The simplest to draw (a straight line), but mathematically catastrophic at the start/end points where acceleration becomes theoretically infinite. Unusable for high speeds.</li>
+                    <li><strong>Simple Harmonic Motion (SHM):</strong> Uses a sine wave projection. Excellent for moderate speeds, but still suffers from instantaneous jumps in acceleration at the boundaries of dwell periods.</li>
+                    <li><strong>Cycloidal Motion:</strong> The gold standard for high-speed machinery. It guarantees zero acceleration at the start and end of the stroke, meaning finite jerk and perfectly smooth operation, albeit requiring larger cam sizes to achieve.</li>
+                </ul>
+
+                <h3>2. Pressure Angle and Cam Profiling</h3>
+                <p>Once the displacement diagram is finalized, the physical cam profile is generated using kinematic inversion—we hold the cam completely stationary and rotate the follower backwards around it. The most critical design parameter during this geometric synthesis is the <strong>Pressure Angle ($\alpha$)</strong>.</p>
+                <div class="math-formula">
+                    $$ \tan \alpha = \frac{dy/d\theta}{R_{base} + y} $$
+                </div>
+                <p>The pressure angle is the angle between the direction of the follower's motion and the normal to the cam surface. If $\alpha$ becomes too large (typically $> 30^\circ$ for translating followers), the side-thrust forces become so immense that the follower jams in its guides, completely seizing the machine. To reduce the pressure angle, the designer must drastically increase the base circle radius ($R_{base}$), leading to a heavier, bulkier cam.</p>
+            </article>
+            <div id="sim-ch4" class="interactive-container">
+                <div class="sim-overlay">
+                    <h4>3D Cam Profile Generator</h4>
+                    <div class="sim-controls">
+                        <label>Motion Program:
+                            <select id="sim4-motion">
+                                <option value="shm">Simple Harmonic (SHM)</option>
+                                <option value="cycloidal">Cycloidal Motion</option>
+                                <option value="uniform">Uniform Acceleration</option>
+                            </select>
+                        </label>
+                        <label>Base Circle ($R_b$): <input type="range" id="sim4-rb" min="20" max="60" value="40"></label>
+                        <label>Max Lift ($h$): <input type="range" id="sim4-lift" min="10" max="50" value="30"></label>
+                    </div>
+                    <div class="sim-stats">
+                        Max Pressure Angle: <span id="sim4-pa" style="color: var(--accent-green);">0.0&deg;</span><br>
+                        Max Accel: <span id="sim4-acc">0.0</span> m/s&sup2;
+                    </div>
+                </div>
+                <canvas id="sim4-canvas"></canvas>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 5 -->
+            <header class="chapter-header" id="ch5">
+                <span class="chapter-badge">Chapter 5</span>
+                <h2>Gears and Gear Trains</h2>
+                <p class="chapter-subtitle">Planetary kinematics and the fundamental law of gearing.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Gears are positive-drive mechanisms used to transmit torque and exact angular velocity ratios between shafts without slip. While Machine Design (Chapter 9) handles the stress and bending strength of the teeth, the Theory of Machines focuses strictly on the pure kinematics of their meshing and the compounding of ratios in complex trains.</p>
+
+                <h3>1. The Fundamental Law of Gearing</h3>
+                <p>For a gear pair to transmit a perfectly constant velocity ratio ($\omega_1 / \omega_2 = \text{constant}$), the tooth profiles must obey the fundamental law: <em>The common normal at the point of contact must always pass through a fixed point on the line of centers (the pitch point).</em> The involute curve naturally satisfies this, which is why it is used in 99% of industrial gears. The velocity ratio is strictly inversely proportional to the number of teeth ($T$):</p>
+                <div class="math-formula">
+                    $$ \frac{\omega_1}{\omega_2} = \frac{T_2}{T_1} $$
+                </div>
+
+                <h3>2. Compound Gear Trains</h3>
+                <p>When massive speed reductions are required (e.g., in a mechanical clock or a winch), a simple train is impractical because the driven gear would have to be monumentally large. Instead, a <strong>Compound Gear Train</strong> is used, where multiple gears are keyed to the same intermediate shafts. The overall train value (speed ratio) is the product of the number of teeth on all driven gears divided by the product of teeth on all driving gears.</p>
+
+                <h3>3. Epicyclic (Planetary) Gear Trains</h3>
+                <p>Epicyclic trains are a marvel of kinematic engineering. In an epicyclic train, the axis of rotation of at least one gear (the planet) physically revolves around the center of another gear (the sun). By locking different components (sun, ring gear, or the carrier arm that holds the planets), a single compact gearset can output multiple different forward gear ratios, neutral, and even reverse—which is why they are the absolute core of automatic automotive transmissions.</p>
+                <p>The velocity analysis of epicyclic trains is uniquely complex, requiring the Tabular Method or the Algebraic Formula method, acknowledging that the absolute velocity of a planet gear is the sum of its velocity relative to the carrier arm plus the velocity of the arm itself:</p>
+                <div class="math-formula">
+                    $$ \omega_{gear} = \omega_{arm} + \omega_{gear/arm} $$
+                </div>
+            </article>
+            <div id="sim-ch5" class="interactive-container">
+                <div class="sim-overlay">
+                    <h4>Epicyclic Gear Train Sandbox</h4>
+                    <div class="sim-controls">
+                        <label>Input Drive:
+                            <select id="sim5-input">
+                                <option value="sun">Drive Sun Gear</option>
+                                <option value="ring">Drive Ring Gear</option>
+                                <option value="carrier">Drive Planet Carrier</option>
+                            </select>
+                        </label>
+                        <label>Locked Component:
+                            <select id="sim5-lock">
+                                <option value="ring">Lock Ring Gear</option>
+                                <option value="sun">Lock Sun Gear</option>
+                                <option value="carrier">Lock Planet Carrier</option>
+                            </select>
+                        </label>
+                    </div>
+                    <div class="sim-stats">
+                        Gear Ratio: <span id="sim5-ratio" style="color: var(--accent-neon);">1 : 1</span><br>
+                        Output Speed: <span id="sim5-outspeed">0</span> RPM
+                    </div>
+                </div>
+                <canvas id="sim5-canvas"></canvas>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 6 -->
+            <header class="chapter-header" id="ch6">
+                <span class="chapter-badge">Chapter 6</span>
+                <h2>Friction and Clutches</h2>
+                <p class="chapter-subtitle">Harnessing Coulomb friction for power transmission.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>In most machine elements (like bearings and slides), friction is a parasitic enemy that destroys efficiency and generates waste heat. However, in clutches and brakes, friction is the primary operating mechanism. A clutch relies entirely on static friction to lock a driving shaft (like an engine flywheel) to a driven shaft (a transmission gearbox) to bring it up to speed seamlessly without shock.</p>
+
+                <h3>1. Pivot and Collar Friction</h3>
+                <p>When an axial thrust load is applied to a rotating vertical shaft, it must be supported by a pivot bearing (if at the end of the shaft) or a collar bearing (if along the shaft). The frictional torque generated by this rotational sliding is calculated by integrating the friction force over the annular contact area. Like clutches, we must assume either Uniform Pressure (for new, rigid bearings) or Uniform Wear (for broken-in bearings where $p \cdot r = \text{constant}$). For a flat collar with inner radius $r_1$ and outer radius $r_2$, the torque under uniform wear is:</p>
+                <div class="math-formula">
+                    $$ T_f = \frac{1}{2} \mu W (r_1 + r_2) $$
+                </div>
+
+                <h3>2. Plate and Cone Clutches</h3>
+                <p>The single-plate clutch operates on the exact same integral mathematics as a flat collar bearing. When the required torque exceeds the capacity of a single plate (due to space constraints, such as inside a motorcycle casing), engineers use a <strong>Multi-Plate Clutch</strong>. By stacking $n$ active friction surfaces, the torque capacity multiplies linearly: $T = n \cdot \mu W R_{mean}$.</p>
+                <p>Alternatively, a <strong>Cone Clutch</strong> utilizes geometric wedging. By machining the friction surfaces at a shallow semi-cone angle ($\alpha$, typically $12.5^\circ$), the normal clamping force is massively magnified by a factor of $1 / \sin \alpha$.</p>
+                <div class="math-formula">
+                    $$ T_{cone} = \frac{\mu W R_{mean}}{\sin \alpha} $$
+                </div>
+                <p>This allows a cone clutch to transmit immense torque with very little axial spring force. However, if $\alpha$ is made too small (less than the friction angle $\phi$), the clutch will self-lock and violently refuse to disengage.</p>
+            </article>
+            <div id="sim-ch6" class="interactive-container">
+                <div class="sim-overlay">
+                    <h4>Exploded Multi-Plate Clutch</h4>
+                    <div class="sim-controls">
+                        <label>Active Plates ($n$): <input type="range" id="sim6-n" min="2" max="10" value="6"></label>
+                        <label>Axial Force ($W$): <input type="range" id="sim6-w" min="500" max="3000" value="1500"> N</label>
+                        <button id="sim6-engage" class="btn-retro">Toggle Engagement</button>
+                    </div>
+                    <div class="sim-stats">
+                        Torque Capacity: <span id="sim6-torque" style="color: var(--accent-mech);">0</span> Nm<br>
+                        Slip Heat Gen: <span id="sim6-heat">0</span> W
+                    </div>
+                </div>
+                <canvas id="sim6-canvas"></canvas>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 7 -->
+            <header class="chapter-header" id="ch7">
+                <span class="chapter-badge">Chapter 7</span>
+                <h2>Brakes and Dynamometers</h2>
+                <p class="chapter-subtitle">Energy dissipation and self-energizing mechanics.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>While a clutch connects two moving shafts, a brake connects a moving shaft to a massive stationary housing, converting the kinetic energy of the rotating mass almost entirely into heat via friction. The design of brakes is dominated by the mechanics of leverage and the phenomenon of self-energization.</p>
+
+                <h3>1. Band and Block Brakes</h3>
+                <p>A simple block brake presses a friction pad radially against a rotating drum. A band brake wraps a flexible steel band (lined with friction material) around the drum. The tension in the band follows the classic belt friction equation: $T_1 / T_2 = e^{\mu \theta}$. Because $T_1$ (tight side) is exponentially larger than $T_2$ (slack side), the band brake generates enormous braking torque from a very small actuation force.</p>
+
+                <h3>2. Internal Expanding Shoe Brakes (Self-Energization)</h3>
+                <p>Used heavily in automotive drum brakes, this mechanism features two curved shoes mounted inside a drum. A hydraulic cylinder pushes the shoes outward. The complex kinematics of the hinge pins creates a critical effect: <strong>Self-Energization</strong>.</p>
+                <p>As the drum rotates, friction pulls on the shoes. For the "Leading Shoe", this friction vector physically grabs the shoe and aggressively wedges it harder against the drum, massively amplifying the braking torque beyond what the hydraulic cylinder applied. The moment equilibrium equation about the shoe pivot demonstrates this:</p>
+                <div class="math-formula">
+                    $$ F_{actuation} \cdot a = M_{normal} - M_{friction} $$
+                </div>
+                <p>Because the friction moment $M_{friction}$ assists the actuation force, less force is required. However, if the pivot is designed such that $M_{friction} \ge M_{normal}$, the required actuation force drops to zero or becomes negative. The brake becomes <strong>Self-Locking</strong>—it will grab violently and refuse to let go, tearing the suspension apart. Accurate pivot placement is crucial.</p>
+
+                <h3>3. Dynamometers</h3>
+                <p>A dynamometer is a specialized brake used strictly to measure the power output of an engine. An absorption dynamometer (like a Prony brake or hydraulic dyno) physically absorbs the energy and dissipates it as heat, calculating power ($P = 2\pi N T / 60$) by accurately measuring the reaction torque generated on the stationary casing.</p>
+            </article>
+            <div id="sim-ch7" class="interactive-container">
+                <div class="sim-overlay sim-overlay-right">
+                    <h4>Internal Expanding Shoe Brake</h4>
+                    <div class="sim-controls">
+                        <label>Hydraulic Force: <input type="range" id="sim7-force" min="0" max="100" value="0">%</label>
+                        <label>Friction Coeff ($\mu$): <input type="range" id="sim7-mu" min="0.1" max="0.6" step="0.05" value="0.3"></label>
+                        <button id="sim7-direction" class="btn-retro">Reverse Drum Rotation</button>
+                    </div>
+                    <div class="sim-stats">
+                        Leading Shoe Torque: <span id="sim7-tlead" style="color: var(--accent-mech);">0</span> Nm<br>
+                        Trailing Shoe Torque: <span id="sim7-ttrail">0</span> Nm<br>
+                        Status: <span id="sim7-status">Idle</span>
+                    </div>
+                </div>
+                <canvas id="sim7-canvas"></canvas>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 8 -->
+            <header class="chapter-header" id="ch8">
+                <span class="chapter-badge">Chapter 8</span>
+                <h2>Governors</h2>
+                <p class="chapter-subtitle">Dynamic speed regulation and centrifugal feedback loops.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>It is vital to distinguish between a flywheel and a governor. A flywheel absorbs rapid, intra-cycle energy fluctuations (e.g., the power stroke of an engine piston) to keep the speed steady over a single revolution. A <strong>Governor</strong> regulates the mean speed of the engine over extended periods by actively restricting or increasing the fuel supply when the external load changes.</p>
+
+                <h3>1. Centrifugal Governors (Watt and Porter)</h3>
+                <p>The simplest centrifugal governor (the Watt governor) consists of two heavy flyballs rotating on a vertical spindle driven by the engine. As engine speed increases, centrifugal force ($F_c = m \omega^2 r$) drives the balls outward. Through a linkage, this outward motion lifts a sliding sleeve, which physically closes the throttle valve, reducing fuel input and slowing the engine back to its mean speed.</p>
+                <p>The height ($h$) of the Watt governor cone is inversely proportional to the square of the speed:</p>
+                <div class="math-formula">
+                    $$ h = \frac{g}{\omega^2} = \frac{895}{N^2} \text{ (meters)} $$
+                </div>
+                <p>Because it lacks a central dead weight, the Watt governor becomes completely insensitive and useless at high speeds ($>60$ RPM). The <strong>Porter Governor</strong> solves this by placing a massive central dead weight ($M$) on the sleeve. This fundamentally alters the force balance, allowing the governor to operate sensitively at high speeds:</p>
+                <div class="math-formula">
+                    $$ N^2 = \frac{m + M}{m} \cdot \frac{895}{h} $$
+                </div>
+
+                <h3>2. Spring-Loaded Governors (Hartnell)</h3>
+                <p>For modern, compact, ultra-high-speed engines, gravity-based governors are too slow and bulky. The Hartnell governor replaces the central dead weight with a highly stiff compression spring. The controlling force is now provided by the spring rate, allowing for aggressive, rapid responses to speed fluctuations and enabling installation in any orientation, not just vertical.</p>
+
+                <h3>3. Sensitiveness, Hunting, and Isochronism</h3>
+                <p>A governor is <em>sensitive</em> if a tiny change in speed produces a massive sleeve movement. However, if a governor is too sensitive, it will over-correct, causing the engine speed to wildly oscillate above and below the mean speed in a phenomenon known as <strong>Hunting</strong>. If a governor is designed to be perfectly sensitive (it attempts to maintain one single mathematical speed regardless of sleeve position), it is <em>Isochronous</em>. Isochronous governors are physically unstable and will immediately hunt uncontrollably in reality.</p>
+            </article>
+            <div id="sim-ch8" class="interactive-container">
+                <div class="sim-overlay">
+                    <h4>High-Speed Governor Dynamics</h4>
+                    <div class="sim-controls">
+                        <label>Type: 
+                            <select id="sim8-type">
+                                <option value="watt">Watt (Gravity)</option>
+                                <option value="porter">Porter (Weighted)</option>
+                            </select>
+                        </label>
+                        <label>Engine Speed (RPM): <input type="range" id="sim8-rpm" min="20" max="250" value="50"></label>
+                    </div>
+                    <div class="sim-stats">
+                        Centrifugal Force: <span id="sim8-fc">0</span> N<br>
+                        Sleeve Height: <span id="sim8-h" style="color: var(--accent-neon);">0</span> mm<br>
+                        Throttle Valve: <span id="sim8-valve">Open</span>
+                    </div>
+                </div>
+                <canvas id="sim8-canvas"></canvas>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 9 -->
+            <header class="chapter-header" id="ch9">
+                <span class="chapter-badge">Chapter 9</span>
+                <h2>Balancing of Masses</h2>
+                <p class="chapter-subtitle">Eliminating destructive vibration in rotating machinery.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>When a heavy mass rotates asymmetrically around a shaft, it generates a rotating centrifugal force ($F_c = m \omega^2 r$). At 3,000 RPM, even a few grams of unbalance creates hundreds of pounds of rotating force, causing violent vibrations that will shatter bearings, fatigue mounts, and destroy the machine. <strong>Balancing</strong> is the highly precise science of strategically adding or removing mass to perfectly cancel these inertial forces.</p>
+
+                <h3>1. Static Balancing (Single Plane)</h3>
+                <p>If multiple unbalanced masses are rotating in the exact same physical plane (like a thin disc or a single gear), they generate coplanar concurrent forces. For the rotor to be statically balanced, the vector sum of all centrifugal forces must be strictly zero ($\sum m_i r_i = 0$). This is easily solved by drawing a mass-radius vector polygon and finding the closing vector, which dictates the exact mass and angular position of the single required counterweight.</p>
+
+                <h3>2. Dynamic Balancing (Multiple Planes)</h3>
+                <p>A long rotor (like a V8 crankshaft or a jet engine turbine) may be perfectly balanced statically (it won't roll on level rails), but still be dynamically disastrous. If two equal unbalances exist on opposite sides of the shaft at different ends, the forces sum to zero, but they generate a massive rotating <strong>Unbalanced Couple</strong>. This couple attempts to violently flip the shaft end-over-end.</p>
+                <div class="math-formula">
+                    $$ \sum (m_i r_i) = 0 \quad \text{AND} \quad \sum (m_i r_i \cdot l_i) = 0 $$
+                </div>
+                <p>To achieve absolute dynamic balance, both the force polygon and the couple polygon (multiplying by distance $l$ from a reference plane) must close to zero simultaneously. This mathematically proves that <em>any</em> complex rotor system can be completely dynamically balanced by adding exactly two counterweights in two arbitrarily chosen correction planes.</p>
+
+                <h3>3. Balancing of Reciprocating Masses</h3>
+                <p>Unlike rotating masses, the pistons in an internal combustion engine move in a straight line. The accelerating piston generates an inertia force along the cylinder axis. This force consists of a Primary component ($\omega$) and a Secondary component ($2\omega$). Because the force is strictly 1D linear, it cannot be perfectly balanced by adding a rotating 2D counterweight. Single-cylinder engines are inherently impossible to balance fully; designers must strategically arrange multiple cylinders (Inline-6, V8) so their primary and secondary force vectors naturally cancel each other out via phase angles.</p>
+            </article>
+            <div id="sim-ch9" class="interactive-container">
+                <div class="sim-overlay sim-overlay-right">
+                    <h4>Engine Balancing Rig</h4>
+                    <div class="sim-controls">
+                        <label>Unbalance Mass 1: <input type="range" id="sim9-m1" min="0" max="50" value="20"> g</label>
+                        <label>Unbalance Mass 2: <input type="range" id="sim9-m2" min="0" max="50" value="30"> g</label>
+                        <button id="sim9-balance" class="btn-retro">Auto-Calculate Counterweights</button>
+                    </div>
+                    <div class="sim-stats">
+                        Force Polygon: <span id="sim9-force-stat" style="color: var(--accent-mech);">UNBALANCED</span><br>
+                        Couple Polygon: <span id="sim9-couple-stat" style="color: var(--accent-mech);">UNBALANCED</span>
+                    </div>
+                </div>
+                <canvas id="sim9-canvas"></canvas>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 10 -->
+            <header class="chapter-header" id="ch10">
+                <span class="chapter-badge">Chapter 10</span>
+                <h2>Gyroscopic Effects</h2>
+                <p class="chapter-subtitle">Angular momentum and 3D rotational mechanics.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Gyroscopic motion is arguably the most counterintuitive phenomenon in all of classical mechanics. When a massive rotor spins at high velocity (like a jet turbine or a ship's propeller), it possesses immense angular momentum ($\mathbf{L} = I \mathbf{\omega}$). Newton's Second Law applied to rotation states that a torque ($\mathbf{\tau}$) is required to change the angular momentum vector over time.</p>
+
+                <h3>1. Gyroscopic Precession</h3>
+                <p>If you attempt to tilt the spin axis of a gyroscope, you are forcing the angular momentum vector to change direction. The gyroscope aggressively fights back by rotating in a completely unexpected third orthogonal direction. This reactionary motion is called <strong>Precession</strong>. The governing vector equation relies on the cross product:</p>
+                <div class="math-formula">
+                    $$ \mathbf{T} = I (\mathbf{\omega_{spin}} \times \mathbf{\omega_{precession}}) $$
+                </div>
+                <p>The magnitude of the active gyroscopic couple is $T = I \omega_s \omega_p$. The direction is strictly determined by the Right-Hand Rule. If you push down on the front of a spinning bicycle wheel, it doesn't tilt down; it forcibly steers to the left or right depending on the spin direction.</p>
+
+                <h3>2. Effect on Naval Ships and Airplanes</h3>
+                <p>Naval architecture and aerospace engineering heavily rely on gyroscopic analysis. A massive ship's propeller spinning at the stern acts as a giant gyroscope. When the ship navigates a sharp left turn (steering, imposing $\omega_p$), the gyroscopic couple ($I \omega_s \omega_p$) reacts by pitching the bow of the ship violently upward or downward into the waves. Conversely, if a wave pitches the ship up and down, the gyroscopic reaction will force the ship to violently yaw off course.</p>
+                
+                <h3>3. Effect on Automobiles and Motorcycles</h3>
+                <p>In a four-wheeled vehicle taking a high-speed curve, the spinning wheels and the engine flywheel all generate gyroscopic couples. These couples act in conjunction with standard centrifugal overturning forces, usually transferring massive weight to the outer wheels and increasing the likelihood of a rollover. For motorcycles, the gyroscopic effect of the front wheel is entirely what dictates the physics of "counter-steering"—pushing the left handlebar forward (turning the wheel right) generates a gyroscopic couple that forces the bike to violently lean to the left, initiating a high-speed left turn.</p>
+            </article>
+            <div id="sim-ch10" class="interactive-container">
+                <div class="sim-overlay">
+                    <h4>Naval Gyroscopic Stabilizer</h4>
+                    <div class="sim-controls">
+                        <label>Rotor Speed ($\omega_s$): <input type="range" id="sim10-ws" min="1000" max="10000" value="5000"> RPM</label>
+                        <button id="sim10-pitch" class="btn-retro">Apply Wave Pitch</button>
+                        <button id="sim10-yaw" class="btn-retro">Apply Steering Yaw</button>
+                    </div>
+                    <div class="sim-stats">
+                        Spin Vector ($L$): <span id="sim10-l">Active</span><br>
+                        Gyroscopic Couple ($T$): <span id="sim10-t" style="color: var(--accent-neon);">0</span> kNm<br>
+                        Reaction: <span id="sim10-react">Stable</span>
+                    </div>
+                </div>
+                <canvas id="sim10-canvas"></canvas>
+            </div>
+            
+        </main>
+    </div>
+
+    <script src="tom-engine.js"></script>
+    <script src="../../../core.js"></script>
+</body>
+</html>
