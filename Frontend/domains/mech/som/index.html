@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SCME | Strength of Materials</title>
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- MathJax for rendering formulas -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']]
+        }
+      };
+    </script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+    <nav class="top-nav">
+        <div class="nav-left">
+            <h1 class="logo">SCME.</h1>
+            <a href="../../mech/index.html" class="btn-retro back-btn">← ME Hub</a>
+        </div>
+        <!-- Toggle button added for theme switching, relies on core.js -->
+        <button id="theme-toggle" class="btn-retro">Toggle Theme</button>
+    </nav>
+
+    <div class="learning-environment">
+        
+        <!-- TOP-BOTTOM APPROACH: Table of Contents -->
+        <section class="chapter-index-container">
+            <h3>Course Curriculum</h3>
+            <ul class="chapter-grid">
+                <li><a href="#ch1">1. Simple Stresses & Strains</a></li>
+                <li><a href="#ch2">2. Principal Stresses (Mohr)</a></li>
+                <li><a href="#ch3">3. SFD & BMD</a></li>
+                <li><a href="#ch4">4. Bending Stresses</a></li>
+                <li><a href="#ch5">5. Shear Stresses in Beams</a></li>
+                <li><a href="#ch6">6. Torsion of Shafts</a></li>
+                <li><a href="#ch7">7. Deflection of Beams</a></li>
+                <li><a href="#ch8">8. Strain Energy & Impact</a></li>
+                <li><a href="#ch9">9. Thin & Thick Cylinders</a></li>
+                <li><a href="#ch10">10. Columns & Struts</a></li>
+                <li><a href="#ch11">11. Theories of Failure</a></li>
+            </ul>
+        </section>
+
+        <main class="reading-core">
+            
+            <!-- CHAPTER 1 -->
+            <header class="chapter-header" id="ch1">
+                <span class="chapter-badge">Chapter 1</span>
+                <h2>Simple Stresses and Strains</h2>
+                <p class="chapter-subtitle">The fundamental physics of solid deformation, elastic constants, and thermal expansion.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Strength of Materials (SOM), also known as Mechanics of Materials, is the rigorous analytical study of how solid bodies respond to external forces. Unlike rigid-body mechanics (statics and dynamics), which assumes bodies do not deform, SOM focuses entirely on the internal resisting forces and the resulting geometric deformations. It bridges the gap between pure physics and mechanical design, providing the mathematical framework required to ensure structural integrity and prevent failure.</p>
+                
+                <h3>1. The Stress-Strain Paradigm</h3>
+                <p>When an external force ($P$) is applied to a continuum, intermolecular atomic bonds resist the deformation. We quantify this internal distributed resistance as <strong>Stress ($\sigma$ or $\tau$)</strong>. If the force acts strictly perpendicular (normal) to the cross-sectional area ($A$), it generates <strong>Normal Stress ($\sigma$)</strong>. If it acts tangentially or parallel to the surface, it generates <strong>Shear Stress ($\tau$)</strong>.</p>
+                <div class="math-formula">
+                    $$ \sigma = \lim_{\Delta A \to 0} \frac{\Delta P_{normal}}{\Delta A} = \frac{P}{A} \quad ; \quad \tau = \frac{V}{A} $$
+                </div>
+                <p>The macroscopic physical deformation resulting from these forces is normalized against the original dimensions to define dimensionless <strong>Strain ($\epsilon$ or $\gamma$)</strong>. Normal strain ($\epsilon$) is the change in length per unit length. Shear strain ($\gamma$) is the change in the initial right angle between two originally orthogonal line segments, measured in radians.</p>
+                <div class="math-formula">
+                    $$ \epsilon = \frac{\Delta L}{L_0} = \frac{L_f - L_0}{L_0} $$
+                </div>
+                
+                <h3>2. Hooke's Law and the Matrix of Elastic Constants</h3>
+                <p>In 1678, Robert Hooke published his anagram "ceiiinosssttuv", later revealed as "Ut tensio, sic vis" (As the extension, so the force). For linearly elastic materials, stress is directly proportional to strain within the proportional limit. This relationship gives rise to the foundational elastic constants:</p>
+                <ul>
+                    <li><strong>Young's Modulus of Elasticity ($E$):</strong> The slope of the linear region of the normal stress-strain curve ($E = \sigma / \epsilon$). It represents the intrinsic stiffness of the atomic bonds. Steel has an $E$ of ~200 GPa, while Aluminum is ~70 GPa.</li>
+                    <li><strong>Modulus of Rigidity / Shear Modulus ($G$):</strong> Relates shear stress to shear strain ($G = \tau / \gamma$). Crucial for torsional analysis.</li>
+                    <li><strong>Bulk Modulus ($K$):</strong> Relates direct volumetric hydrostatic stress to volumetric strain ($K = \sigma / \epsilon_v$). It measures resistance to uniform compression.</li>
+                </ul>
+                <p>Furthermore, axial elongation is invariably accompanied by lateral contraction (the Poisson effect). The ratio of lateral strain to longitudinal strain is <strong>Poisson's Ratio ($\nu$)</strong>. For perfectly incompressible materials (like rubber), $\nu \approx 0.5$. For most metals, $\nu \approx 0.3$. These four constants are mathematically intertwined; if you know two, you can derive the others:</p>
+                <div class="math-formula">
+                    $$ E = 2G(1 + \nu) $$
+                    $$ E = 3K(1 - 2\nu) $$
+                    $$ E = \frac{9KG}{3K + G} $$
+                </div>
+                
+                <h3>3. Thermal Stresses and Restraint</h3>
+                <p>When a homogenous material is subjected to a temperature change ($\Delta T$), it attempts to expand or contract. The free thermal expansion is governed by the Coefficient of Thermal Expansion ($\alpha$). If this free expansion is physically restrained by immovable supports, immense internal forces are generated, resulting in thermal stresses.</p>
+                <div class="math-formula">
+                    $$ \text{Free Expansion: } \Delta L = L_0 \cdot \alpha \cdot \Delta T $$
+                    $$ \text{Thermal Strain (if restricted): } \epsilon_T = \frac{\Delta L}{L_0} = \alpha \cdot \Delta T $$
+                    $$ \text{Thermal Stress: } \sigma_T = E \cdot \alpha \cdot \Delta T $$
+                </div>
+                <p>In compound bars (e.g., a steel rod encased in a copper tube), a temperature change causes internal stresses even without external restraints because the materials have different $\alpha$ values, forcing them to fight against each other to maintain geometric compatibility.</p>
+            </article>
+            <div id="sim-ch1" class="interactive-container">
+                <div class="sim-overlay">
+                    <h4>3D Tensile Test Machine (UTM)</h4>
+                    <p class="sim-desc">Observe the real-time stress-strain curve plotted dynamically as a 3D specimen undergoes elastic deformation, plastic yielding, necking, and fracture.</p>
+                    <div class="sim-controls">
+                        <label>Material: 
+                            <select id="sim1-mat">
+                                <option value="steel">Structural Steel (Ductile)</option>
+                                <option value="aluminum">Aluminum 6061</option>
+                                <option value="castiron">Cast Iron (Brittle)</option>
+                            </select>
+                        </label>
+                        <button id="sim1-run" class="btn-retro">Initiate Tensile Test</button>
+                    </div>
+                    <div class="sim-stats">
+                        Force: <span id="sim1-force">0</span> kN | 
+                        Stress: <span id="sim1-stress">0</span> MPa |
+                        Status: <span id="sim1-status" style="color: var(--accent-mech-light);">Ready</span>
+                    </div>
+                </div>
+                <div class="sim-canvas-area" id="canvas-container-1">
+                    <div class="placeholder-text">[3D Engine Placeholder: UTM Simulator]</div>
+                </div>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 2 -->
+            <header class="chapter-header" id="ch2">
+                <span class="chapter-badge">Chapter 2</span>
+                <h2>Principal Stresses and Strains</h2>
+                <p class="chapter-subtitle">Complex state of stress, stress transformation equations, and Mohr's geometrical synthesis.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>In practical engineering, structural components like aircraft fuselages or submarine pressure hulls are rarely subjected to simple uniaxial tension. They experience complex combinations of bending, torsion, and internal pressure, leading to bi-axial (2D) or tri-axial (3D) states of stress. To design safely, we must determine the absolute maximum stresses occurring on any internal plane within the material.</p>
+                
+                <h3>1. Analytical Stress Transformation</h3>
+                <p>Consider an infinitesimally small 2D rectangular stress element subjected to orthogonal normal stresses ($\sigma_x, \sigma_y$) and complementary shear stresses ($\tau_{xy} = \tau_{yx}$). If we make a hypothetical cut through this element at an arbitrary angle $\theta$, static equilibrium dictates the normal stress ($\sigma_\theta$) and shear stress ($\tau_\theta$) on this inclined plane:</p>
+                <div class="math-formula">
+                    $$ \sigma_\theta = \left( \frac{\sigma_x + \sigma_y}{2} \right) + \left( \frac{\sigma_x - \sigma_y}{2} \right)\cos(2\theta) + \tau_{xy}\sin(2\theta) $$
+                    $$ \tau_\theta = -\left( \frac{\sigma_x - \sigma_y}{2} \right)\sin(2\theta) + \tau_{xy}\cos(2\theta) $$
+                </div>
+
+                <h3>2. Principal Planes and Principal Stresses</h3>
+                <p>By differentiating the $\sigma_\theta$ equation with respect to $\theta$ and setting it to zero, we find specific angles where normal stress is maximized and minimized. Remarkably, at these specific angles, the shear stress ($\tau_\theta$) is mathematically proven to be exactly zero. These shear-free planes are called <strong>Principal Planes</strong>, and the normal stresses acting upon them are the <strong>Principal Stresses</strong> ($\sigma_1, \sigma_2$).</p>
+                <div class="math-formula">
+                    $$ \sigma_{1,2} = \left( \frac{\sigma_x + \sigma_y}{2} \right) \pm \sqrt{\left(\frac{\sigma_x - \sigma_y}{2}\right)^2 + \tau_{xy}^2} $$
+                    $$ \tan(2\theta_p) = \frac{2\tau_{xy}}{\sigma_x - \sigma_y} $$
+                </div>
+                <p>The maximum in-plane shear stress ($\tau_{max}$) occurs on planes oriented exactly $45^\circ$ from the principal planes. Its magnitude is half the difference between the principal stresses:</p>
+                <div class="math-formula">
+                    $$ \tau_{max} = \frac{\sigma_1 - \sigma_2}{2} = \sqrt{\left(\frac{\sigma_x - \sigma_y}{2}\right)^2 + \tau_{xy}^2} $$
+                </div>
+
+                <h3>3. Mohr's Circle of Stress</h3>
+                <p>Developed by German civil engineer Christian Otto Mohr in 1882, this graphical method provides a brilliant visual synthesis of the transformation equations. If we plot normal stress on the x-axis and shear stress on the y-axis, the state of stress for any inclined plane forms a perfect circle.</p>
+                <ul>
+                    <li>The center of the circle is at $C = (\frac{\sigma_x + \sigma_y}{2}, 0)$.</li>
+                    <li>The radius of the circle $R = \tau_{max}$.</li>
+                    <li>The intersections with the x-axis represent the principal stresses $\sigma_1$ and $\sigma_2$.</li>
+                    <li>An angle $\theta$ on the physical stress block corresponds to an angle of $2\theta$ on Mohr's circle.</li>
+                </ul>
+            </article>
+            <div id="sim-ch2" class="interactive-container">
+                <div class="sim-overlay">
+                    <h4>Interactive 3D Mohr's Circle & Stress Element</h4>
+                    <p class="sim-desc">Manipulate the stress tensor in real-time. Watch the principal planes rotate in 3D as Mohr's circle dynamically re-draws itself, instantly solving the transformation equations.</p>
+                    <div class="sim-controls">
+                        <label>$\sigma_x$ (MPa): <input type="number" id="sim2-sigmax" value="100" step="10"></label>
+                        <label>$\sigma_y$ (MPa): <input type="number" id="sim2-sigmay" value="40" step="10"></label>
+                        <label>$\tau_{xy}$ (MPa): <input type="number" id="sim2-tau" value="30" step="10"></label>
+                        <label>Plane Angle $\theta$: <input type="range" id="sim2-theta" min="0" max="180" value="0"></label>
+                    </div>
+                </div>
+                <div class="sim-canvas-area" id="canvas-container-2">
+                    <div class="placeholder-text">[3D Engine Placeholder: Mohr's Circle Simulator]</div>
+                </div>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 3 -->
+            <header class="chapter-header" id="ch3">
+                <span class="chapter-badge">Chapter 3</span>
+                <h2>Shear Force and Bending Moment Diagrams</h2>
+                <p class="chapter-subtitle">Mapping internal load distribution, static equilibrium, and the points of contraflexure.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>When a transverse beam is subjected to external loads (gravity, wind, dynamic machinery), it must develop internal forces to maintain static equilibrium ($ \Sigma F = 0, \Sigma M = 0 $). These internal reactions are categorized into Shear Force (V) and Bending Moment (M). Engineers must map these values continuously along the entire length of the beam to identify the absolute maximums, which dictate the required size and material of the beam.</p>
+
+                <h3>1. Defining Shear Force (SF) and Bending Moment (BM)</h3>
+                <ul>
+                    <li><strong>Shear Force ($V_x$):</strong> The algebraic sum of all vertical transverse forces acting to either the left or right of a specific cross-section. It represents the tendency of one part of the beam to slide vertically past the adjacent part.</li>
+                    <li><strong>Bending Moment ($M_x$):</strong> The algebraic sum of the moments of all forces acting to either the left or right of a section. It represents the tendency of the beam to bend into an arc.</li>
+                </ul>
+                <p><strong>Sign Convention:</strong> A shear force that attempts to rotate the beam element clockwise is positive. A bending moment that causes the beam to sag (compressing the top fibers and stretching the bottom) is positive. A hogging moment (like a cantilever bending downwards) is negative.</p>
+
+                <h3>2. The Differential Load-Shear-Moment Relationships</h3>
+                <p>By analyzing a differential beam element $dx$, we uncover a profound mathematical relationship connecting the distributed load $w(x)$, the shear force $V(x)$, and the bending moment $M(x)$. The rate of change (derivative) of the shear force equals the negative of the distributed load intensity. The rate of change of the bending moment equals the shear force.</p>
+                <div class="math-formula">
+                    $$ \frac{dV}{dx} = -w(x) \quad \implies \quad \Delta V = -\int_{x_1}^{x_2} w(x) dx $$
+                    $$ \frac{dM}{dx} = V(x) \quad \implies \quad \Delta M = \int_{x_1}^{x_2} V(x) dx $$
+                </div>
+                <p>This reveals a critical design rule: <strong>The maximum or minimum bending moment occurs precisely at the location where the shear force is zero (or passes through zero).</strong></p>
+
+                <h3>3. Point of Contraflexure (Inflection Point)</h3>
+                <p>In continuous beams or beams with overhanging sections, the bending moment often transitions from positive (sagging) to negative (hogging). The exact coordinate where the bending moment is zero ($M=0$) is the Point of Contraflexure. At this point, the elastic curve of the beam changes its concavity. Reinforcing steel in concrete beams is often curtailed or bent precisely at these points since bending stress vanishes.</p>
+            </article>
+            <div id="sim-ch3" class="interactive-container">
+                <div class="sim-overlay">
+                    <h4>3D Beam Loading Sandbox</h4>
+                    <p class="sim-desc">Place Point Loads, UDLs, and Applied Moments onto the 3D beam. The engine will instantly solve equilibrium equations and dynamically render the continuous SFD and BMD.</p>
+                    <div class="sim-controls">
+                        <label>Support Type: 
+                            <select id="sim3-support">
+                                <option value="simply">Simply Supported</option>
+                                <option value="cantilever">Cantilever</option>
+                                <option value="overhang">Overhanging</option>
+                            </select>
+                        </label>
+                        <button id="sim3-add-point" class="btn-retro">+ Point Load</button>
+                        <button id="sim3-add-udl" class="btn-retro">+ UDL</button>
+                        <button id="sim3-clear" class="btn-retro">Clear All</button>
+                    </div>
+                </div>
+                <div class="sim-canvas-area" id="canvas-container-3">
+                    <div class="placeholder-text">[3D Engine Placeholder: SFD/BMD Sandbox]</div>
+                </div>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 4 -->
+            <header class="chapter-header" id="ch4">
+                <span class="chapter-badge">Chapter 4</span>
+                <h2>Bending Stresses in Beams</h2>
+                <p class="chapter-subtitle">Euler-Bernoulli flexure theory, the neutral axis, and geometric section modulus.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Knowing the maximum bending moment ($M$) from Chapter 3 is only half the battle. We must convert that moment into internal normal stresses ($\sigma$) to compare against the material's yield strength. Bending causes the fibers on one face of the beam to stretch (tension) and the opposite face to compress (compression).</p>
+
+                <h3>1. The Theory of Simple Bending (Euler-Bernoulli)</h3>
+                <p>The entire classical theory of bending relies on a crucial kinematic assumption proposed by Jacob Bernoulli: <em>"Plane cross-sections, which are normal to the longitudinal axis before bending, remain plane and normal to the longitudinal axis after bending."</em> This implies that longitudinal strain ($\epsilon_x$) varies perfectly linearly across the depth of the beam.</p>
+                <p>The horizontal plane where longitudinal strain is absolutely zero is the <strong>Neutral Surface</strong>, and its intersection with the cross-section is the <strong>Neutral Axis (NA)</strong>. For pure bending without axial load, the Neutral Axis always passes exactly through the centroid (center of gravity) of the cross-section.</p>
+
+                <h3>2. The Flexure Equation</h3>
+                <p>By applying Hooke's Law to the linear strain profile, integrating the resulting stress over the entire cross-sectional area, and equating it to the internal resisting moment, we derive the fundamental flexure equation:</p>
+                <div class="math-formula">
+                    $$ \frac{M}{I} = \frac{\sigma}{y} = \frac{E}{R} $$
+                </div>
+                <ul>
+                    <li>$M$ = Internal bending moment at the specific section (N-mm)</li>
+                    <li>$I$ = Area Moment of Inertia of the cross-section about the Neutral Axis ($mm^4$)</li>
+                    <li>$\sigma$ = Normal bending stress at a vertical distance $y$ from the NA (MPa)</li>
+                    <li>$E$ = Young's Modulus of the material (MPa)</li>
+                    <li>$R$ = Radius of curvature of the bent elastic curve (mm)</li>
+                </ul>
+
+                <h3>3. Section Modulus ($Z$) and Structural Efficiency</h3>
+                <p>The maximum bending stress ($\sigma_{max}$) inevitably occurs at the extreme outermost fibers, where the distance $y$ is maximum (often denoted as $c$ or $y_{max}$). We define a purely geometric property called the <strong>Section Modulus ($Z$)</strong>.</p>
+                <div class="math-formula">
+                    $$ Z = \frac{I}{y_{max}} \quad \implies \quad \sigma_{max} = \frac{M}{Z} $$
+                </div>
+                <p>For a beam to be strong in bending, it needs a large $Z$. The I-beam is the undisputed king of structural efficiency because it takes the bulk of the material (the flanges) and places it as far away from the neutral axis as geometrically possible, maximizing $I$ and $Z$ while minimizing overall weight and cost.</p>
+            </article>
+            <div id="sim-ch4" class="interactive-container">
+                <div class="sim-overlay">
+                    <h4>3D Cross-Section Stress Visualizer</h4>
+                    <p class="sim-desc">Select various industrial cross-sections and apply a severe bending moment. A highly detailed 3D color gradient map will project the tension/compression stress profile across the face.</p>
+                    <div class="sim-controls">
+                        <label>Cross-Section: 
+                            <select id="sim4-section">
+                                <option value="ibeam">Wide-Flange I-Beam</option>
+                                <option value="tbeam">T-Section</option>
+                                <option value="rect">Solid Rectangle</option>
+                                <option value="tube">Hollow Tube</option>
+                            </select>
+                        </label>
+                        <label>Bending Moment (kNm): <input type="range" id="sim4-moment" min="-200" max="200" value="100"></label>
+                    </div>
+                </div>
+                <div class="sim-canvas-area" id="canvas-container-4">
+                    <div class="placeholder-text">[3D Engine Placeholder: Flexure Visualizer]</div>
+                </div>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 5 -->
+            <header class="chapter-header" id="ch5">
+                <span class="chapter-badge">Chapter 5</span>
+                <h2>Transverse Shear Stresses in Beams</h2>
+                <p class="chapter-subtitle">Shear flow, Jouravski's formula, and non-linear stress distribution across the web.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>While bending moments ($M$) generate normal stresses ($\sigma$) that peak at the extreme outer fibers, shear forces ($V$) generate transverse shear stresses ($\tau$). Naively, one might assume shear stress is simply $V/Area$. However, because the free outer surfaces of a beam cannot support shear stress, the distribution must drop to zero at the top and bottom. The actual distribution is highly non-linear.</p>
+
+                <h3>1. Jouravski's Shear Formula</h3>
+                <p>By isolating a longitudinal chunk of the beam and analyzing the horizontal equilibrium of normal bending forces, Russian engineer D.J. Jouravski derived the exact formula for shear stress at any specific height $y'$ from the neutral axis:</p>
+                <div class="math-formula">
+                    $$ \tau = \frac{V \cdot Q}{I \cdot b} $$
+                </div>
+                <ul>
+                    <li>$V$ = Total internal shear force at the cross-section.</li>
+                    <li>$Q$ = First moment of area of the section isolated above (or below) the point of interest, calculated about the NA ($Q = \int y dA = A'\bar{y}'$).</li>
+                    <li>$I$ = Total Area Moment of Inertia of the entire cross-section.</li>
+                    <li>$b$ = Width of the cross-section at the specific height where $\tau$ is being calculated.</li>
+                </ul>
+
+                <h3>2. Shear Distribution Profiles</h3>
+                <p>Because the first moment of area ($Q$) varies parabolically with distance from the NA, the resulting shear stress distribution is parabolic. The most critical takeaway is that <strong>shear stress is absolutely maximum at the Neutral Axis, exactly where bending stress is zero.</strong></p>
+                <ul>
+                    <li><strong>Solid Rectangular Section:</strong> The maximum shear stress at the NA is exactly 1.5 times the average shear stress ($\tau_{max} = 1.5 \frac{V}{A}$).</li>
+                    <li><strong>Solid Circular Section:</strong> The maximum shear stress is 1.33 times the average ($\tau_{max} = \frac{4}{3} \frac{V}{A}$).</li>
+                    <li><strong>I-Section Beams:</strong> The wide flanges carry almost all the bending moment, but because their width $b$ is huge, the shear stress drops to near zero. The thin vertical web, with its tiny width $b$, acts as a high-velocity channel, carrying ~90-95% of the entire shear force. The shear stress profile in an I-beam looks like a massive block over the web and tiny spikes in the flanges.</li>
+                </ul>
+            </article>
+            <div id="sim-ch5" class="interactive-container">
+                <div class="sim-overlay">
+                    <h4>Animated Shear Flow Particle System</h4>
+                    <p class="sim-desc">Observe the parabolic flow of shear stress vectors. Switch to the I-beam to visually prove how the web acts as an intense, high-velocity channel for shear forces while the flanges remain dormant.</p>
+                    <div class="sim-controls">
+                        <label>Section: 
+                            <select id="sim5-section">
+                                <option value="rect">Solid Rectangle</option>
+                                <option value="circle">Solid Circle</option>
+                                <option value="ibeam">I-Beam</option>
+                            </select>
+                        </label>
+                        <label>Shear Force ($V$): <input type="range" id="sim5-shear" min="10" max="100" value="50"></label>
+                    </div>
+                </div>
+                <div class="sim-canvas-area" id="canvas-container-5">
+                    <div class="placeholder-text">[3D Engine Placeholder: Shear Flow Particle System]</div>
+                </div>
+            </div>
+            
+            <!-- Additional Chapters 6-11 follow the same deep-dive pattern -->
+            <!-- Note: Due to system limits, the remaining chapters continue the exact same highly detailed structure -->
+            <!-- CHAPTER 6 -->
+            <hr class="chapter-divider">
+            <header class="chapter-header" id="ch6">
+                <span class="chapter-badge">Chapter 6</span>
+                <h2>Torsion of Circular Shafts</h2>
+                <p class="chapter-subtitle">Torque transmission, polar modulus, and the massive efficiency of hollow shafts.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Torsion is the twisting of a structural member about its longitudinal axis due to an applied torque ($T$). This is the primary loading condition for power transmission components across all of mechanical engineering—from automotive propeller shafts and wind turbine rotors to microscopic drill bits.</p>
+
+                <h3>1. The Pure Torsion Equation</h3>
+                <p>For circular shafts (both solid and hollow), the analysis is elegant. We assume that plane cross-sections remain plane (no warping) and radial lines remain straight during twisting. The fundamental torsion equation is perfectly analogous to the bending equation:</p>
+                <div class="math-formula">
+                    $$ \frac{T}{J} = \frac{\tau}{r} = \frac{G \cdot \theta}{L} $$
+                </div>
+                <ul>
+                    <li>$T$ = Applied twisting moment or Torque (N-mm)</li>
+                    <li>$J$ = Polar Moment of Inertia ($mm^4$). For solid shafts, $J = \frac{\pi d^4}{32}$. For hollow, $J = \frac{\pi(D^4 - d^4)}{32}$.</li>
+                    <li>$\tau$ = Torsional shear stress at a radial distance $r$ from the center (MPa)</li>
+                    <li>$G$ = Modulus of Rigidity of the material (MPa)</li>
+                    <li>$\theta$ = Angle of twist over the length of the shaft (in radians)</li>
+                </ul>
+
+                <h3>2. Torsional Shear Stress Distribution</h3>
+                <p>From the equation $\tau = (T/J)r$, it is evident that shear stress varies perfectly linearly from absolutely zero at the central longitudinal axis to a maximum value at the extreme outer surface ($r=R$).</p>
+                <div class="math-formula">
+                    $$ \tau_{max} = \frac{T \cdot R}{J} = \frac{T}{Z_p} $$
+                </div>
+                <p>Where $Z_p$ is the <strong>Polar Section Modulus</strong>. Because the core of a solid shaft experiences near-zero stress, it contributes almost nothing to torque resistance; it is just dead weight. By removing the core and creating a hollow shaft, we move the material to the outer radius where it is highly effective. <strong>A hollow shaft can be up to 50% lighter than a solid shaft while safely transmitting the exact same torque.</strong></p>
+                
+                <h3>3. Power Transmission</h3>
+                <p>The mechanical power ($P$) transmitted by a rotating shaft is a direct function of the torque it carries and its angular velocity ($\omega$). If the shaft rotates at $N$ revolutions per minute (RPM):</p>
+                <div class="math-formula">
+                    $$ P = T \cdot \omega = T \cdot \frac{2\pi N}{60} \quad \text{(Watts)} $$
+                </div>
+            </article>
+            <div id="sim-ch6" class="interactive-container">
+                <div class="sim-overlay">
+                    <h4>3D Torsional Twist & Hollow Shaft Optimization</h4>
+                    <p class="sim-desc">Apply torque to twist the shaft. Engage comparison mode to race a Solid vs. Hollow shaft of exactly equal weight under the same torque, proving the efficiency of tubular design.</p>
+                    <div class="sim-controls">
+                        <label>Mode: 
+                            <select id="sim6-mode">
+                                <option value="single">Single Shaft Twist</option>
+                                <option value="compare">Solid vs Hollow (Equal Mass)</option>
+                            </select>
+                        </label>
+                        <label>Apply Torque: <input type="range" id="sim6-torque" min="0" max="100" value="50"></label>
+                    </div>
+                </div>
+                <div class="sim-canvas-area" id="canvas-container-6">
+                    <div class="placeholder-text">[3D Engine Placeholder: Torsion Visualizer]</div>
+                </div>
+            </div>
+
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 7 -->
+            <header class="chapter-header" id="ch7">
+                <span class="chapter-badge">Chapter 7</span>
+                <h2>Deflection of Beams</h2>
+                <p class="chapter-subtitle">Elastic curves, boundary conditions, and structural stiffness criteria.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Designing a structural beam requires satisfying two independent criteria: <strong>Strength</strong> (it must not break or yield, governed by Chapters 3, 4, and 5) and <strong>Stiffness</strong> (it must not bend or deflect excessively). Excessive deflection can cause misaligned gear trains, ponding on roofs, or cracking in plaster ceilings. Thus, calculating the exact deformed shape—the elastic curve—is critical.</p>
+
+                <h3>1. Differential Equation of the Elastic Curve</h3>
+                <p>From geometry, the curvature ($1/R$) of a slightly bent curve is approximated by the second derivative of its deflection ($y$) with respect to length ($x$), $d^2y/dx^2$. Equating this to the bending equation ($1/R = M/EI$) yields the governing differential equation:</p>
+                <div class="math-formula">
+                    $$ E I \frac{d^2y}{dx^2} = M(x) $$
+                </div>
+                <p>Integrating this equation once gives the slope ($dy/dx$ or $\theta$) at any point. Integrating it twice gives the actual deflection ($y$). The constants of integration ($C_1, C_2$) are solved using the physical boundary conditions of the beam's supports (e.g., at a fixed wall, $y=0$ and $\theta=0$).</p>
+
+                <h3>2. Advanced Analytical Methods</h3>
+                <ul>
+                    <li><strong>Macaulay's Method:</strong> The standard double-integration method becomes mathematically tedious when multiple point loads create discontinuous moment functions. W.H. Macaulay introduced singular bracket functions $\langle x-a \rangle$, allowing a single, continuous mathematical expression to describe the moment across the entire beam.</li>
+                    <li><strong>Moment-Area Theorems:</strong> Proposed by Otto Mohr, these two theorems offer a rapid, semi-graphical solution. Theorem 1 states that the change in slope between two points equals the area under the $M/EI$ diagram between them. Theorem 2 relates the vertical deviation to the moment of that area. It is exceptionally fast for cantilevers.</li>
+                </ul>
+            </article>
+            <div id="sim-ch7" class="interactive-container">
+                <div class="sim-overlay">
+                    <h4>Dynamic Deflection Exaggerator</h4>
+                    <p class="sim-desc">Actual deflections are often microscopic. This engine calculates the true elastic curve using Macaulay's method but allows you to scale the visual deformation by up to 1000x.</p>
+                    <div class="sim-controls">
+                        <label>Setup: 
+                            <select id="sim7-setup">
+                                <option value="c-point">Cantilever (Point Load)</option>
+                                <option value="ss-udl">Simply Supported (UDL)</option>
+                            </select>
+                        </label>
+                        <label>Exaggeration Scale: <input type="range" id="sim7-scale" min="1" max="1000" value="100"></label>
+                    </div>
+                </div>
+                <div class="sim-canvas-area" id="canvas-container-7">
+                    <div class="placeholder-text">[3D Engine Placeholder: Deflection Exaggerator]</div>
+                </div>
+            </div>
+            
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 8 -->
+            <header class="chapter-header" id="ch8">
+                <span class="chapter-badge">Chapter 8</span>
+                <h2>Strain Energy and Impact Loading</h2>
+                <p class="chapter-subtitle">Energy absorption, resilience, and the severe consequences of dynamic loading.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>When an external force deforms an elastic body, the force does work. According to the conservation of energy, this work is stored internally as potential energy, known specifically as <strong>Strain Energy ($U$)</strong>. When the load is removed, the material uses this stored energy to snap back to its original undeformed geometry.</p>
+
+                <h3>1. Resilience and Toughness</h3>
+                <p>The total strain energy stored within a body is its Resilience. The maximum strain energy that can be stored up to the elastic limit without permanent plastic deformation is the <strong>Proof Resilience</strong>. Normalized per unit volume, it is the <strong>Modulus of Resilience ($u_r$)</strong>, represented by the area under the linear elastic portion of the stress-strain curve.</p>
+                <div class="math-formula">
+                    $$ u_r = \frac{1}{2} \cdot \sigma_y \cdot \epsilon_y = \frac{\sigma_y^2}{2E} $$
+                </div>
+                <p>Toughness, by contrast, is the total energy absorbed up to the point of complete fracture (the entire area under the curve), a critical metric for crash-safety structures.</p>
+
+                <h3>2. Dynamic vs. Static Loading</h3>
+                <p>A static load is applied gradually from zero to its full value $P$. A <strong>suddenly applied load</strong> drops the full magnitude $P$ instantly, but without any initial velocity. An <strong>impact load</strong> involves a mass dropping from a height $h$, bringing kinetic energy into the equation.</p>
+                <p>By equating the external work done by the falling weight to the internal strain energy stored, we derive a shocking reality about dynamic stresses:</p>
+                <div class="math-formula">
+                    $$ \text{Suddenly Applied (h=0): } \sigma_{dyn} = 2 \times \sigma_{static} $$
+                    $$ \text{Impact (h>0): } \sigma_{dyn} = \sigma_{static} \left( 1 + \sqrt{1 + \frac{2hE}{\sigma_{static} L}} \right) $$
+                </div>
+                <p>This proves mathematically why dropping a 10kg weight onto a structure can cause catastrophic failure, whereas gently placing the same 10kg weight is perfectly safe. The dynamic stress can easily be 5 to 10 times higher than the static stress.</p>
+            </article>
+            <div id="sim-ch8" class="interactive-container">
+                <div class="sim-overlay">
+                    <h4>3D Drop Weight Impact Sandbox</h4>
+                    <p class="sim-desc">Release a mass onto a vertical collar. Compare the massive transient spike of the dynamic impact stress wave against placing the exact same mass down statically.</p>
+                    <div class="sim-controls">
+                        <label>Drop Height ($h$): <input type="range" id="sim8-height" min="0" max="5" step="0.1" value="2"> m</label>
+                        <button id="sim8-drop" class="btn-retro">Initiate Drop Sequence</button>
+                        <button id="sim8-refresh" class="btn-retro" style="margin-left: 10px;">Refresh</button>
+                    </div>
+                </div>
+                <div class="sim-canvas-area" id="canvas-container-8">
+                    <div class="placeholder-text">[3D Engine Placeholder: Impact Simulator]</div>
+                </div>
+            </div>
+
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 9 -->
+            <header class="chapter-header" id="ch9">
+                <span class="chapter-badge">Chapter 9</span>
+                <h2>Thin and Thick Cylinders</h2>
+                <p class="chapter-subtitle">Pressure vessels, bi-axial stress fields, and Lamé's theorem for thick walls.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Cylindrical and spherical pressure vessels are ubiquitous—from soda cans and scuba tanks to nuclear reactor containment vessels. The internal fluid pressure ($p$) attempts to burst the vessel, creating a bi-axial state of stress in the walls.</p>
+
+                <h3>1. Thin Cylindrical Shells</h3>
+                <p>If the wall thickness ($t$) is less than 1/20th of the internal diameter ($d$), we assume the stress is uniformly distributed across the entire thickness. A fluid pressure $p$ creates two orthogonal principal stresses:</p>
+                <ul>
+                    <li><strong>Hoop (Circumferential) Stress ($\sigma_h$):</strong> Attempts to tear the cylinder along a longitudinal seam. $\sigma_h = \frac{p \cdot d}{2t}$</li>
+                    <li><strong>Longitudinal (Axial) Stress ($\sigma_l$):</strong> Attempts to blast the end caps off. $\sigma_l = \frac{p \cdot d}{4t}$</li>
+                </ul>
+                <p>Notice that the hoop stress is exactly double the longitudinal stress ($\sigma_h = 2\sigma_l$). This is why a sausage splits lengthways when boiled, and why aircraft fuselages require heavy longitudinal stringers to resist hoop expansion.</p>
+
+                <h3>2. Thick Cylinders and Lamé's Theory</h3>
+                <p>When the wall is thick (like in a cannon barrel or deep-sea submersible), the uniform stress assumption is dangerously inaccurate. The inner fibers stretch significantly more than the outer fibers. French mathematician Gabriel Lamé proved that the hoop stress ($\sigma_x$) and radial pressure ($p_x$) at any radius $x$ are governed by constants $A$ and $B$:</p>
+                <div class="math-formula">
+                    $$ \sigma_x = \frac{B}{x^2} + A \quad \text{(Hoop Stress)} $$
+                    $$ p_x = \frac{B}{x^2} - A \quad \text{(Radial Pressure)} $$
+                </div>
+                <p>This hyperbolic $1/x^2$ relationship means hoop stress is massively concentrated at the inner radius and decays rapidly towards the outer radius. To mitigate this inefficiency, engineers use autofrettage, wire winding, or shrink-fitting compound cylinders to pre-stress the inner layers in compression.</p>
+            </article>
+            <div id="sim-ch9" class="interactive-container">
+                <div class="sim-overlay">
+                    <h4>Pressure Vessel Exploder & Lamé's Radial Plot</h4>
+                    <p class="sim-desc">Crank the internal pressure until yield. Switch to Thick Cylinder mode to visualize the highly non-linear $1/x^2$ decay of hoop stress from the inner to outer wall.</p>
+                    <div class="sim-controls">
+                        <label>Vessel Type: 
+                            <select id="sim9-type">
+                                <option value="thin">Thin Cylinder</option>
+                                <option value="thick">Thick Cylinder</option>
+                            </select>
+                        </label>
+                        <label>Internal Pressure: <input type="range" id="sim9-pressure" min="0" max="100" value="20"> MPa</label>
+                    </div>
+                </div>
+                <div class="sim-canvas-area" id="canvas-container-9">
+                    <div class="placeholder-text">[3D Engine Placeholder: Pressure Vessel Simulator]</div>
+                </div>
+            </div>
+
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 10 -->
+            <header class="chapter-header" id="ch10">
+                <span class="chapter-badge">Chapter 10</span>
+                <h2>Columns and Struts</h2>
+                <p class="chapter-subtitle">Euler's buckling theory, elastic instability, and the Rankine-Gordon empirical correction.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>A structural member subjected to axial tension will fail simply when the stress exceeds the material's yield strength. However, if that same long, slender member is subjected to axial compression, it will likely fail prematurely by a sudden, catastrophic lateral deflection called <strong>Buckling</strong>. Buckling is a phenomenon of geometric elastic instability, entirely distinct from material crushing.</p>
+
+                <h3>1. Euler's Theory of Long Columns</h3>
+                <p>Swiss mathematician Leonhard Euler mathematically derived the critical compressive load ($P_{cr}$) at which a perfectly straight, pin-ended long column will become unstable and buckle. Astonishingly, the formula reveals that the buckling load is independent of the material's yield strength ($S_y$); it depends solely on the material's stiffness ($E$) and the column's geometry ($I, L$).</p>
+                <div class="math-formula">
+                    $$ P_{cr} = \frac{\pi^2 E I}{L_e^2} $$
+                </div>
+
+                <h3>2. Effective Length ($L_e$) and Boundary Conditions</h3>
+                <p>The physical constraints at the ends of the column dictate its buckling mode shape, defined mathematically by its <strong>Effective Length ($L_e$)</strong>. A stiffer boundary condition restricts rotation and translation, shortening the effective length and dramatically increasing the buckling capacity ($P_{cr} \propto 1/L_e^2$).</p>
+                <ul>
+                    <li><strong>Both ends pinned (hinged):</strong> $L_e = L$ (The fundamental base case)</li>
+                    <li><strong>Both ends fixed:</strong> $L_e = 0.5L$ (Requires 4x more load to buckle)</li>
+                    <li><strong>One fixed, one free (flagpole):</strong> $L_e = 2L$ (Buckles at just 1/4th the load)</li>
+                </ul>
+
+                <h3>3. Slenderness Ratio and the Rankine-Gordon Formula</h3>
+                <p>The Slenderness Ratio ($\lambda = L_e / k_{min}$) dictates the failure mode. Euler's formula only works for very slender (long) columns. Short, stubby columns fail by pure crushing ($P = \sigma_c \cdot A$). Intermediate columns fail by a complex combination of crushing and buckling. The empirical <strong>Rankine-Gordon formula</strong> smoothly bridges these extremes, providing safe design loads for columns of any arbitrary length.</p>
+                <div class="math-formula">
+                    $$ \frac{1}{P_{Rankine}} = \frac{1}{P_{Crushing}} + \frac{1}{P_{Euler}} $$
+                </div>
+            </article>
+            <div id="sim-ch10" class="interactive-container">
+                <div class="sim-overlay">
+                    <h4>3D Buckling Mode Visualizer</h4>
+                    <p class="sim-desc">Apply compressive load past the Euler critical threshold. Observe how altering the end restraints radically changes the buckling mode shape (effective length) and ultimate load capacity.</p>
+                    <div class="sim-controls">
+                        <label>End Restraints: 
+                            <select id="sim10-ends">
+                                <option value="pinned-pinned">Pinned - Pinned</option>
+                                <option value="fixed-fixed">Fixed - Fixed</option>
+                                <option value="fixed-free">Fixed - Free</option>
+                            </select>
+                        </label>
+                        <label>Compressive Load: <input type="range" id="sim10-load" min="0" max="100" value="0"></label>
+                    </div>
+                </div>
+                <div class="sim-canvas-area" id="canvas-container-10">
+                    <div class="placeholder-text">[3D Engine Placeholder: Column Buckling Sim]</div>
+                </div>
+            </div>
+
+            <hr class="chapter-divider">
+            <header class="chapter-header" id="ch11">
+                <span class="chapter-badge">Chapter 11</span>
+                <h2>Theories of Failure</h2>
+                <p class="chapter-subtitle">Bridging 1D tensile test data to complex 3D stress envelopes using energy and shear criteria.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>We ascertain a material's Yield Strength ($S_y$) using a simple, uniaxial (1D) tensile test. However, in reality, components undergo complex 2D and 3D states of stress ($\sigma_1, \sigma_2, \sigma_3$). How do we predict if a multi-axial state will cause yielding when we only have 1D material data? The Theories of Failure provide the mathematical criteria to establish "safe zones" or failure envelopes.</p>
+
+                <h3>1. Maximum Principal Stress Theory (Rankine's Theory)</h3>
+                <p>Postulated by W.J.M Rankine, this theory states: <em>"Failure occurs when the absolute maximum principal stress in the complex system reaches the yield stress in simple tension."</em> Mathematically: $\sigma_1 \ge S_y$ or $\sigma_3 \le -S_{yc}$. When plotted in 2D principal stress space, it forms a square envelope. <strong>Application:</strong> Excellent for predicting fracture in brittle materials (like cast iron or concrete), but dangerously unsafe for ductile metals.</p>
+
+                <h3>2. Maximum Shear Stress Theory (Tresca's Theory)</h3>
+                <p>Henri Tresca observed that ductile metals yield by slipping along crystal planes due to shear stress. His theory states: <em>"Yielding occurs when the absolute maximum shear stress in the complex system reaches the maximum shear stress at yielding in simple tension."</em> Since $\tau_{max}$ in tension is $S_y/2$, the criterion is: $\tau_{max_{complex}} \ge S_y/2$. In 2D space, this forms an irregular Hexagon. <strong>Application:</strong> Safe, highly conservative, and universally used in shaft design codes (ASME).</p>
+
+                <h3>3. Maximum Distortion Energy Theory (Von Mises / Hencky Theory)</h3>
+                <p>Richard von Mises proposed that total strain energy can be split into hydrostatic energy (causing volume change without yield) and distortion energy (causing shape change and yielding). His theory states: <em>"Yielding occurs when the distortion strain energy per unit volume reaches the distortion energy at yielding in simple tension."</em></p>
+                <div class="math-formula">
+                    $$ \sigma_{vonMises} = \frac{1}{\sqrt{2}} \sqrt{(\sigma_1 - \sigma_2)^2 + (\sigma_2 - \sigma_3)^2 + (\sigma_3 - \sigma_1)^2} \ge S_y $$
+                </div>
+                <p>In 2D space, this plots as a continuous Ellipse circumscribing the Tresca hexagon. <strong>Application:</strong> This is the most accurate predictor of yielding for ductile metals (steel, aluminum, titanium) and is the default failure criterion in almost all modern Finite Element Analysis (FEA) software.</p>
+            </article>
+            <div id="sim-ch11" class="interactive-container">
+                <div class="sim-overlay">
+                    <h4>3D Failure Envelope Explorer</h4>
+                    <p class="sim-desc">Move the stress state point in 3D principal stress space. Watch it physically punch through the Tresca hexagon or Von Mises cylinder, triggering a structural failure alert.</p>
+                    <div class="sim-controls">
+                        <label>$\sigma_1$: <input type="range" id="sim11-sig1" min="-300" max="300" value="150"></label>
+                        <label>$\sigma_2$: <input type="range" id="sim11-sig2" min="-300" max="300" value="50"></label>
+                        <label>$\sigma_3$: <input type="range" id="sim11-sig3" min="-300" max="300" value="0"></label>
+                    </div>
+                </div>
+                <div class="sim-canvas-area" id="canvas-container-11">
+                    <div class="placeholder-text">[3D Engine Placeholder: Failure Envelopes]</div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Footer container for core.js to inject into -->
+    <div id="global-footer"></div>
+
+    <!-- Core interactivity and MathJax re-render -->
+    <!-- Corrected path to core.js -->
+    <script src="../../../core.js"></script>
+    <!-- SOM specific 3D engine script placeholder -->
+    <script src="som-engine.js"></script>
+</body>
+</html>
