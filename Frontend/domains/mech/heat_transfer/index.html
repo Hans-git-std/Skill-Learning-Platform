@@ -90,8 +90,8 @@
                 <p>where $\sigma = 5.67 \times 10^{-8} \text{ W/m}^2\cdot\text{K}^4$ is the Stefan-Boltzmann constant, and $T_s$ is the absolute temperature of the surface in Kelvin. For real surfaces, the emission is less than that of a blackbody and is characterized by a surface property called emissivity, $\varepsilon$ (where $0 \le \varepsilon \le 1$), such that $E = \varepsilon \sigma T_s^4$.</p>
             </article>
 
-            <!-- SIMULATOR PLACEHOLDER CH 1 -->
-            <div id="sim-ch1" class="interactive-container">
+            <!-- SIMULATOR CH 1: DESKTOP (3D WebGL) -->
+            <div id="sim-ch1-desktop" class="interactive-container desktop-only">
                 <div class="sim-overlay">
                     <h4>The 3D Heat Room (All Modes)</h4>
                     <div class="sim-controls">
@@ -110,7 +110,32 @@
                         Avg Room Temp: <span id="ch1-temp">293.0</span> K
                     </div>
                 </div>
-                <!-- 3D Canvas will be injected here via JS -->
+            </div>
+
+            <!-- SIMULATOR CH 1: MOBILE -->
+            <div id="sim-ch1-mobile" class="interactive-container mobile-only" style="min-height: 300px; padding: 2rem; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+                <h4 style="margin-top: 0; margin-bottom: 0.2rem;">Heat Transfer Modes</h4>
+                <p style="font-size: 0.75rem; color: var(--text-secondary); opacity: 0.7; margin-top: 0; margin-bottom: 1.5rem;">(Open in desktop mode to visualize in 3D)</p>
+                
+                <select id="ch1-mobile-mode" style="margin-bottom: 1.5rem; padding: 0.5rem; border-radius: 4px; background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--border-color); width: 80%;">
+                    <option value="all">All Modes Combined</option>
+                    <option value="conduction">Conduction (Window)</option>
+                    <option value="convection">Convection (Radiator)</option>
+                    <option value="radiation">Radiation (Fireplace)</option>
+                </select>
+
+                <div style="display: flex; gap: 1rem; width: 100%; justify-content: center; margin-bottom: 1.5rem;">
+                    <div style="background: var(--bg-secondary); padding: 1rem; border-radius: 8px; flex: 1; border: 1px solid var(--border-color);">
+                        <div style="font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase;">Total Q_out</div>
+                        <div id="ch1-mob-qout" style="font-size: 1.5rem; color: var(--accent-mech); font-weight: bold;">850 W</div>
+                    </div>
+                    <div style="background: var(--bg-secondary); padding: 1rem; border-radius: 8px; flex: 1; border: 1px solid var(--border-color);">
+                        <div style="font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase;">Avg Temp</div>
+                        <div id="ch1-mob-temp" style="font-size: 1.5rem; color: var(--accent-neon); font-weight: bold;">295.0 K</div>
+                    </div>
+                </div>
+                
+                <div id="ch1-mob-graphic" style="width: 100%; height: 10px; background: linear-gradient(90deg, var(--accent-mech), var(--accent-neon)); border-radius: 5px; transition: all 0.3s;"></div>
             </div>
             
             <hr class="chapter-divider">
@@ -146,8 +171,8 @@
                 <p>This non-linear geometry leads to the concept of <strong>Critical Radius of Insulation</strong>, where adding insulation to a small pipe initially <em>increases</em> heat loss due to the rapidly growing surface area overcoming the conductive resistance.</p>
             </article>
 
-            <!-- SIMULATOR PLACEHOLDER CH 2 -->
-            <div id="sim-ch2" class="interactive-container">
+            <!-- SIMULATOR CH 2: DESKTOP (3D WebGL) -->
+            <div id="sim-ch2-desktop" class="interactive-container desktop-only">
                 <div class="sim-overlay">
                     <h4>Composite Wall Builder</h4>
                     <div class="sim-controls">
@@ -164,6 +189,30 @@
                         Total $R_{th}$: <span id="ch2-rth">0.00</span> K/W<br>
                         Heat Flux $q''$: <span id="ch2-flux">0.0</span> W/m²
                     </div>
+                </div>
+            </div>
+
+            <!-- SIMULATOR CH 2: MOBILE -->
+            <div id="sim-ch2-mobile" class="interactive-container mobile-only" style="min-height: 400px; padding: 2rem; display: flex; flex-direction: column;">
+                <h4 style="margin-top: 0; text-align: center; margin-bottom: 0.2rem;">Composite Wall Builder</h4>
+                <p style="font-size: 0.75rem; color: var(--text-secondary); opacity: 0.7; margin-top: 0; margin-bottom: 1.5rem; text-align: center;">(Open in desktop mode to visualize in 3D)</p>
+                
+                <div style="display: flex; gap: 0.5rem; justify-content: center; margin-bottom: 1rem;">
+                    <select id="ch2-mob-mat" style="padding: 0.5rem; border-radius: 4px; background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--border-color);">
+                        <option value="400">Copper</option>
+                        <option value="0.7">Brick</option>
+                        <option value="0.04">Fiberglass</option>
+                    </select>
+                    <button id="ch2-mob-add" class="btn-retro">+</button>
+                </div>
+                
+                <div id="ch2-mob-wall-container" style="flex: 1; display: flex; flex-direction: column; gap: 2px; background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 2px; border-radius: 4px; overflow: hidden; justify-content: center;">
+                    <!-- Layers injected here -->
+                </div>
+                
+                <div style="display: flex; justify-content: space-between; margin-top: 1rem; font-family: var(--font-mono); font-size: 0.9rem; border-top: 1px solid var(--border-color); padding-top: 1rem;">
+                    <div>$R_{th}$: <span id="ch2-mob-rth" style="color: var(--accent-mech); font-weight: bold;">0.00</span></div>
+                    <div>Flux: <span id="ch2-mob-flux" style="color: var(--accent-neon); font-weight: bold;">0.0</span></div>
                 </div>
             </div>
             
@@ -196,8 +245,8 @@
                 <p><strong>Fin Effectiveness ($\varepsilon_f$)</strong>, on the other hand, is the ratio of the fin heat transfer rate to the heat transfer rate that would exist without the fin. We install fins only when $\varepsilon_f \ge 2$, meaning they at least double the heat transfer. The use of highly conductive materials (aluminum, copper) is crucial for maximizing fin performance.</p>
             </article>
 
-            <!-- SIMULATOR PLACEHOLDER CH 3 -->
-            <div id="sim-ch3" class="interactive-container">
+            <!-- SIMULATOR CH 3: DESKTOP (3D WebGL) -->
+            <div id="sim-ch3-desktop" class="interactive-container desktop-only">
                 <div class="sim-overlay">
                     <h4>3D Heat Sink Optimizer</h4>
                     <div class="sim-controls">
@@ -215,6 +264,26 @@
                         Efficiency $\eta_f$: <span id="ch3-eff">0.00</span>%<br>
                         $Q_{total}$: <span id="ch3-qtot">0.0</span> W
                     </div>
+                </div>
+            </div>
+
+            <!-- SIMULATOR CH 3: MOBILE -->
+            <div id="sim-ch3-mobile" class="interactive-container mobile-only" style="min-height: 350px; padding: 2rem; display: flex; flex-direction: column;">
+                <h4 style="margin-top: 0; text-align: center; margin-bottom: 0.2rem;">Fin Profiler</h4>
+                <p style="font-size: 0.75rem; color: var(--text-secondary); opacity: 0.7; margin-top: 0; margin-bottom: 1.5rem; text-align: center;">(Open in desktop mode to visualize in 3D)</p>
+                
+                <div style="margin-bottom: 2rem; text-align: center;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-size: 0.9rem; color: var(--text-secondary);">Fin Length</label>
+                    <input type="range" id="ch3-mob-length" min="0.01" max="0.1" step="0.01" value="0.05" style="width: 80%;">
+                </div>
+                
+                <div style="flex: 1; display: flex; justify-content: center; align-items: flex-end; padding-bottom: 1rem; border-bottom: 4px solid var(--accent-mech);">
+                    <!-- 2D Fin graphic -->
+                    <div id="ch3-mob-fin" style="width: 40px; height: 100px; background: linear-gradient(to top, var(--accent-mech), #cccccc); border-radius: 4px 4px 0 0; transition: height 0.2s, background 0.2s;"></div>
+                </div>
+                
+                <div style="display: flex; justify-content: space-around; margin-top: 1rem; font-family: var(--font-mono); font-size: 1rem;">
+                    <div>$\eta_f$: <span id="ch3-mob-eff" style="color: var(--accent-purple); font-weight: bold;">77.8</span>%</div>
                 </div>
             </div>
 
@@ -249,8 +318,8 @@
                 <p>For a semi-infinite solid (e.g., the Earth's crust reacting to a sudden surface temperature change, or a thick steel plate during the first few milliseconds of laser heating), the penetration depth of the thermal wave is proportional to $\sqrt{\alpha t}$, utilizing the Gaussian error function ($\text{erfc}$) in its exact solution.</p>
             </article>
 
-            <!-- SIMULATOR PLACEHOLDER CH 4 -->
-            <div id="sim-ch4" class="interactive-container">
+            <!-- SIMULATOR CH 4: DESKTOP -->
+            <div id="sim-ch4-desktop" class="interactive-container desktop-only">
                 <div class="sim-overlay">
                     <h4>Interactive Quenching Lab</h4>
                     <div class="sim-controls">
@@ -267,6 +336,27 @@
                         Time: <span id="ch4-time">0.0</span> s<br>
                         Center Temp: <span id="ch4-temp">1000</span> K
                     </div>
+                </div>
+            </div>
+            
+            <!-- SIMULATOR CH 4: MOBILE -->
+            <div id="sim-ch4-mobile" class="interactive-container mobile-only" style="min-height: 300px; padding: 2rem; display: flex; flex-direction: column;">
+                <h4 style="margin-top: 0; text-align: center; margin-bottom: 0.2rem;">Quenching Lab</h4>
+                <p style="font-size: 0.75rem; color: var(--text-secondary); opacity: 0.7; margin-top: 0; margin-bottom: 1.5rem; text-align: center;">(Open in desktop mode to visualize in 3D)</p>
+                <div style="display: flex; gap: 0.5rem; justify-content: center; margin-bottom: 1rem;">
+                    <select id="ch4-mob-mat" style="padding: 0.5rem; border-radius: 4px; background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--border-color);">
+                        <option value="0.1">Copper</option>
+                        <option value="0.03">Steel</option>
+                        <option value="0.005">Glass</option>
+                    </select>
+                    <button id="ch4-mob-quench" class="btn-retro">Quench</button>
+                </div>
+                <div style="flex: 1; display: flex; justify-content: center; align-items: center; background: rgba(14, 165, 233, 0.2); border-radius: 8px; border: 2px solid rgba(14, 165, 233, 0.5);">
+                    <div id="ch4-mob-sphere" style="width: 60px; height: 60px; border-radius: 50%; background: #ff3300; box-shadow: 0 0 15px #cc0000; transition: all 0.2s;"></div>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-top: 1rem; font-family: var(--font-mono); font-size: 0.9rem;">
+                    <div>Time: <span id="ch4-mob-time" style="color: var(--accent-mech); font-weight: bold;">0.0</span> s</div>
+                    <div>Temp: <span id="ch4-mob-temp" style="color: var(--accent-neon); font-weight: bold;">1000</span> K</div>
                 </div>
             </div>
 
@@ -298,15 +388,15 @@
                 <p>Finally, the <strong>Nusselt Number ($Nu$)</strong> is the dimensionless temperature gradient at the surface. It represents the ratio of convective to conductive heat transfer across the fluid layer. Our ultimate goal in convection is finding $Nu$, because $h = Nu \cdot k_f / L$.</p>
             </article>
 
-            <!-- SIMULATOR PLACEHOLDER CH 5 -->
-            <div id="sim-ch5" class="interactive-container">
+            <!-- SIMULATOR CH 5: DESKTOP -->
+            <div id="sim-ch5-desktop" class="interactive-container desktop-only">
                 <div class="sim-overlay">
                     <h4>Virtual Wind Tunnel</h4>
                     <div class="sim-controls">
                         <label>Fluid Velocity:
                             <input type="range" id="ch5-vel" min="1" max="50" step="1" value="10">
                         </label>
-                        <label>Prandtl Number:
+                        <label>Fluid Type:
                             <select id="ch5-pr">
                                 <option value="0.7">Air (Pr = 0.7)</option>
                                 <option value="7.0">Water (Pr = 7.0)</option>
@@ -318,6 +408,23 @@
                         $Re_L$: <span id="ch5-re">0</span><br>
                         Avg $h$: <span id="ch5-h">0.0</span> W/m²K
                     </div>
+                </div>
+            </div>
+            
+            <!-- SIMULATOR CH 5: MOBILE -->
+            <div id="sim-ch5-mobile" class="interactive-container mobile-only" style="min-height: 300px; padding: 2rem; display: flex; flex-direction: column;">
+                <h4 style="margin-top: 0; text-align: center; margin-bottom: 0.2rem;">Wind Tunnel</h4>
+                <p style="font-size: 0.75rem; color: var(--text-secondary); opacity: 0.7; margin-top: 0; margin-bottom: 1.5rem; text-align: center;">(Open in desktop mode to visualize in 3D)</p>
+                <div style="margin-bottom: 2rem; text-align: center;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-size: 0.9rem; color: var(--text-secondary);">Velocity</label>
+                    <input type="range" id="ch5-mob-vel" min="1" max="50" step="1" value="10" style="width: 80%;">
+                </div>
+                <div style="flex: 1; display: flex; justify-content: center; align-items: flex-end; padding-bottom: 0.5rem; border-bottom: 4px solid #888; position: relative; overflow: hidden; background: rgba(255,255,255,0.02);">
+                    <div id="ch5-mob-particle" style="position: absolute; left: -10%; top: 50%; width: 20px; height: 4px; background: var(--accent-neon); border-radius: 2px;"></div>
+                </div>
+                <div style="display: flex; justify-content: space-around; margin-top: 1rem; font-family: var(--font-mono); font-size: 0.9rem;">
+                    <div>$Re$: <span id="ch5-mob-re" style="color: var(--text-primary); font-weight: bold;">10,000</span></div>
+                    <div>Avg $h$: <span id="ch5-mob-h" style="color: var(--accent-warning); font-weight: bold;">0.15</span></div>
                 </div>
             </div>
 
@@ -349,7 +456,8 @@
                 <p>Where $n = 0.4$ if the fluid is being heated (surface hotter than fluid), and $n = 0.3$ if the fluid is being cooled. For accurate energy balance calculations across a pipe, the fluid's mean (bulk) temperature must be tracked along the length $x$. Since $T_m(x)$ changes exponentially when subject to a constant surface temperature $T_s$, engineers use the Log Mean Temperature Difference (LMTD) method rather than a simple arithmetic average to calculate the total heat transfer rate.</p>
             </article>
 
-            <div id="sim-ch6" class="interactive-container">
+            <!-- SIMULATOR CH 6: DESKTOP -->
+            <div id="sim-ch6-desktop" class="interactive-container desktop-only">
                 <div class="sim-overlay">
                     <h4>Pipe Flow Visualizer</h4>
                     <div class="sim-controls">
@@ -361,6 +469,23 @@
                         Regime: <span id="ch6-regime">Laminar</span><br>
                         $Nu_D$: <span id="ch6-nu">4.36</span>
                     </div>
+                </div>
+            </div>
+            
+            <!-- SIMULATOR CH 6: MOBILE -->
+            <div id="sim-ch6-mobile" class="interactive-container mobile-only" style="min-height: 300px; padding: 2rem; display: flex; flex-direction: column;">
+                <h4 style="margin-top: 0; text-align: center; margin-bottom: 0.2rem;">Pipe Flow</h4>
+                <p style="font-size: 0.75rem; color: var(--text-secondary); opacity: 0.7; margin-top: 0; margin-bottom: 1.5rem; text-align: center;">(Open in desktop mode to visualize in 3D)</p>
+                <div style="margin-bottom: 1.5rem; text-align: center;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-size: 0.9rem; color: var(--text-secondary);">Reynolds Number</label>
+                    <input type="range" id="ch6-mob-re" min="1000" max="10000" step="500" value="2000" style="width: 80%;">
+                </div>
+                <div style="flex: 1; display: flex; justify-content: center; align-items: center; border-top: 2px solid #555; border-bottom: 2px solid #555; background: rgba(0,0,0,0.5); position: relative; overflow: hidden;">
+                    <div id="ch6-mob-flow" style="width: 100%; height: 2px; background: var(--accent-neon); position: absolute; box-shadow: 0 0 10px var(--accent-neon);"></div>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-top: 1rem; font-family: var(--font-mono); font-size: 0.9rem;">
+                    <div id="ch6-mob-regime" style="color: var(--accent-neon); font-weight: bold;">Laminar</div>
+                    <div>$Nu_D$: <span id="ch6-mob-nu" style="color: var(--text-primary); font-weight: bold;">4.36</span></div>
                 </div>
             </div>
 
@@ -388,7 +513,8 @@
                 <p>For a vertical heated plate, the transition from a smooth laminar boundary layer to a chaotic turbulent boundary layer typically occurs at a critical Rayleigh number of approximately $10^9$. For $Ra > 10^9$, the boundary layer breaks down, generating large-scale eddies that significantly boost the convective heat transfer coefficient. Natural convection correlations generally take the form $\overline{Nu} = C \cdot Ra^n$, where $n=1/4$ for laminar flow and $n=1/3$ for turbulent flow.</p>
             </article>
 
-            <div id="sim-ch7" class="interactive-container">
+            <!-- SIMULATOR CH 7: DESKTOP -->
+            <div id="sim-ch7-desktop" class="interactive-container desktop-only">
                 <div class="sim-overlay">
                     <h4>Buoyancy Plume Tracker</h4>
                     <div class="sim-controls">
@@ -400,6 +526,24 @@
                         $Ra_L$: <span id="ch7-ra">0</span><br>
                         Flow: <span id="ch7-flow">Laminar</span>
                     </div>
+                </div>
+            </div>
+            
+            <!-- SIMULATOR CH 7: MOBILE -->
+            <div id="sim-ch7-mobile" class="interactive-container mobile-only" style="min-height: 300px; padding: 2rem; display: flex; flex-direction: column;">
+                <h4 style="margin-top: 0; text-align: center; margin-bottom: 0.2rem;">Plume Tracker</h4>
+                <p style="font-size: 0.75rem; color: var(--text-secondary); opacity: 0.7; margin-top: 0; margin-bottom: 1.5rem; text-align: center;">(Open in desktop mode to visualize in 3D)</p>
+                <div style="margin-bottom: 1.5rem; text-align: center;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-size: 0.9rem; color: var(--text-secondary);">$\Delta T$</label>
+                    <input type="range" id="ch7-mob-dt" min="5" max="100" step="5" value="20" style="width: 80%;">
+                </div>
+                <div style="flex: 1; display: flex; justify-content: center; align-items: flex-end; position: relative;">
+                    <div id="ch7-mob-plume" style="width: 40px; height: 50%; background: linear-gradient(to top, rgba(255, 170, 0, 0.8), transparent); filter: blur(4px); transition: height 0.3s;"></div>
+                    <div style="position: absolute; bottom: 0; width: 60%; height: 4px; background: #ff3300; box-shadow: 0 0 10px #ff3300;"></div>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-top: 1rem; font-family: var(--font-mono); font-size: 0.9rem;">
+                    <div>$Ra_L$: <span id="ch7-mob-ra" style="color: var(--text-primary); font-weight: bold;">1.00e+9</span></div>
+                    <div id="ch7-mob-flow" style="color: var(--accent-neon); font-weight: bold;">Laminar</div>
                 </div>
             </div>
 
@@ -430,7 +574,8 @@
                 </div>
             </article>
 
-            <div id="sim-ch8" class="interactive-container">
+            <!-- SIMULATOR CH 8: DESKTOP -->
+            <div id="sim-ch8-desktop" class="interactive-container desktop-only">
                 <div class="sim-overlay">
                     <h4>Boiling Curve Explorer</h4>
                     <div class="sim-controls">
@@ -442,6 +587,25 @@
                         Regime: <span id="ch8-regime">Nucleate</span><br>
                         Heat Flux: <span id="ch8-flux">0.0</span> MW/m²
                     </div>
+                </div>
+            </div>
+
+            <!-- SIMULATOR CH 8: MOBILE -->
+            <div id="sim-ch8-mobile" class="interactive-container mobile-only" style="min-height: 300px; padding: 2rem; display: flex; flex-direction: column;">
+                <h4 style="margin-top: 0; text-align: center; margin-bottom: 0.2rem;">Boiling Curve Explorer</h4>
+                <p style="font-size: 0.75rem; color: var(--text-secondary); opacity: 0.7; margin-top: 0; margin-bottom: 1.5rem; text-align: center;">(Open in desktop mode to visualize in 3D)</p>
+                <div style="margin-bottom: 1.5rem; text-align: center;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-size: 0.9rem; color: var(--text-secondary);">$\Delta T_e$</label>
+                    <input type="range" id="ch8-mob-temp" min="1" max="150" step="1" value="15" style="width: 80%;">
+                </div>
+                <div style="flex: 1; display: flex; justify-content: center; align-items: center;">
+                    <div id="ch8-mob-visual" style="width: 100px; height: 100px; background: rgba(2,132,199,0.3); border-radius: 50%; border: 2px solid var(--accent-neon); position: relative; overflow: hidden; display: flex; justify-content: center; align-items: center;">
+                        <span id="ch8-mob-bubble-text" style="font-size: 0.8rem; font-weight: bold; color: white;">Bubbles</span>
+                    </div>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-top: 1rem; font-family: var(--font-mono); font-size: 0.9rem;">
+                    <div id="ch8-mob-regime" style="color: var(--accent-neon); font-weight: bold;">Nucleate</div>
+                    <div>Flux: <span id="ch8-mob-flux" style="color: var(--text-primary); font-weight: bold;">0.0</span></div>
                 </div>
             </div>
 
@@ -474,7 +638,8 @@
                 <p>The Number of Transfer Units (NTU) is a dimensionless parameter characterizing the physical size and capability of the exchanger: $\text{NTU} = UA / C_{min}$, where $C_{min}$ is the smaller of the two fluid heat capacity rates ($\dot{m}c_p$). Effectiveness relations $\varepsilon = f(\text{NTU}, C_{min}/C_{max})$ allow for direct, iteration-free sizing and performance prediction.</p>
             </article>
 
-            <div id="sim-ch9" class="interactive-container">
+            <!-- SIMULATOR CH 9: DESKTOP -->
+            <div id="sim-ch9-desktop" class="interactive-container desktop-only">
                 <div class="sim-overlay">
                     <h4>3D HX Routing Matrix</h4>
                     <div class="sim-controls">
@@ -490,6 +655,26 @@
                         Effectiveness $\varepsilon$: <span id="ch9-eff">0.0</span>%<br>
                         $T_{cold,out}$: <span id="ch9-tc">0.0</span> K
                     </div>
+                </div>
+            </div>
+
+            <!-- SIMULATOR CH 9: MOBILE -->
+            <div id="sim-ch9-mobile" class="interactive-container mobile-only" style="min-height: 300px; padding: 2rem; display: flex; flex-direction: column;">
+                <h4 style="margin-top: 0; text-align: center; margin-bottom: 0.2rem;">HX Routing Matrix</h4>
+                <p style="font-size: 0.75rem; color: var(--text-secondary); opacity: 0.7; margin-top: 0; margin-bottom: 1.5rem; text-align: center;">(Open in desktop mode to visualize in 3D)</p>
+                <div style="display: flex; gap: 0.5rem; justify-content: center; margin-bottom: 1rem;">
+                    <select id="ch9-mob-type" style="padding: 0.5rem; border-radius: 4px; background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--border-color);">
+                        <option value="counter">Counter-Flow</option>
+                        <option value="parallel">Parallel-Flow</option>
+                    </select>
+                </div>
+                <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 1rem;">
+                    <div style="height: 30px; background: linear-gradient(to right, #ff3300, #ff8800); border-radius: 15px; display: flex; align-items: center; padding: 0 10px; font-size: 0.8rem; font-weight: bold; color: white;">Hot Flow $\rightarrow$</div>
+                    <div id="ch9-mob-cold-pipe" style="height: 30px; background: linear-gradient(to left, #0ea5e9, #0055ff); border-radius: 15px; display: flex; align-items: center; padding: 0 10px; font-size: 0.8rem; font-weight: bold; color: white;">$\leftarrow$ Cold Flow</div>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-top: 1rem; font-family: var(--font-mono); font-size: 0.9rem;">
+                    <div>$\varepsilon$: <span id="ch9-mob-eff" style="color: var(--accent-warning); font-weight: bold;">0.0%</span></div>
+                    <div>$T_{c,out}$: <span id="ch9-mob-tc" style="color: var(--accent-neon); font-weight: bold;">0.0 K</span></div>
                 </div>
             </div>
 
@@ -519,7 +704,8 @@
                 </div>
             </article>
 
-            <div id="sim-ch10" class="interactive-container">
+            <!-- SIMULATOR CH 10: DESKTOP -->
+            <div id="sim-ch10-desktop" class="interactive-container desktop-only">
                 <div class="sim-overlay">
                     <h4>View Factor Ray-Tracer</h4>
                     <div class="sim-controls">
@@ -537,12 +723,35 @@
                     </div>
                 </div>
             </div>
+
+            <!-- SIMULATOR CH 10: MOBILE -->
+            <div id="sim-ch10-mobile" class="interactive-container mobile-only" style="min-height: 300px; padding: 2rem; display: flex; flex-direction: column;">
+                <h4 style="margin-top: 0; text-align: center; margin-bottom: 0.2rem;">View Factor Ray-Tracer</h4>
+                <p style="font-size: 0.75rem; color: var(--text-secondary); opacity: 0.7; margin-top: 0; margin-bottom: 1.5rem; text-align: center;">(Open in desktop mode to visualize in 3D)</p>
+                <div style="display: flex; gap: 0.5rem; justify-content: center; margin-bottom: 1rem;">
+                    <select id="ch10-mob-orient" style="padding: 0.5rem; border-radius: 4px; background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--border-color);">
+                        <option value="parallel">Parallel Plates</option>
+                        <option value="perp">Perpendicular Plates</option>
+                    </select>
+                </div>
+                <div style="flex: 1; display: flex; justify-content: center; align-items: center;">
+                    <div id="ch10-mob-graphic" style="width: 150px; height: 100px; border-top: 4px solid var(--accent-mech); border-bottom: 4px solid var(--accent-neon); position: relative;">
+                        <!-- Rays -->
+                        <div id="ch10-mob-rays" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: repeating-linear-gradient(0deg, transparent, transparent 10px, rgba(255, 170, 0, 0.3) 10px, rgba(255, 170, 0, 0.3) 12px); opacity: 0; transition: opacity 0.3s;"></div>
+                    </div>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-top: 1rem; font-family: var(--font-mono); font-size: 0.9rem;">
+                    <div>$F_{12}$: <span id="ch10-mob-f12" style="color: var(--accent-warning); font-weight: bold;">0.00</span></div>
+                    <div>$Q_{rad}$: <span id="ch10-mob-qrad" style="color: var(--accent-mech); font-weight: bold;">0.0 W</span></div>
+                </div>
+            </div>
             
         </main>
     </div>
 
     <!-- The simulator logic will be implemented in Step 3 -->
-    <script type="module" src="heat-transfer-engine.js"></script>
+    <script type="module" src="heat-transfer-engine.js?v=5"></script>
+    <script src="../../../core.js"></script>
     <script>
         // Basic Theme Toggle Logic
         const themeBtn = document.getElementById('theme-toggle');
