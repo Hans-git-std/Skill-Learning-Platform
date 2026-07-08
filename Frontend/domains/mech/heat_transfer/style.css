@@ -275,7 +275,7 @@ code {
     border: 1px solid var(--border-color);
     overflow: hidden;
     position: relative;
-    min-height: 500px; /* Minimum height for impressive visuals */
+    min-height: 500px;
     display: flex;
     flex-direction: column;
 }
@@ -342,6 +342,16 @@ canvas.webgl-canvas {
     height: 100%;
     display: block;
     min-height: 500px; /* Base height for standard view */
+}
+
+/* Dual Architecture Visibility Rules */
+@media (max-width: 768px) {
+    .desktop-only { display: none !important; }
+    .mobile-only { display: flex !important; }
+}
+@media (min-width: 769px) {
+    .desktop-only { display: flex !important; }
+    .mobile-only { display: none !important; }
 }
 
 /* Responsive Rules (Strictly handling mobile layout) */
