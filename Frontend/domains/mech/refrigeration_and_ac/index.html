@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SCME | Refrigeration and AC</title>
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- MathJax for rendering formulas -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']]
+        }
+      };
+    </script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <!-- Three.js for 3D Simulators -->
+    <script async src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"></script>
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://unpkg.com/three@0.154.0/build/three.module.js",
+          "three/addons/": "https://unpkg.com/three@0.154.0/examples/jsm/"
+        }
+      }
+    </script>
+</head>
+<body>
+    <nav class="top-nav">
+        <div class="nav-left">
+            <h1 class="logo">SCME.</h1>
+            <a href="../../mech/index.html" class="btn-retro back-btn">← ME Hub</a>
+        </div>
+        <button id="theme-toggle" class="btn-retro">Toggle Theme</button>
+    </nav>
+
+    <div class="learning-environment">
+        <aside class="chapter-sidebar">
+            <h3>Refrigeration & AC</h3>
+            <ul class="chapter-list">
+                <li><a href="#ch1" class="active">1. Intro to Thermodynamics</a></li>
+                <li><a href="#ch2">2. Vapor Compression (VCRS)</a></li>
+                <li><a href="#ch3">3. Refrigerant Properties</a></li>
+                <li><a href="#ch4">4. Vapor Absorption (VARS)</a></li>
+                <li><a href="#ch5">5. Gas Cycle Refrigeration</a></li>
+                <li><a href="#ch6">6. Cascade & Multi-Stage</a></li>
+                <li><a href="#ch7">7. Psychrometrics Theory</a></li>
+                <li><a href="#ch8">8. AC Systems & Processes</a></li>
+                <li><a href="#ch9">9. Cooling Load Estimation</a></li>
+                <li><a href="#ch10">10. Heat Pumps & Defrost</a></li>
+            </ul>
+        </aside>
+
+        <main class="reading-core">
+            
+            <!-- CHAPTER 1 -->
+            <header class="chapter-header" id="ch1">
+                <span class="chapter-badge">Chapter 1</span>
+                <h2>Fundamentals of Thermodynamics & Heat Transfer in RAC</h2>
+                <p class="chapter-subtitle">Laying the groundwork: The physics of moving heat against the thermal gradient.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Refrigeration is the process of removing heat from an enclosed space or substance to lower its temperature and subsequently maintain that lower temperature. Fundamentally, this process violates the natural direction of heat flow dictated by the Second Law of Thermodynamics (Clausius statement), which states that heat cannot spontaneously flow from a colder body to a hotter body. Therefore, external work must be supplied to force this thermal transfer.</p>
+                
+                <h3>1. Thermodynamic Cycles and Carnot Reversed</h3>
+                <p>The absolute theoretical limit of refrigeration efficiency is defined by the Reversed Carnot Cycle. Operating between a cold reservoir $T_L$ and a hot reservoir $T_H$, the cycle consists of two reversible isothermal processes and two reversible adiabatic (isentropic) processes. The efficiency of a refrigeration system is not measured as a percentage, but rather as a <strong>Coefficient of Performance (COP)</strong>, defined as the ratio of the desired cooling effect to the required work input:</p>
+                <div class="math-formula">
+                    $$ \text{COP}_{\text{Carnot, Ref}} = \frac{Q_L}{W_{\text{net,in}}} = \frac{T_L}{T_H - T_L} $$
+                </div>
+                <p>Because $T_L$ and $T_H$ must be in absolute temperature (Kelvin), we can observe that as the temperature difference $(T_H - T_L)$ increases, the maximum theoretical COP drastically drops. This mathematically dictates why it costs significantly more electricity to maintain a freezer at -20°C in a 40°C desert than in a 10°C winter environment.</p>
+
+                <h3>2. The Ton of Refrigeration (TR)</h3>
+                <p>In practical engineering, cooling capacity is historically measured in "Tons of Refrigeration" (TR). One TR is defined as the rate of heat extraction required to freeze exactly one short ton (2,000 lbs) of pure liquid water at 0°C into solid ice at 0°C over a 24-hour period. Using the latent heat of fusion of water (334 kJ/kg):</p>
+                <div class="math-formula">
+                    $$ 1 \text{ TR} = 3.5168 \text{ kW} = 211 \text{ kJ/min} = 12,000 \text{ BTU/hr} $$
+                </div>
+                <p>Understanding this conversion is critical for sizing commercial equipment. For instance, a standard residential bedroom might require a 1.0 TR (12,000 BTU/hr) unit, meaning the system extracts 3.5168 kilojoules of thermal energy every single second.</p>
+            </article>
+            <div id="sim-ch1-desktop" class="interactive-container desktop-only" style="height:450px;"></div>
+            <div id="sim-ch1-mobile" class="interactive-container mobile-only" style="min-height:300px; padding:2rem; display: flex; flex-direction: column;">
+                <h4 style="margin-top: 0; text-align: center;">Heat Transfer Simulation</h4>
+                <div style="margin-bottom: 2rem; text-align: center;">
+                    <label style="display: block; font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0.5rem;">Insulation Level</label>
+                    <input type="range" id="ch1-mob-insulation" min="0" max="100" value="0" style="width: 80%;">
+                </div>
+                <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 1.5rem;">
+                    <div style="width: 40px; height: 40px; background: #ff3300; border-radius: 4px;"></div>
+                    <div id="ch1-mob-flow" style="flex: 1; height: 10px; background: linear-gradient(90deg, #ff3300, #0066ff); position: relative; overflow: hidden; border-radius: 5px;">
+                        <div id="ch1-mob-particle" style="position: absolute; left: 0; top: 0; width: 20px; height: 10px; background: rgba(255,255,255,0.8); border-radius: 5px;"></div>
+                    </div>
+                    <div style="width: 40px; height: 40px; background: #0066ff; border-radius: 4px;"></div>
+                </div>
+                <div style="text-align: center; font-family: var(--font-mono); font-size: 0.9rem;">
+                    Heat Flow Q: <span id="ch1-mob-q" style="color: var(--accent-mech); font-weight: bold;">High</span>
+                </div>
+            </div>
+            
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 2 -->
+            <header class="chapter-header" id="ch2">
+                <span class="chapter-badge">Chapter 2</span>
+                <h2>The Vapor Compression Refrigeration System (VCRS)</h2>
+                <p class="chapter-subtitle">The mechanical heart of modern cooling technology.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>The standard Vapor Compression Refrigeration System is the dominant technology in modern cooling, accounting for over 90% of all domestic refrigerators and air conditioners. It operates by exploiting the latent heat of vaporization of a circulating refrigerant. As the refrigerant undergoes a phase change from liquid to vapor, it absorbs massive amounts of thermal energy.</p>
+                
+                <h3>1. The Four Primary Components</h3>
+                <p>A standard VCRS loop relies on four highly engineered mechanical components:</p>
+                <ul>
+                    <li><strong>Compressor:</strong> The "heart" of the system. It draws in low-pressure, low-temperature refrigerant vapor and isentropically compresses it into a high-pressure, high-temperature superheated vapor. This requires mechanical work input ($W_{in}$).</li>
+                    <li><strong>Condenser:</strong> A heat exchanger coil where the superheated vapor rejects its latent heat to the warmer ambient environment, undergoing an isobaric (constant pressure) phase change into a high-pressure saturated liquid.</li>
+                    <li><strong>Expansion Valve (Metering Device):</strong> A throttling device that forces a sudden, severe pressure drop (isenthalpic expansion). This sudden pressure drop causes a portion of the liquid to "flash" boil into vapor, instantly dropping the temperature of the remaining mixture to the desired cooling temperature.</li>
+                    <li><strong>Evaporator:</strong> The cooling coil located in the space to be refrigerated. The cold, low-pressure liquid-vapor mixture absorbs heat from the room, undergoing an isobaric phase change completely into a saturated or slightly superheated vapor before returning to the compressor.</li>
+                </ul>
+
+                <h3>2. Thermodynamic Analysis on P-h Diagram</h3>
+                <p>The Pressure-Enthalpy (P-h) diagram is the quintessential diagnostic tool for the VCRS cycle. The curve represents the saturated liquid line (left) and saturated vapor line (right), meeting at the critical point. The cycle maps as follows:</p>
+                <div class="math-formula">
+                    $$ \text{Cooling Effect (Evaporator): } q_e = (h_1 - h_4) \text{ kJ/kg} $$
+                    $$ \text{Compressor Work: } w_c = (h_2 - h_1) \text{ kJ/kg} $$
+                    $$ \text{Heat Rejection (Condenser): } q_c = (h_2 - h_3) \text{ kJ/kg} $$
+                    $$ \text{Throttling: } h_3 = h_4 \text{ (Isenthalpic)} $$
+                </div>
+                <p>Where $h_1$ is compressor inlet, $h_2$ is condenser inlet, $h_3$ is expansion inlet, and $h_4$ is evaporator inlet. The actual COP of the system is simply $COP = (h_1 - h_4) / (h_2 - h_1)$. Any subcooling of the liquid leaving the condenser shifts $h_3$ to the left, drastically increasing the cooling effect $q_e$ without increasing compressor work, thereby maximizing system efficiency.</p>
+            </article>
+            <div id="sim-ch2-desktop" class="interactive-container desktop-only" style="height:500px;"></div>
+            <div id="sim-ch2-mobile" class="interactive-container mobile-only" style="min-height:300px; padding:2rem; display: flex; flex-direction: column;">
+                <h4 style="margin-top: 0; text-align: center;">VCRS Engine Cycle</h4>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; flex: 1; margin-bottom: 1rem;">
+                    <div id="ch2-mob-cond" style="border: 2px solid #ff4444; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: bold; color: #ff4444; text-align: center; padding: 0.5rem; transition: background 0.3s;">CONDENSER<br>(Heat Out)</div>
+                    <div id="ch2-mob-valve" style="border: 2px solid #ffaa00; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: bold; color: #ffaa00; text-align: center; padding: 0.5rem; transition: background 0.3s;">EXP. VALVE<br>(Drop Pressure)</div>
+                    <div id="ch2-mob-comp" style="border: 2px solid #aaaaaa; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: bold; color: #aaaaaa; text-align: center; padding: 0.5rem; transition: background 0.3s;">COMPRESSOR<br>(Work In)</div>
+                    <div id="ch2-mob-evap" style="border: 2px solid #44aaff; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: bold; color: #44aaff; text-align: center; padding: 0.5rem; transition: background 0.3s;">EVAPORATOR<br>(Heat In)</div>
+                </div>
+                <div style="text-align: center;">
+                    <button id="ch2-mob-btn" class="btn-retro" style="width: 80%;">Run 1 Cycle</button>
+                    <div id="ch2-mob-status" style="margin-top: 0.5rem; font-family: var(--font-mono); font-size: 0.85rem; color: var(--text-secondary); min-height: 1.5rem;">Idle</div>
+                </div>
+            </div>
+
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 3 -->
+            <header class="chapter-header" id="ch3">
+                <span class="chapter-badge">Chapter 3</span>
+                <h2>Refrigerants and Environmental Impact</h2>
+                <p class="chapter-subtitle">Chemical selection, thermodynamic properties, and the ecological crisis.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>A refrigerant is the working fluid that undergoes phase transitions in the refrigeration cycle. The selection of a refrigerant is a complex engineering compromise involving thermodynamic properties, chemical stability, flammability, toxicity, and environmental impact.</p>
+                
+                <h3>1. Ideal Refrigerant Properties</h3>
+                <p>Thermodynamically, an ideal refrigerant must possess a high latent heat of vaporization (to minimize mass flow rate), a moderate condenser pressure (to prevent dangerous mechanical stress), and a positive evaporator pressure (to prevent ambient air and moisture from leaking into the system). Furthermore, a low specific volume at the compressor inlet is crucial to minimize the physical size of the compressor cylinder.</p>
+                
+                <h3>2. The Environmental Metrics: ODP and GWP</h3>
+                <p>Historically, chlorofluorocarbons (CFCs) like R-12 were the industry standard. However, ultraviolet radiation in the stratosphere breaks the C-Cl bonds in these molecules, releasing free chlorine radicals that catalytically destroy the ozone layer. This led to the Montreal Protocol and the establishment of two critical metrics:</p>
+                <ul>
+                    <li><strong>Ozone Depletion Potential (ODP):</strong> A measure of a substance's capability to destroy stratospheric ozone, relative to R-11 (ODP = 1.0). Modern HFCs (hydrofluorocarbons) have an ODP of zero.</li>
+                    <li><strong>Global Warming Potential (GWP):</strong> A measure of how much infrared thermal radiation a greenhouse gas absorbs over a 100-year period, relative to $CO_2$ (GWP = 1.0).</li>
+                </ul>
+                <p>While HFCs (like R-134a) solved the ozone crisis (ODP = 0), they act as super-pollutants with GWPs in the thousands. For example, 1 kg of R-134a leaking into the atmosphere has the same warming effect as 1,430 kg of $CO_2$. The industry is currently transitioning to Hydrofluoroolefins (HFOs) like R-1234yf, which contain a carbon double bond that breaks down rapidly in the lower atmosphere, resulting in a GWP of less than 1, or natural refrigerants like Ammonia (R-717), $CO_2$ (R-744), and Isobutane (R-600a).</p>
+            </article>
+            <div id="sim-ch3-desktop" class="interactive-container desktop-only" style="height:450px;"></div>
+            <div id="sim-ch3-mobile" class="interactive-container mobile-only" style="min-height:300px; padding:2rem; display: flex; flex-direction: column;">
+                <h4 style="margin-top: 0; text-align: center;">Molecular Dynamics</h4>
+                <div style="margin-bottom: 2rem; text-align: center;">
+                    <label style="display: block; font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0.5rem;">Temperature</label>
+                    <input type="range" id="ch3-mob-temp" min="0" max="100" value="0" style="width: 80%;">
+                </div>
+                <div style="flex: 1; display: flex; justify-content: center; align-items: center; position: relative;">
+                    <div id="ch3-mob-molecule" style="display: flex; gap: 20px; align-items: center; position: relative;">
+                        <!-- Carbon 1 -->
+                        <div style="width: 40px; height: 40px; background: #333; border-radius: 50%; box-shadow: inset -5px -5px 10px rgba(0,0,0,0.5);"></div>
+                        <!-- Bond -->
+                        <div style="position: absolute; left: 40px; top: 18px; width: 20px; height: 4px; background: #888;"></div>
+                        <!-- Carbon 2 -->
+                        <div style="width: 40px; height: 40px; background: #333; border-radius: 50%; box-shadow: inset -5px -5px 10px rgba(0,0,0,0.5);"></div>
+                        
+                        <!-- Floating Fluorine/Hydrogens abstractly -->
+                        <div style="position: absolute; left: 0; top: -15px; width: 15px; height: 15px; background: #11cc11; border-radius: 50%;"></div>
+                        <div style="position: absolute; left: 20px; top: 40px; width: 15px; height: 15px; background: #11cc11; border-radius: 50%;"></div>
+                        <div style="position: absolute; left: 80px; top: -15px; width: 15px; height: 15px; background: #fff; border-radius: 50%;"></div>
+                        <div style="position: absolute; left: 60px; top: 40px; width: 15px; height: 15px; background: #fff; border-radius: 50%;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 4 -->
+            <header class="chapter-header" id="ch4">
+                <span class="chapter-badge">Chapter 4</span>
+                <h2>Vapor Absorption Refrigeration System (VARS)</h2>
+                <p class="chapter-subtitle">Replacing mechanical compression with thermal absorption.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>While the VCRS relies on a mechanical compressor driven by electricity, the Vapor Absorption Refrigeration System (VARS) is driven primarily by low-grade thermal energy (such as waste heat from industrial processes, solar collectors, or natural gas burners). VARS replaces the energy-hungry mechanical compressor with an assembly of an absorber, a pump, and a generator.</p>
+                
+                <h3>1. The Ammonia-Water System Mechanism</h3>
+                <p>In the widely used Aqua-Ammonia VARS, ammonia acts as the refrigerant and water acts as the absorbent. The process operates on the principle that the solubility of ammonia in water is incredibly high at low temperatures, but drops drastically when heated.</p>
+                <ul>
+                    <li><strong>Absorber:</strong> Low-pressure ammonia vapor leaving the evaporator enters the absorber, where it is exposed to liquid water. The ammonia aggressively dissolves into the water in a highly exothermic reaction, creating a "strong solution". Cooling water must circulate through the absorber to remove this heat of absorption.</li>
+                    <li><strong>Liquid Pump:</strong> Instead of compressing a large volume of gas (which requires massive work), a small liquid pump pressurizes the incompressible strong liquid solution. The work input $W_P = \int v \, dP$ is negligible compared to vapor compression because the specific volume $v$ of liquid is minuscule.</li>
+                    <li><strong>Generator:</strong> The high-pressure strong solution enters the generator, where external heat ($Q_G$) is applied. The heat boils off the volatile ammonia vapor, leaving behind a "weak solution" of water, which is routed back to the absorber via a pressure-reducing valve.</li>
+                </ul>
+
+                <h3>2. VARS Thermal Efficiency</h3>
+                <p>Because the work of the pump is negligible, the COP of a VARS system is evaluated based entirely on thermal energy transfers:</p>
+                <div class="math-formula">
+                    $$ \text{COP}_{\text{VARS}} = \frac{Q_E}{Q_G + W_P} \approx \frac{Q_E}{Q_G} $$
+                </div>
+                <p>Where $Q_E$ is the cooling effect in the evaporator and $Q_G$ is the heat input at the generator. The maximum theoretical COP of a VARS is equivalent to a Carnot heat engine driving a Carnot refrigerator. Because it utilizes low-grade heat, actual VARS COPs are typically very low (0.5 to 0.8) compared to VCRS, but they are economically superior when abundant waste heat is available.</p>
+            </article>
+            <div id="sim-ch4-desktop" class="interactive-container desktop-only" style="height:550px;"></div>
+            <div id="sim-ch4-mobile" class="interactive-container mobile-only" style="min-height:300px; padding:2rem; display: flex; flex-direction: column;">
+                <h4 style="margin-top: 0; text-align: center;">VARS Flow</h4>
+                <div style="margin-bottom: 1.5rem; text-align: center;">
+                    <label style="display: block; font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0.5rem;">Generator Heat</label>
+                    <input type="range" id="ch4-mob-heat" min="10" max="100" value="50" style="width: 80%;">
+                </div>
+                <div style="flex: 1; display: flex; justify-content: center; gap: 1rem; align-items: center;">
+                    <div style="text-align: center;">
+                        <div style="width: 60px; height: 60px; background: #aa3333; border-radius: 8px; margin: 0 auto;"></div>
+                        <span style="font-size: 0.8rem;">Generator</span>
+                    </div>
+                    <div style="flex: 1; position: relative; height: 60px;">
+                        <div id="ch4-mob-flow-top" style="position: absolute; top: 10px; width: 100%; height: 8px; background: linear-gradient(90deg, #aa3333, #3333aa); opacity: 0.5;"></div>
+                        <div id="ch4-mob-flow-bot" style="position: absolute; bottom: 10px; width: 100%; height: 8px; background: linear-gradient(90deg, #3333aa, #aa3333); opacity: 0.5;"></div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="width: 60px; height: 60px; background: #3333aa; border-radius: 8px; margin: 0 auto;"></div>
+                        <span style="font-size: 0.8rem;">Absorber</span>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 5 -->
+            <header class="chapter-header" id="ch5">
+                <span class="chapter-badge">Chapter 5</span>
+                <h2>Gas Cycle Refrigeration (Bell-Coleman Cycle)</h2>
+                <p class="chapter-subtitle">Air as a refrigerant: The backbone of aviation environmental control.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>In standard systems, the refrigerant undergoes phase changes. However, in Gas Cycle Refrigeration, the working fluid remains a gas throughout the entire thermodynamic cycle. The most prominent application of this technology is the Bell-Coleman Cycle (or Reversed Brayton Cycle), which utilizes ambient air as the refrigerant.</p>
+                
+                <h3>1. The Thermodynamics of the Bell-Coleman Cycle</h3>
+                <p>The ideal Bell-Coleman cycle consists of four distinct processes:</p>
+                <ul>
+                    <li><strong>Isentropic Compression:</strong> Air from the refrigerated space (or ambient) is compressed by a rotary compressor. This drastically increases both its pressure and temperature.</li>
+                    <li><strong>Isobaric Heat Rejection:</strong> The hot, highly compressed air passes through a heat exchanger (cooler), rejecting sensible heat to a secondary cooling medium (such as ram air), dropping its temperature while maintaining high pressure.</li>
+                    <li><strong>Isentropic Expansion:</strong> The cooled, high-pressure air expands through an expansion turbine. As the gas does work on the turbine blades, its internal energy plummets, resulting in a dramatic drop in temperature, often well below freezing.</li>
+                    <li><strong>Isobaric Heat Absorption:</strong> This ultra-cold air is introduced directly into the cabin or refrigerated space, absorbing heat as it warms up to complete the cycle.</li>
+                </ul>
+
+                <h3>2. Application in Aircraft (Environmental Control Systems)</h3>
+                <p>While the Bell-Coleman cycle has a lower COP than a standard VCRS system, it is exclusively used in aircraft air conditioning. Why? Because the weight and physical bulk of the equipment are significantly more critical in aviation than electrical efficiency.</p>
+                <p>In a jet aircraft, the propulsion engines already act as massive air compressors. "Bleed air" is tapped directly from the jet engine compressor stages. This air is extremely hot and pressurized. It is then run through a primary heat exchanger using cold "ram air" from outside the aircraft. Next, it expands through an air-cycle machine (a cooling turbine), instantly dropping its temperature to sub-zero levels before mixing with recirculated cabin air. This completely eliminates the heavy copper coils, toxic liquid refrigerants, and dedicated heavy compressors required by VCRS.</p>
+                <div class="math-formula">
+                    $$ \text{COP}_{\text{Bell-Coleman}} = \frac{T_1}{T_2 - T_1} = \frac{1}{(r_p)^{(\gamma-1)/\gamma} - 1} $$
+                </div>
+                <p>Where $r_p$ is the pressure ratio of the compressor, and $\gamma$ is the specific heat ratio of air (approx 1.4).</p>
+            </article>
+            <div id="sim-ch5-desktop" class="interactive-container desktop-only" style="height:550px;"></div>
+            <div id="sim-ch5-mobile" class="interactive-container mobile-only" style="min-height:300px; padding:2rem; display: flex; flex-direction: column;">
+                <h4 style="margin-top: 0; text-align: center;">Aircraft ECS</h4>
+                <div style="margin-bottom: 1.5rem; text-align: center;">
+                    <label style="display: block; font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0.5rem;">Altitude: <span id="ch5-mob-alt-val">30,000 ft</span></label>
+                    <input type="range" id="ch5-mob-alt" min="0" max="40000" step="1000" value="30000" style="width: 80%;">
+                </div>
+                <div style="display: flex; justify-content: space-around; font-family: var(--font-mono); font-size: 0.9rem;">
+                    <div>Ambient: <span id="ch5-mob-amb" style="color: #44aaff; font-weight: bold;">-44°C</span></div>
+                    <div>Ram Pres: <span id="ch5-mob-pres" style="color: #ffaa00; font-weight: bold;">Low</span></div>
+                </div>
+                <div style="flex: 1; display: flex; justify-content: center; align-items: center; margin-top: 1rem;">
+                    <div style="width: 100px; height: 20px; background: #ccc; border-radius: 10px 50px 50px 10px; position: relative;">
+                        <div style="position: absolute; top: -10px; left: 30px; width: 20px; height: 40px; background: #aaa; transform: skewX(-20deg);"></div>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="chapter-divider">
+            
+            <!-- CHAPTER 6 -->
+            <header class="chapter-header" id="ch6">
+                <span class="chapter-badge">Chapter 6</span>
+                <h2>Multi-Stage & Cascade Refrigeration Systems</h2>
+                <p class="chapter-subtitle">Pushing the thermodynamic limits for ultra-low temperatures.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Standard single-stage VCRS systems are practically limited to evaporator temperatures of around -30°C. If we attempt to reach ultra-low temperatures (e.g., -80°C for medical freezers or -150°C for gas liquefaction) using a single compressor, the required pressure ratio ($P_{condenser}/P_{evaporator}$) becomes incredibly massive. This astronomical pressure ratio causes the compressor discharge temperature to spike to dangerous levels, carbonizing the lubricating oil, and destroying the volumetric efficiency of the compressor. To overcome this, engineers utilize staging.</p>
+                
+                <h3>1. Multi-Stage Compression with Intercooling</h3>
+                <p>To reduce compressor work and discharge temperatures, compression is split into two or more stages (Low Pressure and High Pressure compressors) operating on the same refrigerant. Between the stages, a "Flash Chamber" or intercooler is utilized. Liquid refrigerant from the condenser is partially expanded into the flash chamber, where flash gas cools the superheated vapor discharging from the LP compressor before it enters the HP compressor. This intercooling significantly reduces the work required by the HP compressor and increases overall system COP.</p>
+
+                <h3>2. Cascade Refrigeration Systems</h3>
+                <p>When the desired temperature difference is too massive for a single refrigerant's properties (as its freezing point may be too high, or specific volume at low pressure too massive), a Cascade System is employed. A cascade system consists of two entirely separate refrigeration cycles, operating in series with two different refrigerants, connected by a central Cascade Condenser.</p>
+                <ul>
+                    <li><strong>Low-Temperature (LT) Cycle:</strong> Uses a refrigerant with ultra-low boiling points (e.g., R-23 or Ethane). This cycle extracts heat from the deep-freeze chamber. However, it cannot reject heat to the ambient air because its critical temperature is too low.</li>
+                    <li><strong>High-Temperature (HT) Cycle:</strong> Uses a standard refrigerant (e.g., R-134a or Ammonia). Its evaporator acts as the condenser for the LT cycle. It absorbs the rejected heat from the LT cycle and pumps it up to ambient temperature.</li>
+                </ul>
+                <div class="math-formula">
+                    $$ W_{\text{total}} = W_{\text{LT_comp}} + W_{\text{HT_comp}} $$
+                    $$ \text{Cascade Condenser Heat Balance: } \dot{m}_{LT} (h_{2,LT} - h_{3,LT}) = \dot{m}_{HT} (h_{1,HT} - h_{4,HT}) $$
+                </div>
+                <p>This thermodynamic handoff allows systems to reach cryogenic temperatures while keeping the mechanical stresses and pressure ratios of each individual compressor perfectly within safe, efficient design limits.</p>
+            </article>
+            <div id="sim-ch6-desktop" class="interactive-container desktop-only" style="height:550px;"></div>
+            <div id="sim-ch6-mobile" class="interactive-container mobile-only" style="min-height:300px; padding:2rem; display: flex; flex-direction: column;">
+                <h4 style="margin-top: 0; text-align: center;">Cascade System</h4>
+                <div style="flex: 1; display: flex; flex-direction: column; justify-content: space-between; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
+                    <div style="width: 80%; padding: 1rem; background: rgba(255, 68, 68, 0.2); border: 2px solid #ff4444; border-radius: 8px; text-align: center;">HT Cycle (-10°C)</div>
+                    <div style="width: 60%; height: 30px; background: linear-gradient(180deg, #ff4444, #4444ff); border-radius: 4px; display: flex; justify-content: center; align-items: center; font-size: 0.7rem; font-weight: bold; color: white;">CASCADE CONDENSER</div>
+                    <div id="ch6-mob-lt" style="width: 80%; padding: 1rem; background: rgba(68, 68, 255, 0.2); border: 2px solid #4444ff; border-radius: 8px; text-align: center; transition: all 1s;">LT Cycle (-30°C)</div>
+                </div>
+                <div style="text-align: center;">
+                    <button id="ch6-mob-btn" class="btn-retro" style="width: 80%;">Engage Cascade</button>
+                </div>
+            </div>
+            
+            <hr class="chapter-divider">
+            
+            <!-- CHAPTER 7 -->
+            <header class="chapter-header" id="ch7">
+                <span class="chapter-badge">Chapter 7</span>
+                <h2>Psychrometrics and Air Properties</h2>
+                <p class="chapter-subtitle">The complex thermodynamics of moist atmospheric air.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Air conditioning is not merely about cooling air; it is the precise, simultaneous control of temperature, humidity, cleanliness, and distribution. To manipulate these factors, we must study Psychrometrics: the branch of physics dealing with the properties of atmospheric air, which is a binary mixture of dry air and water vapor.</p>
+                
+                <h3>1. Fundamental Psychrometric Properties</h3>
+                <p>The state of moist air is defined by several interdependent thermodynamic properties. If you know the barometric pressure and any two of these properties, you can mathematically derive all the others.</p>
+                <ul>
+                    <li><strong>Dry Bulb Temperature (DBT):</strong> The actual thermodynamic temperature of the air mixture as measured by a standard shielded thermometer.</li>
+                    <li><strong>Wet Bulb Temperature (WBT):</strong> The temperature measured by a thermometer whose bulb is wrapped in a wick moistened with distilled water. As water evaporates from the wick, it absorbs latent heat, dropping the temperature until dynamic equilibrium is reached. It acts as an index of the moisture content of the air.</li>
+                    <li><strong>Dew Point Temperature (DPT):</strong> The precise temperature at which moisture in the air begins to condense out as liquid droplets (dew) when the air is isobarically cooled. At this point, the air is 100% saturated.</li>
+                    <li><strong>Specific Humidity (Humidity Ratio, $\omega$):</strong> The actual physical mass of water vapor present per kilogram of perfectly dry air. It is expressed in kg_vapor / kg_dry_air or grams / kg.
+                        <div class="math-formula">
+                            $$ \omega = 0.622 \frac{p_v}{p_t - p_v} $$
+                        </div>
+                        where $p_v$ is the partial pressure of the water vapor and $p_t$ is total atmospheric pressure.
+                    </li>
+                    <li><strong>Relative Humidity (RH, $\phi$):</strong> The ratio of the actual partial pressure of water vapor in the air to the saturation pressure of water vapor at that exact same dry bulb temperature. It indicates how "full" the air is with respect to its maximum moisture-holding capacity.</li>
+                </ul>
+
+                <h3>2. The Psychrometric Chart</h3>
+                <p>The Psychrometric Chart is arguably the most vital graphical tool in HVAC engineering. It visually maps all of the equations above into a single complex grid. The horizontal x-axis represents Dry Bulb Temperature, and the vertical y-axis represents Specific Humidity. Curved lines sweeping from lower-left to upper-right represent constant Relative Humidity, while diagonal lines represent constant Enthalpy and Wet Bulb Temperature. By tracking a "state point" across this chart, engineers can visually calculate the exact amount of sensible heat and latent heat that an AC coil must extract from a room.</p>
+            </article>
+            <div id="sim-ch7-desktop" class="interactive-container desktop-only" style="height:600px;"></div>
+            <div id="sim-ch7-mobile" class="interactive-container mobile-only" style="min-height:300px; padding:2rem; display: flex; flex-direction: column;">
+                <h4 style="margin-top: 0; text-align: center;">Psychrometric Room</h4>
+                <div style="margin-bottom: 1.5rem; text-align: center;">
+                    <label style="display: block; font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0.5rem;">Relative Humidity: <span id="ch7-mob-rh-val">50%</span></label>
+                    <input type="range" id="ch7-mob-rh" min="10" max="100" value="50" style="width: 80%;">
+                </div>
+                <div style="flex: 1; display: flex; justify-content: center; align-items: center;">
+                    <div id="ch7-mob-window" style="width: 150px; height: 100px; border: 4px solid #fff; background: rgba(170, 221, 255, 0.2); position: relative; transition: all 0.5s;">
+                        <div style="position: absolute; left: 50%; top: 0; bottom: 0; width: 4px; background: #fff; transform: translateX(-50%);"></div>
+                        <div style="position: absolute; top: 50%; left: 0; right: 0; height: 4px; background: #fff; transform: translateY(-50%);"></div>
+                        <div id="ch7-mob-fog" style="position: absolute; inset: 0; background: rgba(255,255,255,0); transition: all 0.5s; backdrop-filter: blur(0px);"></div>
+                    </div>
+                </div>
+                <div style="text-align: center; margin-top: 1rem; font-family: var(--font-mono); font-size: 0.9rem;">
+                    State: <span id="ch7-mob-state" style="color: var(--accent-neon); font-weight: bold;">Clear</span>
+                </div>
+            </div>
+
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 8 -->
+            <header class="chapter-header" id="ch8">
+                <span class="chapter-badge">Chapter 8</span>
+                <h2>Psychrometric Processes & Air Conditioning Systems</h2>
+                <p class="chapter-subtitle">Manipulating state points through heating, cooling, and dehumidification.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>In an Air Handling Unit (AHU), air is forced over a series of coils and sprays to alter its psychrometric state. By plotting these thermodynamic journeys on the psychrometric chart, we can calculate the exact energy requirements of the air conditioning equipment.</p>
+                
+                <h3>1. Primary Psychrometric Processes</h3>
+                <ul>
+                    <li><strong>Sensible Cooling/Heating:</strong> Moving strictly horizontally left (cooling) or right (heating) on the chart. The dry bulb temperature changes, but the specific humidity ($\omega$) remains perfectly constant. There is no phase change of water.</li>
+                    <li><strong>Cooling and Dehumidification:</strong> The quintessential summer AC process. Air is passed over a cooling coil that is physically colder than the air's Dew Point Temperature. The air cools down, and moisture condenses out as liquid water dripping into a drain pan. On the chart, this state point moves down and to the left. The total heat removed is the sum of Sensible Heat (cooling the air) and Latent Heat (condensing the vapor).</li>
+                    <li><strong>Heating and Humidification:</strong> The winter AC process. Air is heated via a furnace coil (moving right) and then injected with steam or atomized water spray, increasing its specific humidity (moving up).</li>
+                    <li><strong>Adiabatic Mixing:</strong> When two airstreams (e.g., fresh outdoor ventilation air and recirculated return air) mix in a duct. The resulting mixed state point lies exactly on a straight line connecting the two initial states on the psychrometric chart, with its exact position dictated by the mass ratio of the two air streams.</li>
+                </ul>
+
+                <h3>2. The Sensible Heat Factor (SHF)</h3>
+                <p>An AC unit must be designed to handle both the thermal load (Sensible Heat, $Q_s$) and the moisture load (Latent Heat, $Q_l$) of the building. The ratio of the sensible cooling load to the total cooling load is the Sensible Heat Factor.</p>
+                <div class="math-formula">
+                <p>If a room is packed with 500 sweating people dancing (massive latent load from respiration and sweat), the SHF will be low, requiring a deeply chilled coil to aggressively wring moisture out of the air. If the room is a dry server farm filled with hot computers (zero latent load), the SHF is exactly 1.0, and the coil only needs to perform sensible cooling.</p>
+            </article>
+            <div id="sim-ch8-desktop" class="interactive-container desktop-only" style="height:550px;"></div>
+            <div id="sim-ch8-mobile" class="interactive-container mobile-only" style="min-height:300px; padding:2rem; display: flex; flex-direction: column;">
+                <h4 style="margin-top: 0; text-align: center;">Cooling Tower</h4>
+                <div style="margin-bottom: 1.5rem; text-align: center;">
+                    <label style="display: block; font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0.5rem;">Fan Speed (Airflow)</label>
+                    <input type="range" id="ch8-mob-fan" min="1" max="10" value="5" style="width: 80%;">
+                </div>
+                <div style="flex: 1; display: flex; justify-content: center; align-items: center;">
+                    <div style="width: 120px; height: 160px; border: 3px solid #888; border-radius: 10px 10px 0 0; position: relative; overflow: hidden; background: #222;">
+                        <!-- Water Drops Array -->
+                        <div id="ch8-mob-water" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: repeating-linear-gradient(180deg, transparent, transparent 10px, rgba(68,170,255,0.8) 10px, rgba(68,170,255,0.8) 15px); background-size: 100% 200%; opacity: 0.7;"></div>
+                        <!-- Air Flow Arrows -->
+                        <div id="ch8-mob-air" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: repeating-linear-gradient(0deg, transparent, transparent 15px, rgba(255,255,255,0.3) 15px, rgba(255,255,255,0.3) 20px); background-size: 100% 200%; mix-blend-mode: screen;"></div>
+                    </div>
+                </div>
+                <div style="display: flex; justify-content: space-around; margin-top: 1rem; font-family: var(--font-mono); font-size: 0.9rem;">
+                    <div style="color: #ff6666;">In: 35°C</div>
+                    <div style="color: #44aaff;">Out: <span id="ch8-mob-leaving" style="font-weight: bold;">30°C</span></div>
+                </div>
+            </div>
+
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 9 -->
+            <header class="chapter-header" id="ch9">
+                <span class="chapter-badge">Chapter 9</span>
+                <h2>Cooling Load Estimation & Human Comfort</h2>
+                <p class="chapter-subtitle">Calculating the thermal burden and the physics of comfort.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Before a refrigeration or air conditioning system can be physically sized, the mechanical engineer must perform a highly rigorous heat load estimation. If an AC unit is undersized, it will fail to cool the space during peak summer. Conversely, if it is drastically oversized, it will cool the room too quickly (short-cycling), failing to run long enough to dehumidify the air, resulting in a cold, clammy, and uncomfortable environment.</p>
+                
+                <h3>1. Components of the Cooling Load</h3>
+                <p>The total heat that must be continuously extracted from a building comes from a myriad of complex external and internal sources:</p>
+                <ul>
+                    <li><strong>Solar Heat Gain (External Sensible):</strong> Shortwave radiation from the sun penetrating through glass windows. This is highly dynamic and depends on the time of day, latitude, window orientation, and shading coefficients.</li>
+                    <li><strong>Transmission Load (External Sensible):</strong> Pure 1D heat conduction through the opaque walls and roof due to the temperature difference between the hot outdoors and cold indoors ($Q = U \cdot A \cdot \Delta T_{eq}$). It utilizes the 'sol-air' temperature to account for solar radiation heating the exterior brickwork.</li>
+                    <li><strong>Infiltration (External Sensible & Latent):</strong> Unconditioned outdoor air leaking in through cracks in doors and windows. This introduces massive amounts of humidity that the AC must condense out.</li>
+                    <li><strong>Occupancy & Equipment Load (Internal Sensible & Latent):</strong> Human bodies constantly emit metabolic heat and exhale moisture. Computers, lighting, and industrial machinery inject pure sensible heat directly into the space.</li>
+                </ul>
+
+                <h3>2. ASHRAE Thermal Comfort Standards</h3>
+                <p>The ultimate goal of air conditioning is not absolute cooling, but <strong>Human Thermal Comfort</strong>, defined by ASHRAE Standard 55 as "that condition of mind which expresses satisfaction with the thermal environment." Human comfort is dictated by six primary factors: Air Temperature, Radiant Temperature, Air Velocity, Humidity, Clothing Insulation (Clo), and Metabolic Rate (Met).</p>
+                <p>The human body maintains a core temperature of 37°C. When the environment is hot, the body vasodilates and sweats, relying on the latent heat of evaporation of sweat to cool the skin. If the indoor relative humidity exceeds 60%, the vapor pressure gradient between the skin and the air is too shallow, preventing sweat from evaporating. The AC system must, therefore, maintain the room around 24°C and 50% RH to optimize the body's natural thermodynamic regulatory systems.</p>
+            </article>
+            <div id="sim-ch9-desktop" class="interactive-container desktop-only" style="height:500px;"></div>
+            <div id="sim-ch9-mobile" class="interactive-container mobile-only" style="min-height:300px; padding:2rem; display: flex; flex-direction: column;">
+                <h4 style="margin-top: 0; text-align: center;">Comfort Index</h4>
+                <div style="margin-bottom: 1.5rem; text-align: center;">
+                    <label style="display: block; font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0.5rem;">Clothing (Clo): <span id="ch9-mob-clo-val">1.0</span></label>
+                    <input type="range" id="ch9-mob-clo" min="0" max="20" value="10" style="width: 80%;">
+                </div>
+                <div style="flex: 1; display: flex; justify-content: center; align-items: center;">
+                    <div id="ch9-mob-avatar" style="width: 100px; height: 100px; border-radius: 50%; background: #ffccaa; border: 4px solid #fff; transition: background 0.5s;"></div>
+                </div>
+                <div style="text-align: center; margin-top: 1rem; font-family: var(--font-mono); font-size: 0.9rem;">
+                    Status: <span id="ch9-mob-status" style="color: var(--accent-neon); font-weight: bold;">Comfortable</span>
+                </div>
+            </div>
+
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 10 -->
+            <header class="chapter-header" id="ch10">
+                <span class="chapter-badge">Chapter 10</span>
+                <h2>Heat Pumps & Defrosting Mechanisms</h2>
+                <p class="chapter-subtitle">Reversing the thermodynamic cycle for winter heating.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>A heat pump is simply a Vapor Compression Refrigeration System designed to utilize the heat rejected at the condenser as its primary useful output, rather than the heat absorbed at the evaporator. In essence, it is an air conditioner running in reverse. By pumping thermal energy from the cold winter outdoors into the warm indoors, heat pumps achieve extraordinary efficiencies compared to standard electric resistance heaters.</p>
+                
+                <h3>1. The Reversing Valve Mechanism</h3>
+                <p>The core of a reversible heat pump is the 4-way reversing valve. In <strong>Cooling Mode</strong>, the high-pressure hot gas from the compressor is routed to the outdoor coil (which acts as the condenser), and the cold expanded liquid is routed to the indoor coil (evaporator). In <strong>Heating Mode</strong>, the reversing valve slides over, routing the searing hot discharge gas directly to the indoor coil. The indoor coil now acts as the condenser, rejecting heat into the living room, while the outdoor coil acts as the evaporator, absorbing thermal energy from the freezing winter air.</p>
+                <div class="math-formula">
+                    $$ \text{COP}_{\text{Heat Pump}} = \frac{Q_H}{W_{\text{in}}} = \frac{Q_L + W_{\text{in}}}{W_{\text{in}}} = \text{COP}_{\text{Ref}} + 1 $$
+                </div>
+                <p>Because the work of the compressor $W_{in}$ is added to the heat extracted from outside $Q_L$, a heat pump always delivers more heat energy than the electrical energy it consumes, frequently achieving COPs between 3.0 and 4.0.</p>
+
+                <h3>2. The Winter Defrost Cycle</h3>
+                <p>A critical engineering challenge arises in winter. When the outdoor air is near freezing (e.g., 2°C) and highly humid, the outdoor coil (acting as the evaporator) must operate below 0°C to absorb heat. This causes moisture in the ambient air to freeze instantly upon contact with the coil, forming a thick layer of ice. Ice acts as a thermal insulator, choking airflow and plummeting the system's efficiency to zero.</p>
+                <p>To survive, the heat pump must periodically initiate a <strong>Defrost Cycle</strong>. The reversing valve aggressively snaps back into cooling mode, pumping hot gas to the outdoor coil to rapidly melt the ice. Simultaneously, the outdoor fan is deactivated to prevent cold air from slowing the melt, and auxiliary electric heat strips activate indoors to prevent the system from blowing freezing air onto the occupants during this 5-10 minute survival process.</p>
+            </article>
+            <div id="sim-ch10-desktop" class="interactive-container desktop-only" style="height:550px;"></div>
+            <div id="sim-ch10-mobile" class="interactive-container mobile-only" style="min-height:300px; padding:2rem; display: flex; flex-direction: column;">
+                <h4 style="margin-top: 0; text-align: center;">Defrost Control</h4>
+                <div style="margin-bottom: 1.5rem; text-align: center;">
+                    <label style="display: block; font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0.5rem;">Coil Frost Level</label>
+                    <input type="range" id="ch10-mob-frost" min="0" max="100" value="80" style="width: 80%;">
+                </div>
+                <div style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 1rem;">
+                    <div id="ch10-mob-coil" style="width: 120px; height: 120px; border: 4px solid #fff; background: #eee; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 2rem; transition: background 1s;">❄️</div>
+                    <button id="ch10-mob-btn" class="btn-retro">Defrost</button>
+                </div>
+            </div>
+            
+        </main>
+    </div>
+    
+    <!-- External Scripts for Simulators -->
+    <script type="module" src="rac-simulators-part1.js"></script>
+    <script type="module" src="rac-simulators-part2.js"></script>
+    <script type="module" src="rac-simulators-part3.js"></script>
+    <script src="rac-mobile-simulators.js"></script>
+    <script>
+        const themeToggle = document.getElementById('theme-toggle');
+        const htmlElement = document.documentElement;
+        
+        themeToggle.addEventListener('click', () => {
+            if (htmlElement.getAttribute('data-theme') === 'dark') {
+                htmlElement.removeAttribute('data-theme');
+            } else {
+                htmlElement.setAttribute('data-theme', 'dark');
+            }
+        });
+    </script>
+</body>
+</html>
