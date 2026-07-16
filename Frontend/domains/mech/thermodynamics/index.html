@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SCME | Thermodynamics</title>
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- MathJax for rendering formulas -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']]
+        }
+      };
+    </script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <!-- Three.js and modules for 3D Simulators -->
+    <script async src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"></script>
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://unpkg.com/three@0.154.0/build/three.module.js",
+          "three/addons/": "https://unpkg.com/three@0.154.0/examples/jsm/"
+        }
+      }
+    </script>
+</head>
+<body>
+    <nav class="top-nav">
+        <div class="nav-left">
+            <h1 class="logo">SCME.</h1>
+            <a href="../../mech/index.html" class="btn-retro back-btn">← ME Hub</a>
+        </div>
+        <button id="theme-toggle" class="btn-retro">Toggle Theme</button>
+    </nav>
+
+    <div class="learning-environment">
+        <aside class="chapter-sidebar">
+            <h3>Thermodynamics</h3>
+            <ul class="chapter-list">
+                <li><a href="#ch1" class="active">1. Basic Concepts</a></li>
+                <li><a href="#ch2">2. Work & Heat</a></li>
+                <li><a href="#ch3">3. First Law (Closed)</a></li>
+                <li><a href="#ch4">4. First Law (Open)</a></li>
+                <li><a href="#ch5">5. Second Law</a></li>
+                <li><a href="#ch6">6. Entropy</a></li>
+                <li><a href="#ch7">7. Thermo Relations</a></li>
+                <li><a href="#ch8">8. Pure Substances</a></li>
+                <li><a href="#ch9">9. Vapor Cycles</a></li>
+                <li><a href="#ch10">10. Gas Cycles</a></li>
+            </ul>
+        </aside>
+
+        <main class="reading-core">
+            
+            <!-- CHAPTER 1 -->
+            <header class="chapter-header" id="ch1">
+                <span class="chapter-badge">Chapter 1</span>
+                <h2>Basic Concepts and Definitions</h2>
+                <p class="chapter-subtitle">Systems, Properties, State, and the Zeroth Law of Thermodynamics.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Thermodynamics is the branch of physics and engineering that deals with the relationships between heat, work, temperature, and energy. In broad terms, thermodynamics governs how thermal energy is converted to and from other forms of energy and how it affects matter. The foundational concepts begin with defining the boundary of analysis.</p>
+                
+                <h3>1. Systems and Control Volumes</h3>
+                <p>A <strong>thermodynamic system</strong> is a defined quantity of matter or a region in space upon which attention is concentrated in the analysis of a problem. Everything external to the system is called the <em>surroundings</em>. The surface that separates the system from its surroundings is the <em>boundary</em>.</p>
+                <ul>
+                    <li><strong>Closed System (Control Mass):</strong> A system of fixed mass. No mass can cross its boundary, but energy (in the form of heat and work) can.</li>
+                    <li><strong>Open System (Control Volume):</strong> A properly selected region in space. Both mass and energy can cross the boundary of a control volume.</li>
+                    <li><strong>Isolated System:</strong> A closed system that does not communicate with the surroundings by any means (no heat, work, or mass transfer).</li>
+                </ul>
+
+                <h3>2. Properties, State, and Processes</h3>
+                <p>Any characteristic of a system is called a <strong>property</strong>. Familiar properties are pressure $P$, temperature $T$, volume $V$, and mass $m$. Properties are considered to be either <em>intensive</em> or <em>extensive</em>.</p>
+                <p><strong>Intensive properties</strong> are those that are independent of the mass of a system, such as temperature, pressure, and density. <strong>Extensive properties</strong> are those whose values depend on the size—or extent—of the system (e.g., Total Mass, Total Volume, Total Momentum). If we divide an extensive property by mass, it becomes an intensive property, known as a <em>specific property</em> (e.g., specific volume $v = V/m$).</p>
+                <p>A <strong>state</strong> is the condition of a system as described by its properties. Postulate: The state of a simple compressible system is completely specified by two independent, intensive properties. A <strong>process</strong> is any change that a system undergoes from one equilibrium state to another. The series of states through which a system passes during a process is the <em>path</em>.</p>
+
+                <h3>3. The Zeroth Law of Thermodynamics</h3>
+                <p>The Zeroth Law states that if two bodies are in thermal equilibrium with a third body, they are also in thermal equilibrium with each other. This law serves as the basis for the validity of temperature measurement. It allows us to build thermometers—the "third body" that we use to establish if two systems are at the same temperature.</p>
+            </article>
+
+            <!-- SIMULATOR CH 1: DESKTOP -->
+            <div id="sim-ch1-desktop" class="interactive-container desktop-only">
+                <div class="sim-overlay">
+                    <h4>3D P-V-T Surface Visualizer</h4>
+                    <div class="sim-controls">
+                        <label>Plane Slice:
+                            <select id="ch1-slice">
+                                <option value="none">Full 3D Surface</option>
+                                <option value="pv">Isothermal (P-V)</option>
+                                <option value="tv">Isobaric (T-V)</option>
+                                <option value="pt">Isochoric (P-T)</option>
+                            </select>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SIMULATOR CH 1: MOBILE -->
+            <div id="sim-ch1-mobile" class="interactive-container mobile-only" style="min-height: 250px; padding: 2rem; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+                <h4 style="margin: 0 0 0.5rem 0;">P-V-T Surface Viewer</h4>
+                <p style="font-size: 0.8rem; color: var(--text-secondary);">(Open in desktop mode for full 3D interactive view)</p>
+                <div style="width: 100%; height: 100px; background: repeating-linear-gradient(45deg, var(--bg-panel), var(--bg-panel) 10px, var(--border-color) 10px, var(--border-color) 20px); border: 2px dashed var(--accent-mech); margin-top: 1rem;"></div>
+            </div>
+            
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 2 -->
+            <header class="chapter-header" id="ch2">
+                <span class="chapter-badge">Chapter 2</span>
+                <h2>Work and Heat Transfer</h2>
+                <p class="chapter-subtitle">Boundary work, path functions, and the forms of energy transfer.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Energy can cross the boundary of a closed system in two distinct forms: heat and work. Understanding the fundamental difference and the mathematical representation of these energy transfer mechanisms is the core of thermodynamic analysis.</p>
+                
+                <h3>1. Heat Transfer</h3>
+                <p><strong>Heat</strong> ($Q$) is defined as the form of energy that is transferred between two systems (or a system and its surroundings) by virtue of a temperature difference. A process during which there is no heat transfer is called an <em>adiabatic process</em>. Note that heat is energy in transition; a system <em>contains</em> internal energy, not heat.</p>
+
+                <h3>2. Work and Boundary Work</h3>
+                <p><strong>Work</strong> ($W$) is the energy transfer associated with a force acting through a distance. In thermodynamics, work done by a system is considered positive, while work done on a system is negative. Like heat, work is a <strong>path function</strong>. It depends on the path taken between state 1 and state 2, not just the end states. Consequently, they have inexact differentials (denoted as $\delta W$ and $\delta Q$).</p>
+                <p>A very common form of mechanical work in thermodynamics is <strong>boundary work</strong> or $P-dV$ work, which occurs due to the expansion or compression of a gas in a piston-cylinder device.</p>
+                <div class="math-formula">
+                    $$ W_b = \int_{1}^{2} P \, dV $$
+                </div>
+                <p>On a Pressure-Volume ($P-V$) diagram, the area under the process curve represents the total boundary work done during a quasi-equilibrium expansion or compression process.</p>
+
+                <h3>3. Polytropic Processes</h3>
+                <p>During actual expansion and compression processes of gases, pressure and volume are often related by $PV^n = C$, where $n$ and $C$ are constants. Such a process is called a polytropic process. The boundary work for a polytropic process can be evaluated analytically:</p>
+                <div class="math-formula">
+                    $$ W_b = \frac{P_2 V_2 - P_1 V_1}{1 - n} \quad (\text{for } n \neq 1) $$
+                </div>
+                <p>If $n = 1$, the process is isothermal (for an ideal gas), and the work evaluates to $W_b = P_1 V_1 \ln(V_2/V_1)$.</p>
+            </article>
+
+            <!-- SIMULATOR CH 2 -->
+            <div id="sim-ch2-desktop" class="interactive-container desktop-only">
+                <div class="sim-overlay">
+                    <h4>Interactive P-V Engine</h4>
+                    <div class="sim-controls">
+                        <label>Process:
+                            <select id="ch2-process">
+                                <option value="isothermal">Isothermal (n=1)</option>
+                                <option value="isobaric">Isobaric (n=0)</option>
+                                <option value="adiabatic">Adiabatic (n=1.4)</option>
+                            </select>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SIMULATOR CH 2: MOBILE -->
+            <div id="sim-ch2-mobile" class="interactive-container mobile-only" style="min-height: 250px; padding: 2rem; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+                <h4 style="margin: 0 0 0.5rem 0;">P-V Boundary Work</h4>
+                <p style="font-size: 0.8rem; color: var(--text-secondary);">(Open in desktop mode for synchronized 3D piston-cylinder)</p>
+                <div style="width: 100%; height: 100px; background: repeating-linear-gradient(45deg, var(--bg-panel), var(--bg-panel) 10px, var(--border-color) 10px, var(--border-color) 20px); border: 2px dashed var(--accent-mech); margin-top: 1rem;"></div>
+            </div>
+
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 3 -->
+            <header class="chapter-header" id="ch3">
+                <span class="chapter-badge">Chapter 3</span>
+                <h2>First Law of Thermodynamics (Closed Systems)</h2>
+                <p class="chapter-subtitle">Conservation of Energy, Internal Energy, and Enthalpy.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>The First Law of Thermodynamics is simply a statement of the conservation of energy principle. It asserts that energy can be neither created nor destroyed during a process; it can only change forms.</p>
+                
+                <h3>1. Energy Balance for Closed Systems</h3>
+                <p>For a closed system undergoing a cycle, the net heat transfer equals the net work done. For a process (changing from state 1 to state 2), the net change in total energy of the system ($\Delta E$) is equal to the net heat transfer ($Q$) minus the net work done ($W$).</p>
+                <div class="math-formula">
+                    $$ Q - W = \Delta E $$
+                </div>
+                <p>The total energy $E$ of a system consists of macroscopic energies (kinetic, $KE$, and potential, $PE$) and microscopic energy, known as <strong>Internal Energy</strong> ($U$). For stationary closed systems, changes in kinetic and potential energy are negligible ($\Delta KE = \Delta PE = 0$). Thus, the First Law reduces to:</p>
+                <div class="math-formula">
+                    $$ Q - W = \Delta U $$
+                </div>
+                
+                <h3>2. Specific Heats</h3>
+                <p>The specific heat is defined as the energy required to raise the temperature of a unit mass of a substance by one degree. In thermodynamics, we are interested in two kinds of specific heats: specific heat at constant volume ($C_v$) and specific heat at constant pressure ($C_p$).</p>
+                <p>For ideal gases, internal energy $u$ is a function of temperature only. Therefore, the change in internal energy can always be calculated using $C_v$:</p>
+                <div class="math-formula">
+                    $$ du = C_v \, dT \implies \Delta u = \int_{T_1}^{T_2} C_v(T) \, dT $$
+                </div>
+
+                <h3>3. Enthalpy</h3>
+                <p>In the analysis of certain types of processes, particularly in constant-pressure closed systems and all open steady-flow systems, we frequently encounter the combination of properties $U + PV$. For convenience, this combination is defined as a new property, <strong>Enthalpy</strong> ($H$).</p>
+                <div class="math-formula">
+                    $$ H = U + PV \quad \text{and specific enthalpy:} \quad h = u + Pv $$
+                </div>
+                <p>For an ideal gas, $h$ is also a function of temperature only, and its change is related to the specific heat at constant pressure: $dh = C_p \, dT$.</p>
+            </article>
+
+            <!-- SIMULATOR CH 3 -->
+            <div id="sim-ch3-desktop" class="interactive-container desktop-only">
+                <div class="sim-overlay">
+                    <h4>Virtual Joule's Experiment Lab</h4>
+                    <div class="sim-controls">
+                        <label>Drop Height:
+                            <input type="range" id="ch3-height" min="1" max="10" step="1" value="5">
+                        </label>
+                        <button id="ch3-drop" class="btn-retro">Drop Weights</button>
+                    </div>
+                </div>
+            </div>
+            <!-- SIMULATOR CH 3: MOBILE -->
+            <div id="sim-ch3-mobile" class="interactive-container mobile-only" style="min-height: 250px; padding: 2rem; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+                <h4 style="margin: 0 0 0.5rem 0;">Joule's Experiment</h4>
+                <p style="font-size: 0.8rem; color: var(--text-secondary);">(Open in desktop mode for 3D paddle wheel simulation)</p>
+                <div style="width: 100%; height: 100px; background: repeating-linear-gradient(45deg, var(--bg-panel), var(--bg-panel) 10px, var(--border-color) 10px, var(--border-color) 20px); border: 2px dashed var(--accent-mech); margin-top: 1rem;"></div>
+            </div>
+            
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 4 -->
+            <header class="chapter-header" id="ch4">
+                <span class="chapter-badge">Chapter 4</span>
+                <h2>First Law of Thermodynamics (Open Systems)</h2>
+                <p class="chapter-subtitle">Control Volumes, Steady Flow Devices, and Mass Conservation.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Most engineering applications, such as water heaters, car radiators, turbines, and compressors, involve mass flow and must be analyzed as open systems or control volumes. Here, we must track both the mass entering and leaving the system, as well as the energy carried by that mass.</p>
+                
+                <h3>1. Mass Conservation</h3>
+                <p>The conservation of mass principle for a control volume is expressed as: the net mass transfer to or from a control volume during a time interval is equal to the net change in total mass within the control volume.</p>
+                <div class="math-formula">
+                    $$ \sum \dot{m}_{in} - \sum \dot{m}_{out} = \frac{dm_{CV}}{dt} $$
+                </div>
+                <p>Where mass flow rate is $\dot{m} = \rho V A$ ($\rho$ is density, $V$ is average velocity, and $A$ is cross-sectional area). For <strong>steady-flow processes</strong>, the total mass in the control volume remains constant ($dm_{CV}/dt = 0$), so the mass entering equals the mass leaving.</p>
+
+                <h3>2. Flow Work and Energy of a Flowing Fluid</h3>
+                <p>Unlike closed systems, open systems have mass crossing the boundary, and work is required to push mass into or out of the control volume. This is known as <strong>flow work</strong> or flow energy. The magnitude of flow work is $Pv$ (pressure times specific volume). Because of this, the total energy of a flowing fluid is the sum of its internal energy, flow energy, kinetic energy, and potential energy. Note that $u + Pv$ is exactly the definition of enthalpy ($h$).</p>
+                
+                <h3>3. The Steady-Flow Energy Equation (SFEE)</h3>
+                <p>A large number of engineering devices operate for long periods of time under the same conditions, classifying them as steady-flow devices. The volume, mass, and total energy content of the control volume remain constant. The First Law for a steady-flow process is:</p>
+                <div class="math-formula">
+                    $$ \dot{Q} - \dot{W} = \sum \dot{m}_{out} \left( h_{out} + \frac{V_{out}^2}{2} + g z_{out} \right) - \sum \dot{m}_{in} \left( h_{in} + \frac{V_{in}^2}{2} + g z_{in} \right) $$
+                </div>
+                <p>This equation is adapted for specific devices. For example, a <strong>Turbine</strong> produces power ($\dot{W}_{out} > 0$), is usually adiabatic ($\dot{Q} \approx 0$), and changes in kinetic and potential energy are often negligible. The SFEE reduces simply to $\dot{W}_{out} = \dot{m}(h_{in} - h_{out})$. Conversely, a <strong>Compressor</strong> requires power input to increase the pressure (and thus enthalpy) of a fluid.</p>
+            </article>
+
+            <!-- SIMULATOR CH 4 -->
+            <div id="sim-ch4-desktop" class="interactive-container desktop-only">
+                <div class="sim-overlay">
+                    <h4>3D Steady-Flow Device Sandbox</h4>
+                    <div class="sim-controls">
+                        <label>Device:
+                            <select id="ch4-device">
+                                <option value="turbine">Steam Turbine</option>
+                                <option value="compressor">Air Compressor</option>
+                                <option value="nozzle">Nozzle</option>
+                            </select>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <!-- SIMULATOR CH 4: MOBILE -->
+            <div id="sim-ch4-mobile" class="interactive-container mobile-only" style="min-height: 250px; padding: 2rem; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+                <h4 style="margin: 0 0 0.5rem 0;">Steady Flow Sandbox</h4>
+                <p style="font-size: 0.8rem; color: var(--text-secondary);">(Open in desktop mode for 3D Flow Vectors)</p>
+                <div style="width: 100%; height: 100px; background: repeating-linear-gradient(45deg, var(--bg-panel), var(--bg-panel) 10px, var(--border-color) 10px, var(--border-color) 20px); border: 2px dashed var(--accent-mech); margin-top: 1rem;"></div>
+            </div>
+
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 5 -->
+            <header class="chapter-header" id="ch5">
+                <span class="chapter-badge">Chapter 5</span>
+                <h2>The Second Law of Thermodynamics</h2>
+                <p class="chapter-subtitle">Direction of processes, Heat Engines, and the Carnot Principle.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>The First Law dictates that energy is conserved, but it places no restriction on the direction of a process. A cup of hot coffee cools down in a room, but a cold cup of coffee never spontaneously extracts heat from the room to get hot, even though both scenarios satisfy the First Law. The Second Law of Thermodynamics establishes the fundamental rule that processes occur in a certain direction, and that energy has quality as well as quantity.</p>
+                
+                <h3>1. Heat Engines and Thermal Efficiency</h3>
+                <p>Work can easily be converted to heat completely (e.g., electrical resistance heating), but converting heat to work requires a special device called a <strong>Heat Engine</strong>. Heat engines receive heat ($Q_H$) from a high-temperature source, convert part of this heat to work ($W_{net}$), and reject the remaining waste heat ($Q_L$) to a low-temperature sink.</p>
+                <p>The performance of a heat engine is expressed by its thermal efficiency ($\eta_{th}$), the ratio of the net work output to the total heat input:</p>
+                <div class="math-formula">
+                    $$ \eta_{th} = \frac{W_{net,out}}{Q_H} = 1 - \frac{Q_L}{Q_H} $$
+                </div>
+                
+                <h3>2. Kelvin-Planck and Clausius Statements</h3>
+                <p>The <strong>Kelvin-Planck statement</strong> of the Second Law states: <em>It is impossible for any device that operates on a thermodynamic cycle to receive heat from a single thermal reservoir and produce a net amount of work.</em> This implies no heat engine can have a thermal efficiency of 100%; some heat MUST be rejected to a cold sink.</p>
+                <p>The <strong>Clausius statement</strong> deals with refrigerators and heat pumps: <em>It is impossible to construct a device that operates in a cycle and produces no other effect than the transfer of heat from a lower-temperature body to a higher-temperature body.</em> Work input is always required.</p>
+
+                <h3>3. Reversible Processes and the Carnot Cycle</h3>
+                <p>A reversible process is defined as a process that can be reversed without leaving any trace on the surroundings. Irreversibilities—such as friction, unrestrained expansion, and heat transfer across a finite temperature difference—prevent actual processes from being reversible.</p>
+                <p>The <strong>Carnot cycle</strong> is the most efficient cycle that can be executed between a thermal source at temperature $T_H$ and a sink at temperature $T_L$. The Carnot principles state that the efficiency of an irreversible heat engine is always less than the efficiency of a reversible one operating between the same two reservoirs. The maximum possible efficiency (Carnot efficiency) depends entirely on the absolute temperatures:</p>
+                <div class="math-formula">
+                    $$ \eta_{th,rev} = 1 - \frac{T_L}{T_H} $$
+                </div>
+            </article>
+
+            <!-- SIMULATOR CH 5 -->
+            <div id="sim-ch5-desktop" class="interactive-container desktop-only">
+                <div class="sim-overlay">
+                    <h4>Dynamic Energy Flow (Sankey Architecture)</h4>
+                    <div class="sim-controls">
+                        <label>$T_H$ (Source Temp):
+                            <input type="range" id="ch5-th" min="300" max="1500" step="10" value="1000">
+                        </label>
+                        <label>$T_L$ (Sink Temp):
+                            <input type="range" id="ch5-tl" min="200" max="500" step="10" value="300">
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <!-- SIMULATOR CH 5: MOBILE -->
+            <div id="sim-ch5-mobile" class="interactive-container mobile-only" style="min-height: 250px; padding: 2rem; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+                <h4 style="margin: 0 0 0.5rem 0;">Sankey Diagram Flow</h4>
+                <p style="font-size: 0.8rem; color: var(--text-secondary);">(Open in desktop mode for dynamic energy flow lines)</p>
+                <div style="width: 100%; height: 100px; background: repeating-linear-gradient(45deg, var(--bg-panel), var(--bg-panel) 10px, var(--border-color) 10px, var(--border-color) 20px); border: 2px dashed var(--accent-mech); margin-top: 1rem;"></div>
+            </div>
+
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 6 -->
+            <header class="chapter-header" id="ch6">
+                <span class="chapter-badge">Chapter 6</span>
+                <h2>Entropy and the Arrow of Time</h2>
+                <p class="chapter-subtitle">Clausius inequality, Entropy generation, and isentropic efficiency.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>The Second Law of Thermodynamics leads directly to the definition of a new, highly profound property: Entropy. While energy is conserved, entropy is a measure of the molecular disorder or randomness of a system, and it is governed by a principle of continuous increase.</p>
+                
+                <h3>1. The Clausius Inequality and Entropy Definition</h3>
+                <p>The Clausius inequality states that for any cycle, the cyclic integral of $\delta Q / T$ is always less than or equal to zero. For internally reversible processes, the integral is exactly zero. This implies that the quantity $(\delta Q / T)_{int,rev}$ is independent of the path and is therefore a property. We define this property as <strong>Entropy</strong> ($S$).</p>
+                <div class="math-formula">
+                    $$ dS = \left(\frac{\delta Q}{T}\right)_{int,rev} \quad (\text{kJ/K}) $$
+                </div>
+                <p>For an irreversible process, the entropy change of the system is greater than the integral of $\delta Q / T$. The difference is the entropy generated ($S_{gen}$) due to irreversibilities.</p>
+
+                <h3>2. Principle of Increase of Entropy</h3>
+                <p>The entropy of an isolated system during a process always increases or, in the limiting case of a reversible process, remains constant. In other words, entropy can be transferred via heat, but it is also <em>generated</em> by irreversibilities. It can never be destroyed.</p>
+                <div class="math-formula">
+                    $$ \Delta S_{sys} + \Delta S_{surr} = S_{gen} \ge 0 $$
+                </div>
+                <p>This principle dictates the direction of time. A process will only proceed in the direction that satisfies $S_{gen} \ge 0$.</p>
+
+                <h3>3. Isentropic Processes and T-s Diagrams</h3>
+                <p>A process during which the entropy remains constant is an <strong>isentropic process</strong>. Many engineering devices (turbines, pumps, compressors) are analyzed by comparing their actual performance to an idealized isentropic process. On a Temperature-Entropy ($T-s$) diagram, an internally reversible, adiabatic (isentropic) process is a vertical line. The area under a reversible process curve on a $T-s$ diagram represents the heat transfer.</p>
+            </article>
+
+            <!-- SIMULATOR CH 6 -->
+            <div id="sim-ch6-desktop" class="interactive-container desktop-only">
+                <div class="sim-overlay">
+                    <h4>Microscopic Disorder & Entropy Particle Engine</h4>
+                    <div class="sim-controls">
+                        <button id="ch6-start" class="btn-retro">Remove Partition</button>
+                    </div>
+                </div>
+            </div>
+            <!-- SIMULATOR CH 6: MOBILE -->
+            <div id="sim-ch6-mobile" class="interactive-container mobile-only" style="min-height: 250px; padding: 2rem; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+                <h4 style="margin: 0 0 0.5rem 0;">Entropy Particle Engine</h4>
+                <p style="font-size: 0.8rem; color: var(--text-secondary);">(Open in desktop mode for molecular collision engine)</p>
+                <div style="width: 100%; height: 100px; background: repeating-linear-gradient(45deg, var(--bg-panel), var(--bg-panel) 10px, var(--border-color) 10px, var(--border-color) 20px); border: 2px dashed var(--accent-mech); margin-top: 1rem;"></div>
+            </div>
+
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 7 -->
+            <header class="chapter-header" id="ch7">
+                <span class="chapter-badge">Chapter 7</span>
+                <h2>Thermodynamic Relations</h2>
+                <p class="chapter-subtitle">Maxwell relations, partial differentials, and property derivations.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Properties such as internal energy ($u$), enthalpy ($h$), and entropy ($s$) cannot be measured directly. However, they are mathematically related to measurable properties like pressure ($P$), specific volume ($v$), and temperature ($T$). The mathematical framework of thermodynamics relies on partial differential calculus to establish these relations.</p>
+                
+                <h3>1. The Maxwell Relations</h3>
+                <p>The Maxwell relations are equations that relate the partial derivatives of properties $P, v, T$, and $s$ to each other. They are obtained from exact differentials of thermodynamic potentials (internal energy $du$, enthalpy $dh$, Helmholtz function $da$, and Gibbs function $dg$).</p>
+                <p>For example, from $du = T \, ds - P \, dv$, applying the exactness test yields the first Maxwell relation:</p>
+                <div class="math-formula">
+                    $$ \left(\frac{\partial T}{\partial v}\right)_s = -\left(\frac{\partial P}{\partial s}\right)_v $$
+                </div>
+                <p>Similar relations are derived for the other potentials, providing a crucial bridge between measurable properties (like the isothermal compressibility) and unmeasurable properties (like entropy).</p>
+
+                <h3>2. The Clapeyron Equation</h3>
+                <p>The Clapeyron equation enables us to determine the enthalpy of vaporization ($h_{fg}$) at a given temperature by measuring only the slope of the saturation curve on a $P-T$ diagram ($dP_{sat}/dT$) and the specific volumes of the saturated liquid and vapor.</p>
+                <div class="math-formula">
+                    $$ \left(\frac{dP}{dT}\right)_{sat} = \frac{h_{fg}}{T v_{fg}} $$
+                </div>
+                
+                <h3>3. Generalized Relations for du, dh, and ds</h3>
+                <p>Using the Maxwell relations, one can derive generalized equations for changes in internal energy, enthalpy, and entropy for any substance, regardless of whether it is an ideal gas. For instance, the general change in enthalpy is given by:</p>
+                <div class="math-formula">
+                    $$ dh = C_p \, dT + \left[ v - T \left(\frac{\partial v}{\partial T}\right)_P \right] dP $$
+                </div>
+                <p>For an ideal gas where $v = RT/P$, the bracketed term evaluates exactly to zero, proving mathematically that the enthalpy of an ideal gas is a function of temperature alone.</p>
+            </article>
+
+            <!-- No Simulator for Chapter 7 - Pure Mathematics -->
+
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 8 -->
+            <header class="chapter-header" id="ch8">
+                <span class="chapter-badge">Chapter 8</span>
+                <h2>Properties of Pure Substances</h2>
+                <p class="chapter-subtitle">Phase change, saturation domes, and thermodynamic property tables.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>A pure substance is one that has a fixed chemical composition throughout, such as water, nitrogen, or carbon dioxide. Understanding the thermodynamic behavior of pure substances, particularly during phase changes (boiling/condensation), is essential for designing power plants and refrigeration systems.</p>
+                
+                <h3>1. Phase-Change Processes</h3>
+                <p>Consider heating liquid water at a constant pressure of 1 atm. The liquid expands slightly until it reaches 100°C. This is the <em>saturated liquid</em> state. As heat is added, the temperature remains totally constant while the liquid boils into vapor. This is the <em>saturated liquid-vapor mixture</em> phase. Once the last drop of liquid evaporates, the state is <em>saturated vapor</em>. Further heating increases the temperature, creating a <em>superheated vapor</em>.</p>
+                <p>The temperature at which boiling occurs for a given pressure is the saturation temperature ($T_{sat}$), and the corresponding pressure is the saturation pressure ($P_{sat}$).</p>
+
+                <h3>2. Quality ($x$) and the Vapor Dome</h3>
+                <p>Within the saturation region, temperature and pressure are dependent properties (knowing $T_{sat}$ gives you $P_{sat}$). To define the state of a mixture, we need a new intensive property called <strong>quality</strong> ($x$), defined as the ratio of the mass of vapor to the total mass of the mixture.</p>
+                <div class="math-formula">
+                    $$ x = \frac{m_{vapor}}{m_{total}} \quad (0 \le x \le 1) $$
+                </div>
+                <p>Any property (e.g., specific volume, enthalpy) in the mixture region is calculated as a weighted average of the liquid ($f$) and vapor ($g$) properties: $v = v_f + x(v_g - v_f) = v_f + x v_{fg}$.</p>
+                <p>When these states are plotted on a $T-v$ or $P-v$ diagram, they form a "Vapor Dome". The peak of the dome is the <strong>critical point</strong>, beyond which there is no distinct phase transition process (liquid and vapor states are indistinguishable).</p>
+            </article>
+
+            <!-- SIMULATOR CH 8 -->
+            <div id="sim-ch8-desktop" class="interactive-container desktop-only">
+                <div class="sim-overlay">
+                    <h4>3D Phase Dome & Vapor Quality Explorer</h4>
+                    <div class="sim-controls">
+                        <label>State ($x$):
+                            <input type="range" id="ch8-quality" min="0" max="1" step="0.05" value="0.5">
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <!-- SIMULATOR CH 8: MOBILE -->
+            <div id="sim-ch8-mobile" class="interactive-container mobile-only" style="min-height: 250px; padding: 2rem; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+                <h4 style="margin: 0 0 0.5rem 0;">Vapor Dome Explorer</h4>
+                <p style="font-size: 0.8rem; color: var(--text-secondary);">(Open in desktop mode for interactive 3D phase states)</p>
+                <div style="width: 100%; height: 100px; background: repeating-linear-gradient(45deg, var(--bg-panel), var(--bg-panel) 10px, var(--border-color) 10px, var(--border-color) 20px); border: 2px dashed var(--accent-mech); margin-top: 1rem;"></div>
+            </div>
+
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 9 -->
+            <header class="chapter-header" id="ch9">
+                <span class="chapter-badge">Chapter 9</span>
+                <h2>Vapor Power Cycles (Rankine)</h2>
+                <p class="chapter-subtitle">Steam power plants, superheating, and efficiency optimization.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Vapor power cycles form the backbone of the world's electrical power generation grid, primarily utilizing water as the working fluid due to its high enthalpy of vaporization. While the Carnot cycle is the most theoretically efficient, it is impractical to execute in real hardware. The practical, idealized cycle for steam power plants is the <strong>Ideal Rankine Cycle</strong>.</p>
+                
+                <h3>1. The Ideal Rankine Cycle</h3>
+                <p>The standard Rankine cycle consists of four internally reversible processes flowing through four steady-flow devices:</p>
+                <ul>
+                    <li><strong>1-2: Isentropic compression</strong> in a pump. Liquid water is compressed to the boiler pressure. Work input is required.</li>
+                    <li><strong>2-3: Constant pressure heat addition</strong> in a boiler. The water is heated, boiled, and usually superheated to a high temperature.</li>
+                    <li><strong>3-4: Isentropic expansion</strong> in a turbine. High-energy steam expands, turning the turbine blades and generating significant shaft work.</li>
+                    <li><strong>4-1: Constant pressure heat rejection</strong> in a condenser. Waste steam is condensed back to a saturated liquid.</li>
+                </ul>
+
+                <h3>2. Increasing Cycle Efficiency</h3>
+                <p>The basic thermal efficiency of the Rankine cycle can be determined by evaluating the SFEE for each component. $\eta_{th} = (W_{turbine} - W_{pump}) / Q_{in}$. Engineers employ several strategies to boost this efficiency by increasing the average temperature at which heat is added to the cycle:</p>
+                <p><strong>Superheating:</strong> Heating the steam well above its saturation temperature in the boiler. This increases efficiency and, crucially, increases the steam quality at the turbine exit, preventing water droplets from eroding the turbine blades.</p>
+                <p><strong>Reheating:</strong> Expanding the steam in a high-pressure turbine, routing it back to the boiler to be reheated, and then expanding it through a low-pressure turbine.</p>
+                <p><strong>Regeneration:</strong> Extracting ("bleeding") a portion of the hot steam from the turbine to preheat the liquid water (feedwater) before it enters the boiler, significantly reducing the required $Q_{in}$.</p>
+            </article>
+
+            <!-- SIMULATOR CH 9 -->
+            <div id="sim-ch9-desktop" class="interactive-container desktop-only">
+                <div class="sim-overlay">
+                    <h4>Interactive Power Plant Architect</h4>
+                    <div class="sim-controls">
+                        <label>Boiler Pressure (MPa):
+                            <input type="range" id="ch9-pressure" min="2" max="15" step="1" value="5">
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <!-- SIMULATOR CH 9: MOBILE -->
+            <div id="sim-ch9-mobile" class="interactive-container mobile-only" style="min-height: 250px; padding: 2rem; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+                <h4 style="margin: 0 0 0.5rem 0;">Power Plant Architect</h4>
+                <p style="font-size: 0.8rem; color: var(--text-secondary);">(Open in desktop mode for 3D Turbine/Boiler simulator)</p>
+                <div style="width: 100%; height: 100px; background: repeating-linear-gradient(45deg, var(--bg-panel), var(--bg-panel) 10px, var(--border-color) 10px, var(--border-color) 20px); border: 2px dashed var(--accent-mech); margin-top: 1rem;"></div>
+            </div>
+
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 10 -->
+            <header class="chapter-header" id="ch10">
+                <span class="chapter-badge">Chapter 10</span>
+                <h2>Gas Power Cycles</h2>
+                <p class="chapter-subtitle">Otto, Diesel, and Brayton cycles modeling internal combustion.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Unlike vapor power cycles, the working fluid in gas power cycles remains a gas throughout the entire cycle. These cycles model internal combustion (IC) engines and gas turbine engines. Analyzing complex combustion processes is difficult, so engineers use <strong>Air-Standard Assumptions</strong>, treating the working fluid purely as air behaving as an ideal gas, and replacing combustion with a heat-addition process.</p>
+                
+                <h3>1. The Otto Cycle (Spark-Ignition)</h3>
+                <p>The Otto cycle models the operation of a gasoline-powered four-stroke engine. The ideal cycle consists of: Isentropic compression, constant-volume heat addition (representing the explosive spark ignition), isentropic expansion (the power stroke), and constant-volume heat rejection.</p>
+                <p>The thermal efficiency of the Otto cycle depends entirely on the <strong>compression ratio</strong> ($r = V_{max} / V_{min}$) and the specific heat ratio ($k = C_p/C_v$):</p>
+                <div class="math-formula">
+                    $$ \eta_{th,Otto} = 1 - \frac{1}{r^{k-1}} $$
+                </div>
+                <p>Higher compression ratios yield higher efficiencies, but are limited by engine "knock" (autoignition of the fuel).</p>
+
+                <h3>2. The Diesel Cycle (Compression-Ignition)</h3>
+                <p>Diesel engines compress only air, reaching extreme temperatures. Fuel is then injected and spontaneously ignites. Because the fuel injection process takes time as the piston begins moving down, the combustion process is modeled as <strong>constant-pressure heat addition</strong>, rather than constant-volume. This single difference fundamentally alters the cycle physics, creating the Diesel cycle.</p>
+
+                <h3>3. The Brayton Cycle (Gas Turbines)</h3>
+                <p>The Brayton cycle models gas turbines (jet engines). Unlike piston engines (closed systems operating on a volume cycle), gas turbines are open, steady-flow systems. The ideal Brayton cycle utilizes an isentropic compressor, constant-pressure heat addition (combustion chamber), and an isentropic turbine. Its efficiency is governed by the <strong>pressure ratio</strong> ($r_p = P_{high} / P_{low}$) across the compressor.</p>
+            </article>
+
+            <!-- SIMULATOR CH 10 -->
+            <div id="sim-ch10-desktop" class="interactive-container desktop-only">
+                <div class="sim-overlay">
+                    <h4>3D IC Engine Cutaway & Kinematics</h4>
+                    <div class="sim-controls">
+                        <button id="ch10-animate" class="btn-retro">Play Stroke</button>
+                    </div>
+                </div>
+            </div>
+            <!-- SIMULATOR CH 10: MOBILE -->
+            <div id="sim-ch10-mobile" class="interactive-container mobile-only" style="min-height: 250px; padding: 2rem; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+                <h4 style="margin: 0 0 0.5rem 0;">IC Engine Kinematics</h4>
+                <p style="font-size: 0.8rem; color: var(--text-secondary);">(Open in desktop mode for 3D engine cutaway)</p>
+                <div style="width: 100%; height: 100px; background: repeating-linear-gradient(45deg, var(--bg-panel), var(--bg-panel) 10px, var(--border-color) 10px, var(--border-color) 20px); border: 2px dashed var(--accent-mech); margin-top: 1rem;"></div>
+            </div>
+
+        </main>
+    </div>
+    
+    <!-- Link to our future Simulation Engine -->
+    <script type="module" src="thermo-engine.js"></script>
+
+    <!-- UI Interaction Scripts -->
+    <script>
+        // Smooth scrolling for sidebar links
+        document.querySelectorAll('.chapter-list a').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                
+                // Update active state
+                document.querySelectorAll('.chapter-list a').forEach(a => a.classList.remove('active'));
+                this.classList.add('active');
+
+                // Scroll with offset for sticky nav
+                window.scrollTo({
+                    top: targetElement.offsetTop - 100,
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Theme Toggle
+        const themeBtn = document.getElementById('theme-toggle');
+        const htmlElement = document.documentElement;
+        
+        themeBtn.addEventListener('click', () => {
+            const currentTheme = htmlElement.getAttribute('data-theme');
+            if (currentTheme === 'dark') {
+                htmlElement.removeAttribute('data-theme');
+            } else {
+                htmlElement.setAttribute('data-theme', 'dark');
+            }
+        });
+    </script>
+</body>
+</html>
