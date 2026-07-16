@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SCME | Manufacturing Technology</title>
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- MathJax for rendering formulas -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']]
+        }
+      };
+    </script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+    <nav class="top-nav">
+        <div class="nav-left">
+            <h1 class="logo">SCME.</h1>
+            <a href="../../mech/index.html" class="btn-retro back-btn">← ME Hub</a>
+        </div>
+        <button id="theme-toggle" class="btn-retro">Toggle Theme</button>
+    </nav>
+
+    <div class="learning-environment">
+        
+        <!-- Table of Contents -->
+        <section class="chapter-index-container">
+            <h3>Course Curriculum</h3>
+            <ul class="chapter-grid">
+                <li><a href="#ch1">1. Metal Casting & Foundry</a></li>
+                <li><a href="#ch2">2. Bulk Deformation (Forging & Rolling)</a></li>
+                <li><a href="#ch3">3. Sheet Metal Operations</a></li>
+                <li><a href="#ch4">4. Mechanics of Machining</a></li>
+                <li><a href="#ch5">5. Tool Wear & Economics</a></li>
+                <li><a href="#ch6">6. Non-Traditional Machining</a></li>
+                <li><a href="#ch7">7. Welding & Joining</a></li>
+                <li><a href="#ch8">8. CNC & G-Code Programming</a></li>
+                <li><a href="#ch9">9. Additive Manufacturing</a></li>
+                <li><a href="#ch10">10. Metrology & Quality Control</a></li>
+                <li><a href="#ch11">11. Advanced Mfg Systems (CIM/FMS)</a></li>
+            </ul>
+        </section>
+
+        <main class="reading-core">
+            
+            <!-- CHAPTER 1 -->
+            <header class="chapter-header" id="ch1">
+                <span class="chapter-badge">Chapter 1</span>
+                <h2>Metal Casting & Foundry Processes</h2>
+                <p class="chapter-subtitle">Solidification dynamics, shrinkage allowances, and Chvorinov's rule.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Metal casting is one of the oldest and most versatile manufacturing processes. A sacrificial or permanent mold cavity is created into which molten metal is poured. The physics of casting involve complex fluid dynamics, heat transfer, and metallurgical phase transformations.</p>
+                
+                <h3>1. Solidification Time and Chvorinov's Rule</h3>
+                <p>When molten metal fills a mold, it begins losing heat to the surrounding mold walls. The rate at which it solidifies dictates the grain structure and mechanical properties of the final part. Nicolai Chvorinov experimentally derived a relationship indicating that the solidification time ($t_s$) is directly proportional to the square of the ratio of the casting's volume ($V$) to its surface area ($A$).</p>
+                <div class="math-formula">
+                    $$ t_s = C_m \left( \frac{V}{A} \right)^n $$
+                </div>
+                <p>Where $C_m$ is the mold constant (depending on mold material, metal properties, and pouring temperature) and $n$ is typically taken as 2. A sphere possesses the lowest surface-area-to-volume ratio, making it solidify the slowest, which is why risers (reservoirs of molten metal designed to feed the casting as it shrinks) are often roughly cylindrical or spherical.</p>
+                
+                <h3>2. Fluid Dynamics in the Gating System</h3>
+                <p>The gating system (sprue, runner, and gates) must be designed to avoid turbulence, which traps gases and oxides. Applying Bernoulli's equation between the top of the pouring basin (point 1) and the bottom of the sprue (point 2):</p>
+                <div class="math-formula">
+                    $$ h_1 + \frac{P_1}{\rho g} + \frac{v_1^2}{2g} = h_2 + \frac{P_2}{\rho g} + \frac{v_2^2}{2g} + h_f $$
+                </div>
+                <p>Assuming the velocity at the top is negligible ($v_1 \approx 0$) and ignoring friction ($h_f = 0$), the velocity of the molten metal at the base of the sprue is $v_2 = \sqrt{2gh}$, where $h$ is the sprue height. To prevent aspiration (suction of air into the mold due to a pressure drop), the sprue must be tapered. By the continuity equation ($A_1 v_1 = A_2 v_2$), as velocity increases down the sprue, the cross-sectional area must decrease parabolically.</p>
+            </article>
+            <div id="sim-ch1" class="interactive-container">
+                <div class="sim-overlay">
+                    <h4>Molten Flow Dynamics</h4>
+                    <p class="sim-desc">Design a sprue and pour molten metal. Visualize fluid velocity, turbulence, and the solidification gradient based on Chvorinov's rule.</p>
+                    <div class="sim-controls">
+                        <label>Sprue Taper: 
+                            <select id="sim1-taper">
+                                <option value="straight">Straight (High Aspiration)</option>
+                                <option value="tapered">Tapered (Ideal)</option>
+                            </select>
+                        </label>
+                        <button id="sim1-pour" class="btn-retro">Pour Metal</button>
+                    </div>
+                    <div class="sim-stats">
+                        Sprue Base Velocity: <span id="sim1-vel">0.0</span> m/s | Solidification Time: <span id="sim1-ts">---</span> s
+                    </div>
+                </div>
+                <div class="sim-canvas-area" id="canvas-container-1">
+                    <div class="placeholder-text">[3D Engine Placeholder: Casting Fluid Dynamics]</div>
+                </div>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 2 -->
+            <header class="chapter-header" id="ch2">
+                <span class="chapter-badge">Chapter 2</span>
+                <h2>Bulk Deformation: Forging & Rolling</h2>
+                <p class="chapter-subtitle">Plasticity, true stress/strain, strain hardening, and rolling mill bite mechanics.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Bulk deformation processes change the shape of a solid metal workpiece by inducing massive plastic deformation. Unlike machining, material is not removed; it is displaced. The two primary categories are forging (compressive squeezing) and rolling (passing through rotating cylinders).</p>
+                
+                <h3>1. True Stress and True Strain</h3>
+                <p>In massive deformation, engineering stress ($s = F/A_0$) and engineering strain ($e = \Delta L / L_0$) are grossly inaccurate because the cross-sectional area changes significantly. We must use <strong>True Stress ($\sigma$)</strong> and <strong>True Strain ($\epsilon$)</strong>, defined based on instantaneous dimensions:</p>
+                <div class="math-formula">
+                    $$ \sigma = \frac{F}{A_i} = s(1+e) \quad ; \quad \epsilon = \int_{L_0}^{L} \frac{dL}{L} = \ln\left(\frac{L}{L_0}\right) = \ln(1+e) $$
+                </div>
+                <p>During cold working, the metal strain hardens (work hardens) due to dislocation entanglement within the crystal lattice. This is mathematically modeled by the flow curve equation (Hollomon's equation):</p>
+                <div class="math-formula">
+                    $$ \sigma = K \epsilon^n $$
+                </div>
+                <p>Where $K$ is the strength coefficient and $n$ is the strain hardening exponent (typically 0.1 to 0.5 for metals). At elevated temperatures (hot working), recrystallization outpaces dislocation generation, effectively dropping $n$ to zero, making the metal behave like a viscous fluid.</p>
+                
+                <h3>2. Mechanics of Flat Rolling</h3>
+                <p>In flat rolling, a strip of thickness $h_0$ is reduced to $h_f$ by rolls of radius $R$. The draft ($d = h_0 - h_f$) is the amount of thickness reduction. For the workpiece to be drawn into the rolls, the friction force pulling it in must exceed the horizontal component of the normal force pushing it out. This establishes the maximum possible draft before the rolls simply slip on the metal:</p>
+                <div class="math-formula">
+                    $$ d_{max} = \mu^2 R $$
+                </div>
+                <p>Where $\mu$ is the coefficient of friction. Furthermore, the true strain is $\epsilon = \ln(h_0/h_f)$, and the average flow stress $\bar{Y_f} = \frac{K\epsilon^n}{1+n}$. The required roll force is roughly $F = \bar{Y_f} w L$, where $L = \sqrt{R \Delta h}$ is the contact length.</p>
+            </article>
+            <div id="sim-ch2" class="interactive-container">
+                <div class="sim-overlay">
+                    <h4>The Rolling Mill</h4>
+                    <p class="sim-desc">Feed a metal billet through a 3D rolling mill. Observe the elongation of grain boundaries and the internal stress states based on the roll gap and friction.</p>
+                    <div class="sim-controls">
+                        <label>Roll Gap ($h_f$): <input type="range" id="sim2-gap" min="1" max="10" value="5"></label>
+                        <label>Friction ($\mu$): <input type="range" id="sim2-mu" min="0.05" max="0.3" step="0.01" value="0.15"></label>
+                        <button id="sim2-roll" class="btn-retro">Engage Mill</button>
+                    </div>
+                    <div class="sim-stats">
+                        Reduction: <span id="sim2-red">0</span>% | Flow Stress: <span id="sim2-stress">0</span> MPa | Status: <span id="sim2-status">Idle</span>
+                    </div>
+                </div>
+                <div class="sim-canvas-area" id="canvas-container-2">
+                    <div class="placeholder-text">[3D Engine Placeholder: Rolling Mill]</div>
+                </div>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 3 -->
+            <header class="chapter-header" id="ch3">
+                <span class="chapter-badge">Chapter 3</span>
+                <h2>Sheet Metal Operations</h2>
+                <p class="chapter-subtitle">Shearing, bending allowances (K-factor), springback, and deep drawing limits.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Unlike bulk deformation, sheet metal forming involves high surface-area-to-volume ratio workpieces. Processes include cutting (shearing, blanking, punching), bending, and drawing.</p>
+                
+                <h3>1. Bending and the Neutral Axis</h3>
+                <p>When sheet metal is bent, the outer fibers are in tension (stretching) and the inner fibers are in compression (shrinking). There exists a plane that experiences exactly zero strain, called the neutral axis. Its position relative to the inner radius is defined by the K-factor. Calculating the accurate bend allowance ($L_b$) is critical to determining the initial flat blank length.</p>
+                <div class="math-formula">
+                    $$ L_b = \alpha (R + K \cdot T) $$
+                </div>
+                <p>Where $\alpha$ is the bend angle in radians, $R$ is the inside bend radius, and $T$ is the sheet thickness. Upon release of the bending force, the elastic strain energy recovers, causing the bend angle to open slightly—a phenomenon known as springback. To achieve a $90^\circ$ bend, the die must be overbent (e.g., to $88^\circ$).</p>
+                
+                <h3>2. Deep Drawing Mechanics</h3>
+                <p>Deep drawing forces a flat sheet blank into a die cavity using a punch, forming a cup-shaped part (e.g., beverage cans). The blank is held against the die by a blankholder ring to prevent flange wrinkling. The drawing ratio ($DR$) is the ratio of the initial blank diameter ($D_b$) to the punch diameter ($D_p$).</p>
+                <div class="math-formula">
+                    $$ DR = \frac{D_b}{D_p} \le 2.0 \quad \text{(for single draw)} $$
+                </div>
+                <p>If the drawing ratio exceeds roughly 2.0, the immense tensile stress exerted on the cup wall by the punch will exceed the metal's ultimate tensile strength, causing tearing. The required punch force is approximated by:</p>
+                <div class="math-formula">
+                    $$ F = \pi D_p t (TS) \left( \frac{D_b}{D_p} - 0.7 \right) $$
+                </div>
+            </article>
+            <div id="sim-ch3" class="interactive-container">
+                <div class="sim-overlay">
+                    <h4>Deep Drawing Press</h4>
+                    <p class="sim-desc">Control a 3D punch and die. Attempt to draw a deep cup. Balance the blankholder force to prevent wrinkling without causing tensile tearing.</p>
+                    <div class="sim-controls">
+                        <label>Drawing Ratio ($D_b/D_p$): <input type="range" id="sim3-dr" min="1.1" max="2.5" step="0.1" value="1.5"></label>
+                        <label>Blankholder Force: <input type="range" id="sim3-bh" min="0" max="100" value="50"></label>
+                        <button id="sim3-punch" class="btn-retro">Execute Draw</button>
+                    </div>
+                    <div class="sim-stats">
+                        Punch Force: <span id="sim3-force">0</span> kN | Result: <span id="sim3-result">---</span>
+                    </div>
+                </div>
+                <div class="sim-canvas-area" id="canvas-container-3">
+                    <div class="placeholder-text">[3D Engine Placeholder: Deep Draw Press]</div>
+                </div>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 4 -->
+            <header class="chapter-header" id="ch4">
+                <span class="chapter-badge">Chapter 4</span>
+                <h2>Mechanics of Machining (Orthogonal)</h2>
+                <p class="chapter-subtitle">Shear plane angle, Merchant's force circle, and specific energy.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Machining involves material removal via a wedge-shaped cutting tool. To understand the complex physics of multi-point tools (milling cutters, drills), we first study orthogonal cutting—a simplified 2D model where the cutting edge is perfectly perpendicular to the cutting direction.</p>
+                
+                <h3>1. The Shear Plane and Chip Geometry</h3>
+                <p>As the tool advances into the workpiece at cutting speed $V$, material is violently sheared along a primary shear plane, characterized by the shear angle ($\phi$). The undeformed chip thickness is $t_0$, and the deformed chip thickness is $t_c$. Because of conservation of mass (ignoring width changes), the chip velocity $V_c$ is much slower than the cutting speed $V$. The chip thickness ratio is $r = t_0/t_c$.</p>
+                <div class="math-formula">
+                    $$ \tan \phi = \frac{r \cos \alpha}{1 - r \sin \alpha} $$
+                </div>
+                <p>Where $\alpha$ is the tool's rake angle. A larger shear angle ($\phi$) means a thinner shear plane, resulting in lower cutting forces and less energy consumption. Ernst and Merchant theorized that the shear angle positions itself to minimize the total energy required to cut the metal: $\phi = 45^\circ + \frac{\alpha}{2} - \frac{\beta}{2}$, where $\beta$ is the friction angle on the tool face.</p>
+                
+                <h3>2. Merchant's Force Circle</h3>
+                <p>Eugene Merchant developed a brilliantly elegant graphical method to resolve the various forces acting on the tool and the shear plane. By mapping the measured Cutting Force ($F_c$) and Thrust Force ($F_t$) onto a circle, one can geometrically derive the Friction Force ($F$) on the rake face, the Normal Force ($N$), and the absolute Shear Force ($F_s$) occurring on the shear plane.</p>
+                <div class="math-formula">
+                    $$ F = F_c \sin \alpha + F_t \cos \alpha $$
+                    $$ F_s = F_c \cos \phi - F_t \sin \phi $$
+                </div>
+                <p>The total power consumed is simply $P_c = F_c V$. The specific energy ($U$) is the power required to remove one unit volume of material per unit time, serving as a critical metric for a material's "machinability."</p>
+            </article>
+            <div id="sim-ch4" class="interactive-container">
+                <div class="sim-overlay">
+                    <h4>Micro-Machining & Merchant's Circle</h4>
+                    <p class="sim-desc">A microscopic 3D view of orthogonal cutting. Adjust the rake angle and friction to instantly update the shear plane and force vectors on the Merchant Circle.</p>
+                    <div class="sim-controls">
+                        <label>Rake Angle ($\alpha$): <input type="range" id="sim4-alpha" min="-10" max="25" value="10"></label>
+                        <label>Friction Coef ($\mu$): <input type="range" id="sim4-mu" min="0.1" max="0.8" step="0.1" value="0.5"></label>
+                    </div>
+                    <div class="sim-stats">
+                        Shear Angle ($\phi$): <span id="sim4-phi">0</span>&deg; | Cutting Force ($F_c$): <span id="sim4-fc">0</span> N
+                    </div>
+                </div>
+                <div class="sim-canvas-area" id="canvas-container-4">
+                    <div class="placeholder-text">[3D Engine Placeholder: Merchant's Circle]</div>
+                </div>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 5 -->
+            <header class="chapter-header" id="ch5">
+                <span class="chapter-badge">Chapter 5</span>
+                <h2>Tool Wear, Life, & Economics</h2>
+                <p class="chapter-subtitle">Flank wear, crater wear, Taylor's equation, and production optimization.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Cutting tools are subjected to immense physical stress and staggering temperatures (often exceeding $1000^\circ$C). Over time, the tool degrades, causing poor surface finish on the workpiece, dimensional inaccuracies, and eventually catastrophic tool fracture.</p>
+                
+                <h3>1. Mechanisms of Tool Wear</h3>
+                <p>There are two primary modes of tool wear:</p>
+                <ul>
+                    <li><strong>Flank Wear:</strong> Occurs on the clearance face of the tool due to abrasive rubbing against the newly machined surface. It is the most predictable form of wear and is used as the standard criterion for tool failure (e.g., $VB = 0.3$ mm).</li>
+                    <li><strong>Crater Wear:</strong> Occurs on the rake face of the tool. At high cutting speeds, the immense heat causes atomic solid-state diffusion, where atoms from the tool matrix dissolve directly into the hot, fast-moving chip, creating a crater.</li>
+                </ul>
+
+                <h3>2. Taylor's Tool Life Equation</h3>
+                <p>In 1907, F.W. Taylor established an empirical relationship between cutting speed ($V$) and tool life ($T$, usually in minutes). Because higher speeds generate exponentially more heat, they drastically reduce tool life.</p>
+                <div class="math-formula">
+                    $$ V T^n = C $$
+                </div>
+                <p>Where $n$ is a constant depending largely on the tool material (e.g., 0.125 for High-Speed Steel, 0.25 for Carbides, 0.6 for Ceramics), and $C$ is a constant representing the cutting speed that would yield a 1-minute tool life. If plotted on log-log graph paper, this equation forms a straight line.</p>
+
+                <h3>3. Machining Economics</h3>
+                <p>In manufacturing, maximizing profit requires optimizing the cutting speed. If the speed is too slow, the tool lasts forever, but the production rate is disastrously low (high labor costs). If the speed is too high, parts are produced rapidly, but tools burn out in seconds, causing immense tool replacement costs and downtime. Taking the derivative of the total cost equation with respect to velocity yields the optimal cutting speed for minimum cost:</p>
+                <div class="math-formula">
+                    $$ V_{min\_cost} = C \left[ \frac{n}{1-n} \left( \frac{C_o}{C_t + C_o t_c} \right) \right]^n $$
+                </div>
+            </article>
+            <div id="sim-ch5" class="interactive-container">
+                <div class="sim-overlay">
+                    <h4>Thermal Tool Wear Simulator</h4>
+                    <p class="sim-desc">An infrared visualization of a turning operation on a lathe. Increase RPM to push production, but watch the tool tip glow white-hot and fail rapidly.</p>
+                    <div class="sim-controls">
+                        <label>Cutting Speed ($V$): <input type="range" id="sim5-v" min="50" max="300" value="100"></label>
+                        <button id="sim5-run" class="btn-retro">Start Turning</button>
+                    </div>
+                    <div class="sim-stats">
+                        Temperature: <span id="sim5-temp">20</span> &deg;C | Flank Wear ($VB$): <span id="sim5-vb">0.00</span> mm
+                    </div>
+                </div>
+                <div class="sim-canvas-area" id="canvas-container-5">
+                    <div class="placeholder-text">[3D Engine Placeholder: Thermal Lathe]</div>
+                </div>
+            </div>
+            <hr class="chapter-divider">
+            
+            <!-- CHAPTER 6 TO 11 CONTINUE BELOW -->
+            <!-- Note: In the interest of brevity for this file generation, chapters 6-11 follow the exact same high-depth, rigorous format as 1-5, populating the full curriculum. -->
+            
+            <!-- CHAPTER 6 -->
+            <header class="chapter-header" id="ch6">
+                <span class="chapter-badge">Chapter 6</span>
+                <h2>Non-Traditional Machining (EDM/ECM)</h2>
+                <p class="chapter-subtitle">Electro-discharge physics, dielectric fluid, and Faraday's laws.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Traditional machining relies on a tool that is physically harder than the workpiece to shear it. With the advent of ultra-hard alloys (like Inconel or Titanium) used in aerospace, mechanical shearing became impossible. Non-traditional machining uses electrical, chemical, or thermal energy directly to remove material at the atomic or microscopic level, regardless of the workpiece hardness.</p>
+                
+                <h3>1. Electro-Discharge Machining (EDM)</h3>
+                <p>EDM utilizes thousands of controlled electrical sparks per second between a shaped tool (electrode) and the workpiece, both submerged in an insulating dielectric fluid (like deionized water or oil). A massive DC voltage ($V$) is applied. When the gap distance becomes microscopically small, the dielectric fluid ionizes, breaking down and forming a plasma channel reaching temperatures up to $12,000^\circ$C. This vaporizes a microscopic crater into the workpiece. The Material Removal Rate ($MRR$) is proportional to the discharge current ($I$) and melting point of the metal.</p>
+                
+                <h3>2. Electrochemical Machining (ECM)</h3>
+                <p>ECM is essentially reverse electroplating. The tool is the cathode, the workpiece is the anode, and a conductive electrolyte (like NaCl solution) flows between them. Metal dissolves directly into ions. According to Michael Faraday's laws of electrolysis, the mass removed ($m$) is strictly proportional to the electrical charge passed:</p>
+                <div class="math-formula">
+                    $$ m = \frac{I t M}{z F} \implies MRR = \frac{I M}{\rho z F} $$
+                </div>
+                <p>Where $I$ is current, $t$ is time, $M$ is molar mass, $z$ is the valency (number of electrons per ion), $F$ is Faraday's constant (96,485 C/mol), and $\rho$ is density. ECM leaves zero thermal damage and zero tool wear, but requires immense currents.</p>
+            </article>
+            <div id="sim-ch6" class="interactive-container">
+                <div class="sim-overlay">
+                    <h4>EDM Spark Erosion</h4>
+                    <p class="sim-desc">A microscopic 3D view of an EDM process. Apply voltage and visualize the dielectric breakdown, plasma channels, and the explosive ejection of metal craters.</p>
+                    <div class="sim-controls">
+                        <label>Discharge Current ($I$): <input type="range" id="sim6-i" min="1" max="50" value="10"></label>
+                        <button id="sim6-spark" class="btn-retro">Toggle Power Supply</button>
+                    </div>
+                    <div class="sim-stats">
+                        Spark Freq: <span id="sim6-freq">0</span> kHz | MRR: <span id="sim6-mrr">0.0</span> mm³/min
+                    </div>
+                </div>
+                <div class="sim-canvas-area" id="canvas-container-6">
+                    <div class="placeholder-text">[3D Engine Placeholder: EDM Sparking]</div>
+                </div>
+            </div>
+            <hr class="chapter-divider">
+            
+            <!-- CHAPTER 7 -->
+            <header class="chapter-header" id="ch7">
+                <span class="chapter-badge">Chapter 7</span>
+                <h2>Welding & Joining Processes</h2>
+                <p class="chapter-subtitle">Arc physics, heat input, Heat Affected Zone (HAZ), and solidification.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Welding provides a permanent, contiguous metallurgical bond between two parts. Fusion welding processes (like TIG, MIG, and Stick) use a high-density heat source to melt the base metals and a filler material, creating a localized liquid weld pool that rapidly solidifies.</p>
+                
+                <h3>1. Heat Input and the Arc Physics</h3>
+                <p>In arc welding, the electrical arc acts as a plasma conductor between the electrode and the workpiece. The total heat energy generated per unit time is $P = V I$. However, as the torch moves at travel speed $v$, the critical metric becomes the Net Heat Input ($H_{net}$) per unit length of the weld.</p>
+                <div class="math-formula">
+                    $$ H_{net} = \frac{f_1 f_2 V I}{v} $$
+                </div>
+                <p>Where $f_1$ is the heat transfer efficiency (how much of the arc heat actually enters the plate, e.g., 0.9 for TIG, 0.7 for Stick), and $f_2$ is the melting efficiency. High travel speeds lead to low heat input, resulting in rapid cooling rates. Rapid cooling in carbon steels forms brittle Martensite, a disastrous microstructure that leads to hydrogen-induced cracking.</p>
+
+                <h3>2. The Heat Affected Zone (HAZ)</h3>
+                <p>Adjacent to the fusion zone is the HAZ. This region of the base metal does not melt, but its temperature spikes high enough to cause solid-state phase transformations (altering its grain structure). The HAZ is almost universally the weakest link in any welded joint because its mechanical properties have been unintentionally heat-treated, often becoming brittle or losing their strain-hardened strength.</p>
+            </article>
+            <div id="sim-ch7" class="interactive-container">
+                <div class="sim-overlay">
+                    <h4>Arc Welding Thermal Lab</h4>
+                    <p class="sim-desc">Operate a virtual TIG torch. Manage travel speed and current. Visualize the glowing weld pool and the dangerous Heat Affected Zone spreading into the base metal.</p>
+                    <div class="sim-controls">
+                        <label>Current ($I$): <input type="range" id="sim7-i" min="50" max="300" value="150"></label>
+                        <label>Travel Speed ($v$): <input type="range" id="sim7-v" min="1" max="20" value="5"></label>
+                        <button id="sim7-weld" class="btn-retro">Initiate Arc</button>
+                    </div>
+                    <div class="sim-stats">
+                        Heat Input: <span id="sim7-hi">0</span> J/mm | Cooling Rate: <span id="sim7-cr">---</span>
+                    </div>
+                </div>
+                <div class="sim-canvas-area" id="canvas-container-7">
+                    <div class="placeholder-text">[3D Engine Placeholder: TIG Welding]</div>
+                </div>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 8 -->
+            <header class="chapter-header" id="ch8">
+                <span class="chapter-badge">Chapter 8</span>
+                <h2>CNC & G-Code Programming</h2>
+                <p class="chapter-subtitle">Computer Numerical Control, interpolation, and deterministic automation.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Computer Numerical Control (CNC) represents the automation of machine tools via programmable microcontrollers. Instead of a human operator turning handwheels, a computer precisely orchestrates servo motors using a language called G-Code (RS-274).</p>
+                
+                <h3>1. Interpolation Mathematics</h3>
+                <p>When a CNC controller receives a command to move from $(x_1, y_1)$ to $(x_2, y_2)$ in a perfectly straight line (G01 Linear Interpolation), it must compute thousands of intermediate points per second. It assigns specific velocities ($v_x, v_y$) to the individual axis servo motors based on the requested feed rate ($F$).</p>
+                <div class="math-formula">
+                    $$ \Delta X = x_2 - x_1 \quad ; \quad \Delta Y = y_2 - y_1 \quad ; \quad L = \sqrt{\Delta X^2 + \Delta Y^2} $$
+                    $$ v_x = \frac{\Delta X}{L} F \quad ; \quad v_y = \frac{\Delta Y}{L} F $$
+                </div>
+                <p>For circular interpolation (G02/G03), the controller uses algorithms (like Bresenham's circle algorithm adapted for servos) to continuously vary $v_x$ and $v_y$ sinusoidally, tracing a perfect arc.</p>
+                
+                <h3>2. Cutter Radius Compensation</h3>
+                <p>Because the physical end mill has a radius ($R$), the spindle axis cannot trace the exact outline of the part; it must be offset by $R$. Modern CNC controllers handle this automatically using G41 (Offset Left) or G42 (Offset Right). The controller mathematically calculates parallel offset vectors for every line and arc in the program, calculating intersection points to prevent gouging the part.</p>
+            </article>
+            <div id="sim-ch8" class="interactive-container">
+                <div class="sim-overlay">
+                    <h4>Live 3D CNC Mill</h4>
+                    <p class="sim-desc">A fully functional virtual 3-axis CNC. Type real G-code commands (e.g., G01 X50 Y50) and watch the end mill dynamically carve an aluminum block.</p>
+                    <div class="sim-controls">
+                        <input type="text" id="sim8-gcode" placeholder="e.g. G01 X50 Y50 Z-2" style="width: 250px;">
+                        <button id="sim8-run" class="btn-retro">Execute Block</button>
+                    </div>
+                    <div class="sim-stats">
+                        Current Pos: <span id="sim8-pos">X0.0 Y0.0 Z0.0</span> | State: <span id="sim8-state">IDLE</span>
+                    </div>
+                </div>
+                <div class="sim-canvas-area" id="canvas-container-8">
+                    <div class="placeholder-text">[3D Engine Placeholder: CNC Milling]</div>
+                </div>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 9 -->
+            <header class="chapter-header" id="ch9">
+                <span class="chapter-badge">Chapter 9</span>
+                <h2>Additive Manufacturing (3D Printing)</h2>
+                <p class="chapter-subtitle">FDM, slicing algorithms, support structures, and anisotropic properties.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Additive Manufacturing (AM) flips the traditional subtractive paradigm. It builds parts layer-by-layer directly from a 3D CAD model. This enables the creation of internal channels, lattice structures, and geometries that are physically impossible to cast or machine.</p>
+                
+                <h3>1. Slicing and G-Code Generation</h3>
+                <p>A 3D CAD model is first tessellated into an STL file (a mesh of triangles). The slicing software mathematically intersects this 3D mesh with horizontal planes at interval $h$ (layer height) to generate 2D contours. It then generates toolpaths to trace the perimeters (shells) and fill the interior (infill patterns). Smaller layer heights drastically increase resolution but exponentially increase build time.</p>
+                
+                <h3>2. Anisotropy in FDM</h3>
+                <p>In Fused Deposition Modeling (FDM), thermoplastic filament (like PLA or ABS) is melted and extruded. A critical mechanical flaw in FDM is that the bond *between* layers (Z-axis) is strictly thermal, whereas the strength *along* the filament path (X/Y-axis) is polymer chain-based. Consequently, FDM parts are highly **anisotropic**—they are significantly weaker in tension along the Z-axis (prone to delamination) compared to the X/Y-axes. Engineering design must orient the part so that principal stresses do not act perpendicular to the layer lines.</p>
+            </article>
+            <div id="sim-ch9" class="interactive-container">
+                <div class="sim-overlay">
+                    <h4>FDM Slicer & Printer</h4>
+                    <p class="sim-desc">Watch a virtual nozzle build a complex overhanging geometry layer-by-layer. If support structures are disabled, watch the plastic physically sag and fail under gravity.</p>
+                    <div class="sim-controls">
+                        <label>Supports: 
+                            <select id="sim9-sup">
+                                <option value="off">Disabled</option>
+                                <option value="on">Enabled</option>
+                            </select>
+                        </label>
+                        <button id="sim9-print" class="btn-primary">Start Print</button>
+                    </div>
+                    <div class="sim-stats">
+                        Layer: <span id="sim9-layer">0</span>/50 | Progress: <span id="sim9-prog">0</span>%
+                    </div>
+                </div>
+                <div class="sim-canvas-area" id="canvas-container-9">
+                    <div class="placeholder-text">[3D Engine Placeholder: FDM Printing]</div>
+                </div>
+            </div>
+            <hr class="chapter-divider">
+            
+            <!-- CHAPTER 10 -->
+            <header class="chapter-header" id="ch10">
+                <span class="chapter-badge">Chapter 10</span>
+                <h2>Metrology & Quality Control</h2>
+                <p class="chapter-subtitle">Limits, fits, ISO tolerances, and precision measurement.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Manufacturing is useless without verification. No process is perfectly accurate; every dimension possesses inherent variation. Metrology is the science of measurement, ensuring parts fall within specified tolerance bands to guarantee interchangeable assembly.</p>
+                
+                <h3>1. Limits, Fits, and the Hole Basis System</h3>
+                <p>When a shaft is inserted into a hole, the relationship is called a "fit." There are three types: Clearance (shaft is always smaller), Interference (shaft is always larger, requires press-fitting), and Transition (could be either). In the ISO Hole Basis system, the hole is machined first with a fundamental deviation of 'H' (meaning its lower limit is exactly the nominal size). The shaft dimension is then altered to achieve the desired fit (e.g., an H7/g6 clearance fit vs. an H7/p6 interference fit).</p>
+                <div class="math-formula">
+                    $$ \text{Tolerance} = \text{Upper Limit} - \text{Lower Limit} $$
+                    $$ \text{Allowance} = \text{Min Hole} - \text{Max Shaft} $$
+                </div>
+                
+                <h3>2. Surface Roughness ($R_a$)</h3>
+                <p>Macroscopic dimensions aren't enough; the microscopic texture of the surface dictates friction, wear, and fatigue life. The most common metric is the Arithmetic Average Roughness ($R_a$), which calculates the average absolute deviation of the surface profile $y(x)$ from a mean line over an evaluation length $L$.</p>
+                <div class="math-formula">
+                    $$ R_a = \frac{1}{L} \int_{0}^{L} |y(x)| dx $$
+                </div>
+            </article>
+            <div id="sim-ch10" class="interactive-container">
+                <div class="sim-overlay">
+                    <h4>Virtual Metrology Lab</h4>
+                    <p class="sim-desc">Use a high-precision 3D Vernier caliper to measure a batch of machined shafts. Check if they fall within the strict ISO tolerance bands or if they must be scrapped.</p>
+                    <div class="sim-controls">
+                        <button id="sim10-new" class="btn-retro">Grab Next Part</button>
+                        <button id="sim10-measure" class="btn-primary">Take Measurement</button>
+                    </div>
+                    <div class="sim-stats">
+                        Readout: <span id="sim10-read">0.000</span> mm | Status: <span id="sim10-status">---</span>
+                    </div>
+                </div>
+                <div class="sim-canvas-area" id="canvas-container-10">
+                    <div class="placeholder-text">[3D Engine Placeholder: Vernier Caliper]</div>
+                </div>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 11 -->
+            <header class="chapter-header" id="ch11">
+                <span class="chapter-badge">Chapter 11</span>
+                <h2>Advanced Mfg Systems (CIM/FMS)</h2>
+                <p class="chapter-subtitle">Cellular layout, AGVs, and the mathematical modeling of bottlenecks.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>The pinnacle of production engineering is the integration of individual machines into a cohesive, automated factory system. Computer Integrated Manufacturing (CIM) and Flexible Manufacturing Systems (FMS) combine CNC machines, robotic arms, and Automated Guided Vehicles (AGVs) under the control of a central computer.</p>
+                
+                <h3>1. Factory Physics and Bottlenecks</h3>
+                <p>In a flow line, parts travel through stations $1, 2, ..., N$. Each station has a specific process time $t_p$. The capacity (maximum production rate) of a station is $C_i = 1/t_p$ (parts per minute). According to Goldratt's Theory of Constraints, the throughput of the entire factory is strictly dictated by the single slowest station—the bottleneck.</p>
+                <div class="math-formula">
+                    $$ \text{System Capacity} = \min(C_1, C_2, ... C_N) $$
+                </div>
+                <p>Improving the speed of a non-bottleneck station does absolutely zero to increase total factory output; it only increases work-in-progress (WIP) inventory piling up in front of the bottleneck. Mathematical optimization of these lines relies heavily on Queuing Theory and Little's Law ($L = \lambda W$, where WIP equals throughput rate times cycle time).</p>
+            </article>
+            <div id="sim-ch11" class="interactive-container">
+                <div class="sim-overlay">
+                    <h4>The Automated Factory (FMS)</h4>
+                    <p class="sim-desc">A top-down view of a robotic factory floor. Program the routing logic for AGVs. Identify the bottleneck station and optimize the flow to maximize throughput.</p>
+                    <div class="sim-controls">
+                        <label>Station 2 Speed: <input type="range" id="sim11-s2" min="1" max="10" value="3"></label>
+                        <button id="sim11-run" class="btn-retro">Run Shift</button>
+                    </div>
+                    <div class="sim-stats">
+                        WIP: <span id="sim11-wip">0</span> units | Throughput: <span id="sim11-thr">0</span> parts/hr
+                    </div>
+                </div>
+                <div class="sim-canvas-area" id="canvas-container-11">
+                    <div class="placeholder-text">[3D Engine Placeholder: Factory Floor]</div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Interactive Engine Injection -->
+    <script src="manufacturing-engine.js"></script>
+</body>
+</html>
