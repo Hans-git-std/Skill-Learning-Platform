@@ -749,22 +749,11 @@
         </main>
     </div>
 
-    <!-- Conditional Engine Loader based on Device Size -->
-    <script>
-        const isMobile = window.matchMedia("(max-width: 768px)").matches;
-        if (isMobile) {
-            // Load lightweight 2D Mobile Engine (No Three.js dependency)
-            const script = document.createElement('script');
-            script.src = 'mobile-engine.js?v=1';
-            document.body.appendChild(script);
-        } else {
-            // Load full 3D Desktop Engine (requires Three.js via ES Modules)
-            const script = document.createElement('script');
-            script.type = 'module';
-            script.src = 'heat-transfer-engine.js?v=6';
-            document.body.appendChild(script);
-        }
-    </script>
+    <!-- Load 2D Mobile Engine (Extremely lightweight, zero dependencies) -->
+    <script src="mobile-engine.js?v=2"></script>
+    
+    <!-- Load 3D Desktop Engine (Relies on CSS display:none to abort if on mobile) -->
+    <script type="module" src="heat-transfer-engine.js?v=8"></script>
     
     <script src="../../../core.js"></script>
     <script>
