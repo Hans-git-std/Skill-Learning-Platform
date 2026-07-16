@@ -325,8 +325,7 @@ function initCh10Mobile() {
     select.dispatchEvent(new Event('change'));
 }
 
-// Ensure DOM is ready, then run
-document.addEventListener("DOMContentLoaded", () => {
+const runMobile = () => {
     initCh1Mobile();
     initCh2Mobile();
     initCh3Mobile();
@@ -337,4 +336,10 @@ document.addEventListener("DOMContentLoaded", () => {
     initCh8Mobile();
     initCh9Mobile();
     initCh10Mobile();
-});
+};
+
+if (document.readyState === 'loading') {
+    document.addEventListener("DOMContentLoaded", runMobile);
+} else {
+    runMobile();
+}
