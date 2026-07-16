@@ -269,7 +269,7 @@ code {
 }
 
 .desktop-only { display: block; }
-.mobile-only { display: none; }
+.mobile-only { display: none !important; }
 
 .sim-overlay {
     position: absolute;
@@ -364,7 +364,7 @@ code {
     h3 { font-size: 1.5rem; }
     
     .desktop-only { display: none !important; }
-    .mobile-only { display: block !important; }
+    .mobile-only { display: flex !important; flex-direction: column; }
     
     .nav-left gap {
         gap: 1rem;
