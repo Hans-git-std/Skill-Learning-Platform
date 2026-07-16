@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SCME | Computer Integrated Mfg</title>
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- MathJax for rendering formulas -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']]
+        }
+      };
+    </script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+    <nav class="top-nav">
+        <div class="nav-left">
+            <h1 class="logo">SCME.</h1>
+            <a href="../../mech/index.html" class="btn-retro back-btn">← ME Hub</a>
+        </div>
+        <div class="nav-center">
+            <h2 class="module-title">Computer Integrated Mfg (CIM)</h2>
+        </div>
+        <div class="nav-right">
+            <button id="theme-toggle" class="btn-retro">Toggle Theme</button>
+        </div>
+    </nav>
+
+    <main class="content-container">
+        <!-- CHAPTER 1 -->
+        <section class="chapter-card">
+            <div class="theory-section">
+                <div class="chapter-header">
+                    <span class="chapter-num">CH 01</span>
+                    <h2>CAD Geometric Modeling</h2>
+                </div>
+                <div class="theory-content">
+                    <p>Computer-Aided Design (CAD) relies on mathematical representations of curves and surfaces. Bezier curves are foundational in modeling.</p>
+                    <div class="formula-box">
+                        <p><strong>Parametric Bezier Curve:</strong></p>
+                        $$ P(t) = \sum_{i=0}^{n} \binom{n}{i} (1-t)^{n-i} t^i P_i $$
+                    </div>
+                    <p>Where $P_i$ are the control points and $t \in [0, 1]$. Adjust the control points in the simulator to see how the mathematical blending functions instantly alter the geometric shape.</p>
+                </div>
+                <div class="interactive-controls">
+                    <div class="control-group">
+                        <label>Control Point P2 (X, Y):</label>
+                        <input type="range" id="sim1-p2x" min="100" max="400" value="250">
+                        <input type="range" id="sim1-p2y" min="50" max="350" value="100">
+                    </div>
+                    <button id="sim1-anim" class="btn-retro">Animate Tracing</button>
+                </div>
+            </div>
+            <div class="canvas-section">
+                <div class="canvas-wrapper" id="canvas-container-1">
+                    <div class="canvas-overlay">
+                        <span>P(t) = <span id="sim1-pt">---</span></span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CHAPTER 2 -->
+        <section class="chapter-card">
+            <div class="theory-section">
+                <div class="chapter-header">
+                    <span class="chapter-num">CH 02</span>
+                    <h2>CNC Interpolation Algorithms</h2>
+                </div>
+                <div class="theory-content">
+                    <p>CNC controllers use interpolation to move tools along smooth paths using discrete stepper motor pulses. Digital Differential Analyzer (DDA) is a classic line algorithm.</p>
+                    <div class="formula-box">
+                        <p><strong>DDA Algorithm:</strong></p>
+                        $$ \Delta = \max(|dx|, |dy|) $$
+                        $$ x_{new} = x_{old} + \frac{dx}{\Delta}, \quad y_{new} = y_{old} + \frac{dy}{\Delta} $$
+                    </div>
+                    <p>Observe the staircase effect (quantization error) when generating a toolpath with low resolution stepper motors.</p>
+                </div>
+                <div class="interactive-controls">
+                    <div class="control-group">
+                        <label>Target X:</label>
+                        <input type="range" id="sim2-x" min="10" max="90" value="80">
+                    </div>
+                    <div class="control-group">
+                        <label>Target Y:</label>
+                        <input type="range" id="sim2-y" min="10" max="90" value="60">
+                    </div>
+                    <button id="sim2-step" class="btn-retro">Pulse Stepper</button>
+                </div>
+            </div>
+            <div class="canvas-section">
+                <div class="canvas-wrapper" id="canvas-container-2">
+                    <div class="canvas-overlay">
+                        <span>Step Count: <span id="sim2-count">0</span></span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CHAPTER 3 -->
+        <section class="chapter-card">
+            <div class="theory-section">
+                <div class="chapter-header">
+                    <span class="chapter-num">CH 03</span>
+                    <h2>Robotic Kinematics</h2>
+                </div>
+                <div class="theory-content">
+                    <p>Industrial robotic arms require Inverse Kinematics (IK) to calculate joint angles $(\theta_1, \theta_2)$ to reach a specific $(x, y)$ coordinate.</p>
+                    <div class="formula-box">
+                        <p><strong>2R Planar Arm IK:</strong></p>
+                        $$ \cos(\theta_2) = \frac{x^2 + y^2 - L_1^2 - L_2^2}{2 L_1 L_2} $$
+                    </div>
+                    <p>Move the target coordinate. If the target is within the workspace envelope, the IK solver will compute the exact joint angles required.</p>
+                </div>
+                <div class="interactive-controls">
+                    <div class="control-group">
+                        <label>Target Coordinates (X, Y):</label>
+                        <input type="range" id="sim3-x" min="-150" max="150" value="100">
+                        <input type="range" id="sim3-y" min="0" max="150" value="100">
+                    </div>
+                </div>
+            </div>
+            <div class="canvas-section">
+                <div class="canvas-wrapper" id="canvas-container-3">
+                    <div class="canvas-overlay">
+                        <span>θ1: <span id="sim3-t1">0</span>° | θ2: <span id="sim3-t2">0</span>°</span><br>
+                        <span id="sim3-err" style="color:#ef4444;"></span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CHAPTER 4 -->
+        <section class="chapter-card">
+            <div class="theory-section">
+                <div class="chapter-header">
+                    <span class="chapter-num">CH 04</span>
+                    <h2>AGV Path Planning</h2>
+                </div>
+                <div class="theory-content">
+                    <p>Automated Guided Vehicles (AGVs) navigate factory floors avoiding obstacles. The A* (A-star) algorithm is a common pathfinding technique.</p>
+                    <div class="formula-box">
+                        <p><strong>A* Heuristic Cost:</strong></p>
+                        $$ f(n) = g(n) + h(n) $$
+                    </div>
+                    <p>Where $g(n)$ is the cost from start to node $n$, and $h(n)$ is the estimated cost (Manhattan distance) to the goal. Add obstacles and watch the AGV recalculate.</p>
+                </div>
+                <div class="interactive-controls">
+                    <button id="sim4-obs" class="btn-retro">Randomize Obstacles</button>
+                    <button id="sim4-run" class="btn-retro">Start AGV</button>
+                </div>
+            </div>
+            <div class="canvas-section">
+                <div class="canvas-wrapper" id="canvas-container-4">
+                    <div class="canvas-overlay">
+                        <span>Status: <span id="sim4-status">Idle</span></span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CHAPTER 5 -->
+        <section class="chapter-card">
+            <div class="theory-section">
+                <div class="chapter-header">
+                    <span class="chapter-num">CH 05</span>
+                    <h2>Automated Storage (AS/RS)</h2>
+                </div>
+                <div class="theory-content">
+                    <p>Automated Storage and Retrieval Systems (AS/RS) optimize warehouse operations. The S/R machine travels in X (aisle) and Y (height) simultaneously to minimize cycle time.</p>
+                    <div class="formula-box">
+                        <p><strong>Chebyshev Travel Time:</strong></p>
+                        $$ T = \max\left(\frac{\Delta x}{v_x}, \frac{\Delta y}{v_y}\right) $$
+                    </div>
+                    <p>Request a bin retrieval. Observe how diagonal travel is achieved by maximizing simultaneous axis movement.</p>
+                </div>
+                <div class="interactive-controls">
+                    <div class="control-group">
+                        <label>Target Bin (Row, Col):</label>
+                        <input type="number" id="sim5-r" min="0" max="4" value="4">
+                        <input type="number" id="sim5-c" min="0" max="9" value="9">
+                    </div>
+                    <button id="sim5-go" class="btn-retro">Fetch Bin</button>
+                </div>
+            </div>
+            <div class="canvas-section">
+                <div class="canvas-wrapper" id="canvas-container-5">
+                    <div class="canvas-overlay">
+                        <span>Cycle Time: <span id="sim5-time">0.0</span> s</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CHAPTER 6 -->
+        <section class="chapter-card">
+            <div class="theory-section">
+                <div class="chapter-header">
+                    <span class="chapter-num">CH 06</span>
+                    <h2>Cellular Manufacturing (GT)</h2>
+                </div>
+                <div class="theory-content">
+                    <p>Group Technology (GT) groups dissimilar machines into cells to process part families. Rank Order Clustering (ROC) is used to sort the Machine-Part incidence matrix.</p>
+                    <div class="formula-box">
+                        <p><strong>Binary Weighting:</strong></p>
+                        $$ W = \sum_{j=1}^{n} a_{ij} 2^{n-j} $$
+                    </div>
+                    <p>Toggle the algorithm to sort the disorganized matrix into distinct manufacturing cells, minimizing inter-cell material handling.</p>
+                </div>
+                <div class="interactive-controls">
+                    <button id="sim6-scramble" class="btn-retro">Scramble Matrix</button>
+                    <button id="sim6-sort" class="btn-retro">Apply ROC Algorithm</button>
+                </div>
+            </div>
+            <div class="canvas-section">
+                <div class="canvas-wrapper" id="canvas-container-6">
+                    <div class="canvas-overlay">
+                        <span>Cells Identified: <span id="sim6-cells">0</span></span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CHAPTER 7 -->
+        <section class="chapter-card">
+            <div class="theory-section">
+                <div class="chapter-header">
+                    <span class="chapter-num">CH 07</span>
+                    <h2>Coordinate Measuring Machine</h2>
+                </div>
+                <div class="theory-content">
+                    <p>A CMM uses a touch trigger probe to capture discrete points on a part's surface. Software algorithms then fit these points to ideal geometries using Least Squares.</p>
+                    <div class="formula-box">
+                        <p><strong>Least Squares Circle Fit:</strong></p>
+                        $$ \min \sum (R_i - R)^2 $$
+                    </div>
+                    <p>Click on the canvas to simulate probe hits around the part. Once enough points are captured, the system calculates the geometric center and form error.</p>
+                </div>
+                <div class="interactive-controls">
+                    <button id="sim7-fit" class="btn-retro">Calculate Best Fit</button>
+                    <button id="sim7-clear" class="btn-retro">Clear Points</button>
+                </div>
+            </div>
+            <div class="canvas-section">
+                <div class="canvas-wrapper" id="canvas-container-7" style="cursor: crosshair;">
+                    <div class="canvas-overlay">
+                        <span>Center: <span id="sim7-c">---</span> | Error: <span id="sim7-err">---</span></span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CHAPTER 8 -->
+        <section class="chapter-card">
+            <div class="theory-section">
+                <div class="chapter-header">
+                    <span class="chapter-num">CH 08</span>
+                    <h2>Flexible Manufacturing System</h2>
+                </div>
+                <div class="theory-content">
+                    <p>An FMS adapts to changing production schedules. We use queuing theory and state machines to manage a central buffer routing parts to available CNC machines.</p>
+                    <div class="formula-box">
+                        <p><strong>Utilization ($U$):</strong></p>
+                        $$ U = \frac{\lambda}{c \mu} $$
+                    </div>
+                    <p>Increase the arrival rate $\lambda$. If it exceeds the combined service rate $\mu$ of the CNCs, the central buffer will rapidly overflow.</p>
+                </div>
+                <div class="interactive-controls">
+                    <div class="control-group">
+                        <label>Arrival Rate ($\lambda$):</label>
+                        <input type="range" id="sim8-arr" min="1" max="10" value="3">
+                    </div>
+                    <button id="sim8-run" class="btn-retro">Start Shift</button>
+                </div>
+            </div>
+            <div class="canvas-section">
+                <div class="canvas-wrapper" id="canvas-container-8">
+                    <div class="canvas-overlay">
+                        <span>Buffer: <span id="sim8-buf">0</span> | Utilization: <span id="sim8-util">0</span>%</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CHAPTER 9 -->
+        <section class="chapter-card">
+            <div class="theory-section">
+                <div class="chapter-header">
+                    <span class="chapter-num">CH 09</span>
+                    <h2>PID Control for Servo Drives</h2>
+                </div>
+                <div class="theory-content">
+                    <p>Precise CNC axis positioning relies on closed-loop PID (Proportional-Integral-Derivative) controllers to minimize position error $e(t)$.</p>
+                    <div class="formula-box">
+                        <p><strong>PID Control Law:</strong></p>
+                        $$ u(t) = K_p e(t) + K_i \int e(t) dt + K_d \frac{de}{dt} $$
+                    </div>
+                    <p>Tune the gains. Too much $K_p$ causes oscillation. $K_d$ dampens the response. $K_i$ eliminates steady-state error.</p>
+                </div>
+                <div class="interactive-controls">
+                    <div class="control-group">
+                        <label>Kp (Proportional): <span id="sim9-kp-v">2.0</span></label>
+                        <input type="range" id="sim9-kp" min="0" max="10" step="0.1" value="2.0">
+                    </div>
+                    <div class="control-group">
+                        <label>Kd (Derivative): <span id="sim9-kd-v">0.5</span></label>
+                        <input type="range" id="sim9-kd" min="0" max="5" step="0.1" value="0.5">
+                    </div>
+                    <button id="sim9-step" class="btn-retro">Step Input Target</button>
+                </div>
+            </div>
+            <div class="canvas-section">
+                <div class="canvas-wrapper" id="canvas-container-9">
+                    <div class="canvas-overlay">
+                        <span>Error: <span id="sim9-err">0.00</span></span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CHAPTER 10 -->
+        <section class="chapter-card">
+            <div class="theory-section">
+                <div class="chapter-header">
+                    <span class="chapter-num">CH 10</span>
+                    <h2>Industry 4.0 IoT Dashboard</h2>
+                </div>
+                <div class="theory-content">
+                    <p>Modern CIM heavily integrates the Internet of Things (IoT) for predictive maintenance. Sensors monitor machine vibrations and temperatures in real-time.</p>
+                    <div class="formula-box">
+                        <p><strong>Overall Equipment Effectiveness:</strong></p>
+                        $$ OEE = \text{Availability} \times \text{Performance} \times \text{Quality} $$
+                    </div>
+                    <p>Watch the real-time telemetry. If temperature or vibration exceeds the critical threshold, an automated maintenance halt is triggered.</p>
+                </div>
+                <div class="interactive-controls">
+                    <button id="sim10-fault" class="btn-retro" style="border-color: #ef4444; color: #ef4444;">Inject Fault</button>
+                    <button id="sim10-repair" class="btn-retro">Repair & Reset</button>
+                </div>
+            </div>
+            <div class="canvas-section">
+                <div class="canvas-wrapper" id="canvas-container-10">
+                    <div class="canvas-overlay">
+                        <span>OEE: <span id="sim10-oee">95</span>% | Status: <span id="sim10-status">ONLINE</span></span>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+    </main>
+    <script src="cim-engine.js"></script>
+</body>
+</html>
