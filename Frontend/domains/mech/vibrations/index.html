@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SCME | Mechanical Vibrations</title>
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- MathJax for rendering formulas -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']]
+        }
+      };
+    </script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+    <nav class="top-nav">
+        <div class="nav-left">
+            <h1 class="logo">SCME.</h1>
+            <a href="../../mech/index.html" class="btn-retro back-btn">← ME Hub</a>
+        </div>
+        <button id="theme-toggle" class="btn-retro">Toggle Theme</button>
+    </nav>
+
+    <div class="learning-environment">
+        
+        <!-- Table of Contents -->
+        <section class="chapter-index-container">
+            <h3>Course Curriculum</h3>
+            <ul class="chapter-grid">
+                <li><a href="#ch1">1. Fundamentals & SHM</a></li>
+                <li><a href="#ch2">2. Free Undamped SDOF</a></li>
+                <li><a href="#ch3">3. Free Damped SDOF</a></li>
+                <li><a href="#ch4">4. Harmonically Excited SDOF</a></li>
+                <li><a href="#ch5">5. Vibration Isolation</a></li>
+                <li><a href="#ch6">6. Two Degree of Freedom (2DOF)</a></li>
+                <li><a href="#ch7">7. Dynamic Vibration Absorbers</a></li>
+                <li><a href="#ch8">8. Multi Degree of Freedom (MDOF)</a></li>
+                <li><a href="#ch9">9. Continuous Systems</a></li>
+                <li><a href="#ch10">10. Whirling of Shafts</a></li>
+                <li><a href="#ch11">11. Vibration Measurement & FFT</a></li>
+            </ul>
+        </section>
+
+        <main class="reading-core">
+            
+            <!-- CHAPTER 1 -->
+            <header class="chapter-header" id="ch1">
+                <span class="chapter-badge">Chapter 1</span>
+                <h2>Fundamentals of Vibrations & SHM</h2>
+                <p class="chapter-subtitle">Kinematics of oscillation, periodic motion, phase, and mathematical foundations.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Mechanical vibration is the rigorous study of the oscillatory motions of dynamic systems. A system vibrates when it possesses elasticity (to store potential energy) and mass (to store kinetic energy), and experiences a perturbing force. The continuous interchange of these energy forms yields motion that is periodic or aperiodic in nature.</p>
+                
+                <h3>1. Simple Harmonic Motion (SHM)</h3>
+                <p>The simplest form of periodic motion is Simple Harmonic Motion, characterized by an acceleration that is directly proportional to the displacement and always directed towards the equilibrium position. If we track the projection of a particle moving in a perfect circle at constant angular velocity $\omega$ onto a diameter, its displacement $x(t)$ perfectly describes SHM.</p>
+                <div class="math-formula">
+                    $$ x(t) = A \sin(\omega t + \phi) $$
+                    $$ v(t) = \frac{dx}{dt} = A\omega \cos(\omega t + \phi) $$
+                    $$ a(t) = \frac{dv}{dt} = -A\omega^2 \sin(\omega t + \phi) = -\omega^2 x(t) $$
+                </div>
+                <p>Here, $A$ represents the absolute amplitude (maximum displacement), $\omega$ is the circular natural frequency in radians per second, and $\phi$ is the phase angle determined by the initial conditions. The period of the oscillation $\tau$ is the time taken to complete one full cycle, while the frequency $f$ in Hertz is the reciprocal of the period.</p>
+                <div class="math-formula">
+                    $$ \tau = \frac{2\pi}{\omega} \quad ; \quad f = \frac{1}{\tau} = \frac{\omega}{2\pi} $$
+                </div>
+                
+                <h3>2. Degrees of Freedom (DOF)</h3>
+                <p>A crucial step in vibration analysis is mathematical modeling, which begins by identifying the number of degrees of freedom. The number of DOFs is defined as the minimum number of independent coordinates required to completely specify the spatial positions of all masses in the system at any given instant in time. A simple pendulum constrained to swing in a single plane has 1 DOF ($\theta$). A rigid car suspended on four independent shock absorbers generally requires 3 DOFs (vertical bounce, pitch, and roll) to describe its rigid-body motion.</p>
+            </article>
+            <div id="sim-ch1" class="interactive-container">
+                <div class="sim-overlay">
+                    <h4>The SHM Visualizer</h4>
+                    <p class="sim-desc">Observe the real-time equivalence between a mass oscillating on a spring and a rotating phasor diagram in 3D.</p>
+                    <div class="sim-controls">
+                        <label>Amplitude (A): <input type="range" id="sim1-amp" min="1" max="10" value="5"></label>
+                        <label>Angular Freq ($\omega$): <input type="range" id="sim1-omega" min="1" max="10" value="3"></label>
+                        <button id="sim1-run" class="btn-retro">Toggle Motion</button>
+                    </div>
+                    <div class="sim-stats">
+                        Displacement: <span id="sim1-x">0</span> m | Velocity: <span id="sim1-v">0</span> m/s | Acceleration: <span id="sim1-a">0</span> m/s²
+                    </div>
+                </div>
+                <div class="sim-canvas-area" id="canvas-container-1">
+                    <div class="placeholder-text">[3D Engine Placeholder: SHM Phasor & Spring]</div>
+                </div>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 2 -->
+            <header class="chapter-header" id="ch2">
+                <span class="chapter-badge">Chapter 2</span>
+                <h2>Free Undamped SDOF Systems</h2>
+                <p class="chapter-subtitle">Newtonian mechanics, D'Alembert's principle, and Rayleigh's energy methods.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>When a system is displaced from its static equilibrium and released, it oscillates purely under the influence of its inherent restoring forces without any continuing external excitation. If we assume energy dissipation (damping) is negligible, the system theoretically oscillates indefinitely. This is known as free undamped vibration.</p>
+                
+                <h3>1. Equation of Motion: Newton's Second Law</h3>
+                <p>Consider a simple spring-mass system. A mass $m$ is attached to a linear spring of stiffness $k$. At static equilibrium, the spring deflection $\delta_{st}$ balances the weight ($mg = k\delta_{st}$). If we displace the mass by a dynamic distance $x$, the restoring force of the spring becomes $k(\delta_{st} + x)$. According to Newton's Second Law ($\sum F = m\ddot{x}$):</p>
+                <div class="math-formula">
+                    $$ mg - k(\delta_{st} + x) = m\ddot{x} \implies -kx = m\ddot{x} $$
+                    $$ m\ddot{x} + kx = 0 $$
+                </div>
+                <p>This is the classic homogeneous linear second-order ordinary differential equation governing undamped SDOF systems. Dividing by $m$, we isolate the acceleration:</p>
+                <div class="math-formula">
+                    $$ \ddot{x} + \omega_n^2 x = 0 \quad \text{where} \quad \omega_n = \sqrt{\frac{k}{m}} $$
+                </div>
+                <p>Here, $\omega_n$ is the <strong>natural circular frequency</strong>. It is a fundamental property of the system entirely independent of the amplitude of vibration. The solution to this differential equation requires two initial conditions: initial displacement $x(0) = x_0$ and initial velocity $\dot{x}(0) = v_0$.</p>
+                
+                <h3>2. Rayleigh's Energy Method</h3>
+                <p>For conservative systems where no energy is lost, the total mechanical energy $E_{total}$ remains perfectly constant. $E_{total} = T + U = \text{Constant}$, where $T$ is the kinetic energy and $U$ is the potential strain energy. Taking the time derivative of the total energy yields the equation of motion:</p>
+                <div class="math-formula">
+                    $$ \frac{d}{dt}(T + U) = 0 $$
+                    $$ \frac{d}{dt}\left(\frac{1}{2}m\dot{x}^2 + \frac{1}{2}kx^2\right) = m\dot{x}\ddot{x} + kx\dot{x} = 0 \implies \dot{x}(m\ddot{x} + kx) = 0 $$
+                </div>
+                <p>Rayleigh's principle further dictates that the maximum kinetic energy occurs precisely as the system passes through the equilibrium position ($x=0$), and the maximum potential energy occurs at the extreme amplitude positions ($v=0$). By equating $T_{max} = U_{max}$, we can rapidly solve for the natural frequency of highly complex continuous systems by guessing a mode shape.</p>
+            </article>
+            <div id="sim-ch2" class="interactive-container">
+                <div class="sim-overlay">
+                    <h4>Energy Conservation Engine</h4>
+                    <p class="sim-desc">Interact with a 3D pendulum and spring system. Watch glowing particles transfer between Kinetic (velocity) and Potential (strain) energy on a live phase-space plot.</p>
+                    <div class="sim-controls">
+                        <label>Mass (kg): <input type="range" id="sim2-m" min="1" max="20" value="5"></label>
+                        <label>Stiffness (N/m): <input type="range" id="sim2-k" min="10" max="200" value="50"></label>
+                        <button id="sim2-pull" class="btn-retro">Pull & Release</button>
+                    </div>
+                    <div class="sim-stats">
+                        Kinetic: <span id="sim2-ke">0</span> J | Potential: <span id="sim2-pe">0</span> J | Total: <span id="sim2-te">0</span> J
+                    </div>
+                </div>
+                <div class="sim-canvas-area" id="canvas-container-2">
+                    <div class="placeholder-text">[3D Engine Placeholder: Phase Space Pendulum]</div>
+                </div>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 3 -->
+            <header class="chapter-header" id="ch3">
+                <span class="chapter-badge">Chapter 3</span>
+                <h2>Free Damped SDOF Systems</h2>
+                <p class="chapter-subtitle">Viscous dashpots, energy dissipation, and the logarithmic decrement.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>In reality, energy is always dissipated due to internal friction, fluid drag, or acoustic radiation. We model this dissipation most commonly using linear viscous damping, where the resisting damping force is directly proportional and opposite to the velocity of the mass ($F_c = c\dot{x}$). The constant $c$ is the viscous damping coefficient.</p>
+                
+                <h3>1. The Damped Equation of Motion</h3>
+                <p>Incorporating the damping force into our free-body diagram yields:</p>
+                <div class="math-formula">
+                    $$ m\ddot{x} + c\dot{x} + kx = 0 \implies \ddot{x} + 2\zeta\omega_n\dot{x} + \omega_n^2x = 0 $$
+                </div>
+                <p>We introduce the dimensionless <strong>damping ratio ($\zeta$)</strong>, defined as the ratio of actual damping $c$ to the critical damping coefficient $c_c = 2m\omega_n = 2\sqrt{km}$. The roots of the characteristic equation are $s_{1,2} = -\zeta\omega_n \pm \omega_n\sqrt{\zeta^2 - 1}$. The value of $\zeta$ completely dictates the dynamic behavior of the system.</p>
+                
+                <h3>2. Damping Regimes</h3>
+                <ul>
+                    <li><strong>Underdamped ($0 \le \zeta < 1$):</strong> The system oscillates with decaying amplitude. The roots are complex conjugates. The frequency of oscillation is slightly lower than the natural frequency, defined as the damped natural frequency $\omega_d = \omega_n\sqrt{1-\zeta^2}$.</li>
+                    <li><strong>Critically Damped ($\zeta = 1$):</strong> The system returns to equilibrium as fast as mathematically possible without overshooting or oscillating. The roots are real and repeated. This is highly desired in artillery recoil mechanisms and high-end automotive suspensions.</li>
+                    <li><strong>Overdamped ($\zeta > 1$):</strong> The system is heavily restricted (e.g., oscillating in thick molasses). It returns to equilibrium exponentially without oscillating, but takes significantly longer than a critically damped system.</li>
+                </ul>
+
+                <h3>3. Logarithmic Decrement</h3>
+                <p>For an underdamped system, we can experimentally determine the damping ratio by comparing the amplitudes of successive cycles. The natural logarithm of the ratio of any two successive peak amplitudes ($x_1$ and $x_2$) is a constant called the logarithmic decrement ($\delta$).</p>
+                <div class="math-formula">
+                    $$ \delta = \ln\left(\frac{x_1}{x_2}\right) = \frac{2\pi\zeta}{\sqrt{1-\zeta^2}} $$
+                    $$ \text{For small damping } (\zeta < 0.1): \quad \delta \approx 2\pi\zeta $$
+                </div>
+            </article>
+            <div id="sim-ch3" class="interactive-container">
+                <div class="sim-overlay">
+                    <h4>Viscous Dashpot Lab</h4>
+                    <p class="sim-desc">A transparent 3D dashpot where you control fluid viscosity. Pull the mass and visualize the boundary between oscillatory decay and sluggish exponential return.</p>
+                    <div class="sim-controls">
+                        <label>Fluid Type ($\zeta$): 
+                            <select id="sim3-zeta">
+                                <option value="0.05">Air ($\zeta = 0.05$)</option>
+                                <option value="0.3">Water ($\zeta = 0.3$)</option>
+                                <option value="1.0">Motor Oil ($\zeta = 1.0$, Critical)</option>
+                                <option value="3.0">Thick Honey ($\zeta = 3.0$)</option>
+                            </select>
+                        </label>
+                        <button id="sim3-run" class="btn-retro">Disturb System</button>
+                    </div>
+                    <div class="sim-stats">
+                        Damping Ratio: <span id="sim3-zval">0.05</span> | Damped Freq: <span id="sim3-wd">---</span> rad/s
+                    </div>
+                </div>
+                <div class="sim-canvas-area" id="canvas-container-3">
+                    <div class="placeholder-text">[3D Engine Placeholder: Dashpot & Fluids]</div>
+                </div>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 4 -->
+            <header class="chapter-header" id="ch4">
+                <span class="chapter-badge">Chapter 4</span>
+                <h2>Harmonically Excited SDOF Systems</h2>
+                <p class="chapter-subtitle">Forced vibrations, resonance, phase lag, and rotating unbalance.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>When a dynamic system is subjected to a continuously fluctuating external force, we enter the realm of forced vibrations. The most common and analytically vital excitation is harmonic force, denoted as $F(t) = F_0 \sin(\omega t)$, where $F_0$ is the force amplitude and $\omega$ is the excitation frequency (which is independent of the system's natural frequency $\omega_n$).</p>
+                
+                <h3>1. Steady-State Response and Resonance</h3>
+                <p>The total response of the system is the superposition of a transient response (which decays to zero due to damping) and a steady-state response, which persists indefinitely at the excitation frequency $\omega$. The equation of motion is:</p>
+                <div class="math-formula">
+                    $$ m\ddot{x} + c\dot{x} + kx = F_0 \sin(\omega t) $$
+                </div>
+                <p>The steady-state solution takes the form $x_p(t) = X \sin(\omega t - \phi)$. The amplitude $X$ and the phase angle $\phi$ (how far the displacement lags behind the applied force) are highly dependent on the frequency ratio $r = \omega / \omega_n$.</p>
+                <div class="math-formula">
+                    $$ X = \frac{F_0 / k}{\sqrt{(1-r^2)^2 + (2\zeta r)^2}} = \frac{X_0}{\sqrt{(1-r^2)^2 + (2\zeta r)^2}} $$
+                    $$ \phi = \tan^{-1}\left(\frac{2\zeta r}{1-r^2}\right) $$
+                </div>
+                <p>The term $\frac{X}{X_0}$ is the <strong>Magnification Factor (M)</strong>. As the excitation frequency approaches the natural frequency ($r \to 1$), the denominator shrinks drastically. If damping $\zeta$ is very small, the amplitude $X$ trends towards infinity. This catastrophic amplification of vibration is called <strong>Resonance</strong>.</p>
+                
+                <h3>2. Rotating Unbalance</h3>
+                <p>A frequent source of harmonic excitation in machinery is rotating unbalance. If an eccentric mass $m_0$ rotates at distance $e$ from the axis with angular velocity $\omega$, it generates a centrifugal force $F_0 = m_0 e \omega^2$. The vertical component of this force is $F(t) = m_0 e \omega^2 \sin(\omega t)$. The resulting amplitude of the main machine mass $M$ becomes frequency-dependent in the numerator as well.</p>
+                <div class="math-formula">
+                    $$ \frac{MX}{m_0 e} = \frac{r^2}{\sqrt{(1-r^2)^2 + (2\zeta r)^2}} $$
+                </div>
+            </article>
+            <div id="sim-ch4" class="interactive-container">
+                <div class="sim-overlay">
+                    <h4>Resonance Catastrophe</h4>
+                    <p class="sim-desc">Sweep a motor's RPM through the natural frequency of its mounting platform. Watch the dramatic amplitude spikes and phase shifts as you hit resonance.</p>
+                    <div class="sim-controls">
+                        <label>Motor Speed ($\omega$): <input type="range" id="sim4-omega" min="0.1" max="3" step="0.05" value="0.5"></label>
+                        <label>Damping ($\zeta$): <input type="range" id="sim4-zeta" min="0.01" max="0.5" step="0.01" value="0.05"></label>
+                        <button id="sim4-run" class="btn-retro">Toggle Motor</button>
+                    </div>
+                    <div class="sim-stats">
+                        Frequency Ratio ($r$): <span id="sim4-r">0.5</span> | Magnification (M): <span id="sim4-m">1.0</span>
+                    </div>
+                </div>
+                <div class="sim-canvas-area" id="canvas-container-4">
+                    <div class="placeholder-text">[3D Engine Placeholder: Rotating Unbalance]</div>
+                </div>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 5 -->
+            <header class="chapter-header" id="ch5">
+                <span class="chapter-badge">Chapter 5</span>
+                <h2>Vibration Isolation & Transmissibility</h2>
+                <p class="chapter-subtitle">Force transmission to foundations, base excitation, and mount optimization.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>In heavy industrial settings, massive engines generate tremendous vibrational forces. If bolted directly to the floor, these forces transmit unabated into the building structure, causing noise, material fatigue, and damage to sensitive equipment. We introduce resilient mounts (springs and dampers) between the machine and the floor to isolate the vibration.</p>
+                
+                <h3>1. Force Transmissibility</h3>
+                <p>Transmissibility ($T_r$) is the dimensionless ratio of the maximum force transmitted to the foundation ($F_T$) to the amplitude of the disturbing harmonic force ($F_0$). The transmitted force acts through both the spring ($kx$) and the damper ($c\dot{x}$).</p>
+                <div class="math-formula">
+                    $$ T_r = \frac{F_T}{F_0} = \sqrt{\frac{1 + (2\zeta r)^2}{(1-r^2)^2 + (2\zeta r)^2}} $$
+                </div>
+                <p>Analyzing this equation yields critical design insights. For $T_r$ to be less than 1 (meaning isolation is actually occurring), the frequency ratio $r$ must be strictly greater than $\sqrt{2}$. If $r < \sqrt{2}$, the mounts actually <em>amplify</em> the transmitted force. Furthermore, at very high frequencies ($r \gg \sqrt{2}$), adding damping actually worsens isolation (increases $T_r$), contrary to intuition.</p>
+
+                <h3>2. Base Excitation (Kinematic Excitation)</h3>
+                <p>Conversely, sometimes the environment vibrates (e.g., a car driving over a corrugated road, or an earthquake), and we must protect the mass (passengers/building). This is base excitation, modeled by a harmonic displacement of the support $y(t) = Y \sin(\omega t)$. The ratio of the mass's absolute displacement amplitude $X$ to the base amplitude $Y$ is mathematically identical to the force transmissibility equation above.</p>
+            </article>
+            <div id="sim-ch5" class="interactive-container">
+                <div class="sim-overlay">
+                    <h4>Engine Mount Optimizer</h4>
+                    <p class="sim-desc">Tune the stiffness and damping of a 3D automotive engine mount. A heat map on the chassis visually glows red if isolation fails.</p>
+                    <div class="sim-controls">
+                        <label>Mount Stiffness: <input type="range" id="sim5-k" min="1" max="100" value="50"></label>
+                        <label>Mount Damping: <input type="range" id="sim5-c" min="0" max="20" value="5"></label>
+                    </div>
+                    <div class="sim-stats">
+                        Force Transmitted: <span id="sim5-ft">0</span> N | Transmissibility ($T_r$): <span id="sim5-tr">1.0</span>
+                    </div>
+                </div>
+                <div class="sim-canvas-area" id="canvas-container-5">
+                    <div class="placeholder-text">[3D Engine Placeholder: Engine & Heatmap]</div>
+                </div>
+            </div>
+            <hr class="chapter-divider">
+            
+            <!-- CHAPTER 6 -->
+            <header class="chapter-header" id="ch6">
+                <span class="chapter-badge">Chapter 6</span>
+                <h2>Two Degree of Freedom (2DOF) Systems</h2>
+                <p class="chapter-subtitle">Coupled equations, eigenvalues, mode shapes, and the beat phenomenon.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>When a system has two masses capable of independent motion, or a single mass capable of both translation and rotation, it requires two independent coordinates ($x_1, x_2$) to describe its state. This introduces coupling, where the motion of one coordinate directly influences the other.</p>
+                
+                <h3>1. Coupled Equations of Motion</h3>
+                <p>Consider two masses $m_1, m_2$ connected by springs $k_1, k_2, k_3$. Drawing the free-body diagrams yields a system of two coupled differential equations, which are most elegantly written in matrix format using a Mass matrix $[M]$ and a Stiffness matrix $[K]$:</p>
+                <div class="math-formula">
+                    $$ \begin{bmatrix} m_1 & 0 \\ 0 & m_2 \end{bmatrix} \begin{Bmatrix} \ddot{x}_1 \\ \ddot{x}_2 \end{Bmatrix} + \begin{bmatrix} k_1+k_2 & -k_2 \\ -k_2 & k_2+k_3 \end{bmatrix} \begin{Bmatrix} x_1 \\ x_2 \end{Bmatrix} = \begin{Bmatrix} 0 \\ 0 \end{Bmatrix} $$
+                </div>
+                <p>This is succinctly written as $[M]\{\ddot{x}\} + [K]\{x\} = \{0\}$.</p>
+
+                <h3>2. Natural Frequencies and Mode Shapes</h3>
+                <p>Assuming harmonic motion $\{x\} = \{X\}\sin(\omega t)$, we substitute into the matrix equation to yield the generalized eigenvalue problem: $([K] - \omega^2[M])\{X\} = \{0\}$. For a non-trivial solution (where amplitudes aren't zero), the determinant of the impedance matrix must be zero:</p>
+                <div class="math-formula">
+                    $$ \det([K] - \omega^2[M]) = 0 $$
+                </div>
+                <p>Expanding this determinant yields a quadratic equation in $\omega^2$ called the characteristic equation. The two positive roots ($\omega_1, \omega_2$) are the system's two natural frequencies (eigenvalues). Substituting these frequencies back into the matrix yields the amplitude ratios $\{X\}^{(1)}$ and $\{X\}^{(2)}$, known as the Principal Mode Shapes (eigenvectors). In the first mode ($\omega_1$), the masses typically move in-phase. In the second mode ($\omega_2$), they move out-of-phase.</p>
+            </article>
+            <div id="sim-ch6" class="interactive-container">
+                <div class="sim-overlay">
+                    <h4>Mode Shape Analyzer</h4>
+                    <p class="sim-desc">Force two coupled masses to vibrate. Excite them at exactly their natural frequencies to isolate Mode 1 (in-phase) or Mode 2 (out-of-phase).</p>
+                    <div class="sim-controls">
+                        <button id="sim6-mode1" class="btn-retro">Excite Mode 1</button>
+                        <button id="sim6-mode2" class="btn-retro">Excite Mode 2</button>
+                        <button id="sim6-mixed" class="btn-retro">Mixed Modes (Beat)</button>
+                    </div>
+                    <div class="sim-stats">
+                        Current Mode: <span id="sim6-status">Idle</span> | Ratio $X_1/X_2$: <span id="sim6-ratio">0.0</span>
+                    </div>
+                </div>
+                <div class="sim-canvas-area" id="canvas-container-6">
+                    <div class="placeholder-text">[3D Engine Placeholder: Coupled 2DOF]</div>
+                </div>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 7 -->
+            <header class="chapter-header" id="ch7">
+                <span class="chapter-badge">Chapter 7</span>
+                <h2>Dynamic Vibration Absorbers</h2>
+                <p class="chapter-subtitle">Tuned Mass Dampers, counter-excitation, and resonance elimination.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>When a primary machine (mass $M$) operating at a specific frequency $\omega$ falls into violent resonance due to $F_0 \sin(\omega t)$, altering its heavy mass or stiff foundations might be practically impossible. The brilliant engineering solution is to bolt a much smaller secondary spring-mass system ($m, k$) onto the main machine to act as a <strong>Dynamic Vibration Absorber (DVA)</strong>.</p>
+                
+                <h3>1. Principle of the Undamped Absorber</h3>
+                <p>By adding the absorber, we convert a 1DOF system into a 2DOF system. The amplitude $X_1$ of the primary mass and $X_2$ of the absorber mass are derived from the coupled equations. Remarkably, if we tune the natural frequency of the absorber ($\omega_a = \sqrt{k/m}$) to perfectly match the excitation frequency ($\omega$), the amplitude $X_1$ of the massive primary machine becomes <em>mathematically zero</em>.</p>
+                <div class="math-formula">
+                    $$ X_1 = \frac{(k - m\omega^2)F_0}{(K - M\omega^2)(k - m\omega^2) - k^2} $$
+                </div>
+                <p>When $k - m\omega^2 = 0 \implies \omega^2 = k/m$, the numerator is zero, thus $X_1 = 0$. The small absorber mass $m$ takes on all the kinetic energy, vibrating vigorously to exert a spring force that exactly cancels out the external excitation force $F_0$.</p>
+                
+                <h3>2. Tuned Mass Dampers (TMD)</h3>
+                <p>While an undamped absorber is perfect for constant-speed machines (like turbines), it introduces two new resonant frequencies. If the machine's speed fluctuates, it might hit these new resonances. By adding a viscous damper to the absorber (creating a TMD), we sacrifice the "perfect zero" amplitude at the tuning frequency to significantly suppress the vibration amplitude across a much wider bandwidth of frequencies. TMDs are famously used in super-tall skyscrapers like Taipei 101 to mitigate wind-induced swaying.</p>
+            </article>
+            <div id="sim-ch7" class="interactive-container">
+                <div class="sim-overlay">
+                    <h4>The Skyscraper TMD</h4>
+                    <p class="sim-desc">A skyscraper is swaying dangerously under wind load. Tune the mass and length of the pendulum damper on the roof to absorb the energy.</p>
+                    <div class="sim-controls">
+                        <label>Damper Mass ($m$): <input type="range" id="sim7-m" min="1" max="50" value="10"></label>
+                        <label>Damper Tuning ($k$): <input type="range" id="sim7-k" min="1" max="100" value="50"></label>
+                        <button id="sim7-wind" class="btn-retro">Gust of Wind</button>
+                    </div>
+                    <div class="sim-stats">
+                        Building Sway: <span id="sim7-sway">0</span> m | TMD Amplitude: <span id="sim7-tmd">0</span> m
+                    </div>
+                </div>
+                <div class="sim-canvas-area" id="canvas-container-7">
+                    <div class="placeholder-text">[3D Engine Placeholder: Skyscraper TMD]</div>
+                </div>
+            </div>
+            <hr class="chapter-divider">
+            
+            <!-- CHAPTER 8 -->
+            <header class="chapter-header" id="ch8">
+                <span class="chapter-badge">Chapter 8</span>
+                <h2>Multi Degree of Freedom (MDOF) Systems</h2>
+                <p class="chapter-subtitle">Matrix formulation, orthogonality of modes, and modal analysis.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Real-world structures, such as multi-story buildings, aircraft wings, and vehicle suspension networks, possess many degrees of freedom. A 3-story building modeled as a shear frame has 3 DOFs. A car has at least 6. Analyzing these requires robust linear algebra and matrix operations.</p>
+                
+                <h3>1. The Eigenvalue Problem in N-Dimensions</h3>
+                <p>The general undamped free vibration equation for an N-DOF system is $[M]\{\ddot{x}\} + [K]\{x\} = \{0\}$. The determinant $\det([K] - \omega^2[M]) = 0$ yields a polynomial of degree N in $\omega^2$. Solving this provides $N$ natural frequencies ($\omega_1 \le \omega_2 \le ... \le \omega_N$). Each frequency corresponds to a unique N-dimensional eigenvector (mode shape) $\{u\}_r$.</p>
+                
+                <h3>2. Orthogonality of Mode Shapes</h3>
+                <p>A profound and immensely useful property of linear systems is that their principal mode shapes are orthogonal (conceptually perpendicular) with respect to both the mass and stiffness matrices. For any two different modes $r$ and $s$ ($r \neq s$):</p>
+                <div class="math-formula">
+                    $$ \{u\}_r^T [M] \{u\}_s = 0 $$
+                    $$ \{u\}_r^T [K] \{u\}_s = 0 $$
+                </div>
+                <p>This means that energy does not transfer between different modes. They exist entirely independently of one another. We typically normalize these mode shapes so that the modal mass $\{u\}_r^T [M] \{u\}_r = 1$.</p>
+
+                <h3>3. Modal Superposition Method</h3>
+                <p>Because the mode shapes form an orthogonal basis (like XYZ axes in space), any arbitrary complex deformation of the structure can be expressed as a linear combination of its mode shapes. This allows us to decouple the massive, complex $N \times N$ matrix equation into $N$ separate, easily solvable SDOF equations. We solve them individually, then sum the results back together—a technique vital for software like ANSYS and Abaqus.</p>
+            </article>
+            <div id="sim-ch8" class="interactive-container">
+                <div class="sim-overlay">
+                    <h4>Earthquake Simulator</h4>
+                    <p class="sim-desc">A 4-story shear building subjected to base excitation. Input an earthquake spectrum and visualize the combined modal responses through strain gradients.</p>
+                    <div class="sim-controls">
+                        <label>Excitation: 
+                            <select id="sim8-eq">
+                                <option value="sine">Simple Harmonic</option>
+                                <option value="elcentro">El Centro Earthquake</option>
+                                <option value="kobe">Kobe Earthquake</option>
+                            </select>
+                        </label>
+                        <button id="sim8-run" class="btn-retro">Trigger Shake Table</button>
+                    </div>
+                    <div class="sim-stats">
+                        Max Inter-story Drift: <span id="sim8-drift">0.0</span> cm | Dominant Mode: <span id="sim8-mode">---</span>
+                    </div>
+                </div>
+                <div class="sim-canvas-area" id="canvas-container-8">
+                    <div class="placeholder-text">[3D Engine Placeholder: Shear Building]</div>
+                </div>
+            </div>
+            <hr class="chapter-divider">
+            
+            <!-- CHAPTER 9 -->
+            <header class="chapter-header" id="ch9">
+                <span class="chapter-badge">Chapter 9</span>
+                <h2>Continuous Systems (Distributed Mass)</h2>
+                <p class="chapter-subtitle">The wave equation, infinite DOFs, transverse beams, and nodal points.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Until now, we have assumed lumped parameters (mass concentrated at points, weightless springs). In reality, mass and elasticity are distributed continuously throughout a physical body. A guitar string, a steel beam, or a column of air actually possesses an infinite number of degrees of freedom, and thus, an infinite number of natural frequencies.</p>
+                
+                <h3>1. Transverse Vibrations of a String</h3>
+                <p>Consider a taut string of length $L$, mass per unit length $\rho$, under constant tension $T$. By analyzing a differential element $dx$, Newton's second law yields a partial differential equation known as the 1D Wave Equation:</p>
+                <div class="math-formula">
+                    $$ T \frac{\partial^2 y}{\partial x^2} = \rho \frac{\partial^2 y}{\partial t^2} \implies \frac{\partial^2 y}{\partial x^2} = \frac{1}{c^2}\frac{\partial^2 y}{\partial t^2} $$
+                </div>
+                <p>Where $c = \sqrt{T/\rho}$ is the velocity of wave propagation. Solving this using separation of variables ($y(x,t) = X(x)T(t)$) subject to boundary conditions (fixed at $x=0$ and $x=L$), yields natural frequencies that are integer multiples of the fundamental frequency: $\omega_n = \frac{n\pi c}{L}$ where $n = 1,2,3...$</p>
+                
+                <h3>2. Transverse Vibrations of a Euler-Bernoulli Beam</h3>
+                <p>A beam resists bending due to its flexural rigidity ($EI$). The partial differential equation is fourth-order in space and second-order in time:</p>
+                <div class="math-formula">
+                    $$ EI \frac{\partial^4 y}{\partial x^4} + \rho A \frac{\partial^2 y}{\partial t^2} = 0 $$
+                </div>
+                <p>The solution requires four boundary conditions. For a simply supported beam (hinged at both ends), the natural frequencies are proportional to $n^2$, unlike the string. Higher modes show <strong>Nodes</strong>—specific points along the beam that remain perfectly stationary while the rest of the beam vibrates furiously.</p>
+            </article>
+            <div id="sim-ch9" class="interactive-container">
+                <div class="sim-overlay">
+                    <h4>Standing Wave Generator</h4>
+                    <p class="sim-desc">Visualize continuous mesh deformation on a 3D beam. Adjust the frequency to discover standing waves and stationary nodal points.</p>
+                    <div class="sim-controls">
+                        <label>Frequency Slider: <input type="range" id="sim9-freq" min="1" max="100" value="10"></label>
+                        <label>Boundary: 
+                            <select id="sim9-bc">
+                                <option value="pinned">Pinned-Pinned</option>
+                                <option value="cantilever">Cantilever (Fixed-Free)</option>
+                            </select>
+                        </label>
+                    </div>
+                    <div class="sim-stats">
+                        Mode Order ($n$): <span id="sim9-n">0</span> | Nodes Detected: <span id="sim9-nodes">0</span>
+                    </div>
+                </div>
+                <div class="sim-canvas-area" id="canvas-container-9">
+                    <div class="placeholder-text">[3D Engine Placeholder: Continuous Beam]</div>
+                </div>
+            </div>
+            <hr class="chapter-divider">
+            
+            <!-- CHAPTER 10 -->
+            <header class="chapter-header" id="ch10">
+                <span class="chapter-badge">Chapter 10</span>
+                <h2>Whirling of Shafts (Critical Speeds)</h2>
+                <p class="chapter-subtitle">Rotor dynamics, gyroscopic effects, and high-speed stability.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>In turbomachinery (jet engines, steam turbines, compressors), heavy disks are mounted on high-speed rotating shafts. Due to manufacturing tolerances, the center of mass of the disk is never perfectly aligned with the geometric axis of rotation, creating an initial eccentricity $e$.</p>
+                
+                <h3>1. The Whirling Phenomenon</h3>
+                <p>As the shaft spins at angular velocity $\omega$, centrifugal force bends the shaft. Because the shaft rotates as it bends, the entire bent shaft sweeps out a 3D surface, looking like a skipping rope. This is called whirling. The centrifugal force ($F = M(\delta + e)\omega^2$) is resisted by the shaft's bending stiffness ($kx = M\delta$).</p>
+                <div class="math-formula">
+                    $$ \delta = \frac{e(\omega/\omega_n)^2}{1 - (\omega/\omega_n)^2} = \frac{er^2}{1-r^2} $$
+                </div>
+                
+                <h3>2. Critical Speed</h3>
+                <p>As the rotational speed $\omega$ approaches the lateral natural frequency $\omega_n$ ($r \to 1$), the denominator approaches zero, and the deflection $\delta$ tends toward infinity. This speed is known as the <strong>Critical Speed</strong> of the shaft. Running a turbine at its critical speed will inevitably shatter the bearings or snap the shaft.</p>
+                <p>Remarkably, looking at the equation, if the machine can rapidly accelerate <em>past</em> the critical speed into the supercritical region ($r \gg 1$), the denominator becomes negative, and $\delta \approx -e$. The heavy disk essentially inverts and rotates perfectly smoothly around its own center of gravity, with the shaft bent to accommodate it. This is why high-speed jet turbines run incredibly smoothly once they surpass their critical startup speeds.</p>
+            </article>
+            <div id="sim-ch10" class="interactive-container">
+                <div class="sim-overlay">
+                    <h4>High-Speed Turbine Rotor</h4>
+                    <p class="sim-desc">Accelerate a 3D spinning shaft. Observe the dangerous violent whirling near critical speed, and the smooth inversion as you break into the supercritical regime.</p>
+                    <div class="sim-controls">
+                        <label>Throttle (RPM): <input type="range" id="sim10-rpm" min="0" max="10000" step="100" value="1000"></label>
+                        <button id="sim10-throttle" class="btn-retro">Full Throttle</button>
+                    </div>
+                    <div class="sim-stats">
+                        Current RPM: <span id="sim10-speed">1000</span> | Shaft Deflection: <span id="sim10-def">0.01</span> mm
+                    </div>
+                </div>
+                <div class="sim-canvas-area" id="canvas-container-10">
+                    <div class="placeholder-text">[3D Engine Placeholder: Rotor Dynamics]</div>
+                </div>
+            </div>
+            <hr class="chapter-divider">
+            
+            <!-- CHAPTER 11 -->
+            <header class="chapter-header" id="ch11">
+                <span class="chapter-badge">Chapter 11</span>
+                <h2>Vibration Measurement & Signal Processing</h2>
+                <p class="chapter-subtitle">Accelerometers, time-domain, frequency-domain, and Fast Fourier Transform (FFT).</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Theoretical analysis must be verified with physical measurement. In modern engineering, we use piezoelectric accelerometers mounted on machinery to capture vibration data. These sensors output a voltage proportional to acceleration in the time domain. However, a raw time-domain signal from a complex machine is often an unreadable, chaotic mess of overlapping waves.</p>
+                
+                <h3>1. The Fourier Transform</h3>
+                <p>The mathematical breakthrough of Jean-Baptiste Joseph Fourier states that any complex periodic waveform can be decomposed into a sum of simple sine and cosine waves of varying frequencies and amplitudes. We use the Discrete Fourier Transform (and its computationally efficient cousin, the FFT) to convert the signal from the Time Domain into the Frequency Domain.</p>
+                <div class="math-formula">
+                    $$ X(f) = \int_{-\infty}^{\infty} x(t) e^{-i 2\pi ft} dt $$
+                </div>
+                
+                <h3>2. Spectrum Analysis</h3>
+                <p>When we plot amplitude against frequency (a spectrum), the chaotic noise separates into distinct sharp peaks. Each peak represents a specific component vibrating at that frequency. For example, in a gearbox, a peak exactly at the gear mesh frequency indicates healthy operation, but sidebands around that peak strongly indicate a cracked gear tooth. This makes FFT the most powerful tool in predictive maintenance and condition monitoring.</p>
+            </article>
+            <div id="sim-ch11" class="interactive-container">
+                <div class="sim-overlay">
+                    <h4>Live FFT Spectrum Analyzer</h4>
+                    <p class="sim-desc">A virtual diagnostic tool. Capture a noisy time-domain signal from a virtual machine and watch the mathematical transform into sharp frequency peaks.</p>
+                    <div class="sim-controls">
+                        <button id="sim11-capture" class="btn-retro">Capture Signal</button>
+                        <button id="sim11-fft" class="btn-primary">Execute FFT</button>
+                    </div>
+                    <div class="sim-stats">
+                        Status: <span id="sim11-status">Awaiting Signal</span> | Dominant Frequency: <span id="sim11-dom">---</span> Hz
+                    </div>
+                </div>
+                <div class="sim-canvas-area" id="canvas-container-11">
+                    <div class="placeholder-text">[3D Engine Placeholder: Live FFT Graphs]</div>
+                </div>
+            </div>
+            
+        </main>
+    </div>
+
+    <!-- Interactive Engine Injection -->
+    <script src="vibration-engine.js"></script>
+</body>
+</html>
