@@ -707,39 +707,7 @@ function initCh7Simulator() {
     animate();
 }
 
-// ==========================================
-// MOBILE 2D DASHBOARDS (BATCH 1 & 2)
-// ==========================================
 
-function initCh1Mobile() {
-    const select = document.getElementById('ch1-mobile-mode');
-    if(!select) return;
-    
-    const qout = document.getElementById('ch1-mob-qout');
-    const temp = document.getElementById('ch1-mob-temp');
-    const graphic = document.getElementById('ch1-mob-graphic');
-    
-    select.addEventListener('change', (e) => {
-        const mode = e.target.value;
-        if (mode === 'all') {
-            qout.innerText = '850 W'; temp.innerText = '295.0 K';
-            graphic.style.background = 'linear-gradient(90deg, var(--accent-mech), var(--accent-neon))';
-        } else if (mode === 'conduction') {
-            qout.innerText = '150 W'; temp.innerText = '290.0 K';
-            graphic.style.background = 'var(--accent-neon)';
-        } else if (mode === 'convection') {
-            qout.innerText = '400 W'; temp.innerText = '298.0 K';
-            graphic.style.background = 'var(--accent-warning)';
-        } else if (mode === 'radiation') {
-            qout.innerText = '300 W'; temp.innerText = '305.0 K';
-            graphic.style.background = 'var(--accent-mech)';
-        }
-    });
-}
-
-function initCh2Mobile() {
-    const btn = document.getElementById('ch2-mob-add');
-    if(!btn) return;
     
 // CHAPTER 8: Boiling Curve Explorer (Desktop)
 // ==========================================
