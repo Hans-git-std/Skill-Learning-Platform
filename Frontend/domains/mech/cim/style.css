@@ -44,6 +44,9 @@ body {
     line-height: 1.6;
     overflow-x: hidden;
     width: 100%;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    hyphens: auto;
 }
 
 /* Typography */
@@ -216,9 +219,13 @@ input[type="number"], select {
     height: 100%;
     display: flex;
     align-items: stretch;
+    overflow: hidden;
 }
 
 canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
     object-fit: contain;
@@ -252,5 +259,35 @@ canvas {
     
     .canvas-section {
         min-height: 350px;
+    }
+}
+
+@media (max-width: 480px) {
+    .top-nav {
+        padding: 0.5rem 1rem;
+        flex-direction: column;
+        height: auto;
+        gap: 0.5rem;
+    }
+    
+    .nav-left {
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    .logo {
+        font-size: 1.25rem;
+    }
+    
+    .content-container {
+        padding: 1rem 0.5rem;
+    }
+    
+    .theory-section {
+        padding: 1rem;
+    }
+    
+    .canvas-section {
+        min-height: 300px;
     }
 }
