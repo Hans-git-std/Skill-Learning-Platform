@@ -101,10 +101,16 @@
             </div>
 
             <!-- SIMULATOR CH 1: MOBILE -->
-            <div id="sim-ch1-mobile" class="interactive-container mobile-only" style="min-height: 250px; padding: 2rem; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
-                <h4 style="margin: 0 0 0.5rem 0;">P-V-T Surface Viewer</h4>
-                <p style="font-size: 0.8rem; color: var(--text-secondary);">(Open in desktop mode for full 3D interactive view)</p>
-                <div style="width: 100%; height: 100px; background: repeating-linear-gradient(45deg, var(--bg-panel), var(--bg-panel) 10px, var(--border-color) 10px, var(--border-color) 20px); border: 2px dashed var(--accent-mech); margin-top: 1rem;"></div>
+            <div id="sim-ch1-mobile" class="interactive-container mobile-only" style="min-height: 400px; padding: 2rem; display: flex; flex-direction: column;">
+                <h4 style="margin-top: 0; text-align: center;">2D Isotherms (P-V)</h4>
+                <div class="sim-controls" style="justify-content: center; margin-bottom: 1rem;">
+                    <label>Temperature ($T$):
+                        <input type="range" id="ch1-mob-temp" min="1" max="10" step="0.1" value="5">
+                    </label>
+                </div>
+                <div style="flex: 1; position: relative;">
+                    <canvas id="ch1-mob-canvas" style="width: 100%; height: 100%; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 4px;"></canvas>
+                </div>
             </div>
             
             <hr class="chapter-divider">
@@ -137,7 +143,7 @@
                 <p>If $n = 1$, the process is isothermal (for an ideal gas), and the work evaluates to $W_b = P_1 V_1 \ln(V_2/V_1)$.</p>
             </article>
 
-            <!-- SIMULATOR CH 2 -->
+            <!-- SIMULATOR CH 2: DESKTOP -->
             <div id="sim-ch2-desktop" class="interactive-container desktop-only">
                 <div class="sim-overlay">
                     <h4>Interactive P-V Engine</h4>
@@ -154,10 +160,20 @@
             </div>
 
             <!-- SIMULATOR CH 2: MOBILE -->
-            <div id="sim-ch2-mobile" class="interactive-container mobile-only" style="min-height: 250px; padding: 2rem; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
-                <h4 style="margin: 0 0 0.5rem 0;">P-V Boundary Work</h4>
-                <p style="font-size: 0.8rem; color: var(--text-secondary);">(Open in desktop mode for synchronized 3D piston-cylinder)</p>
-                <div style="width: 100%; height: 100px; background: repeating-linear-gradient(45deg, var(--bg-panel), var(--bg-panel) 10px, var(--border-color) 10px, var(--border-color) 20px); border: 2px dashed var(--accent-mech); margin-top: 1rem;"></div>
+            <div id="sim-ch2-mobile" class="interactive-container mobile-only" style="min-height: 400px; padding: 2rem; display: flex; flex-direction: column;">
+                <h4 style="margin-top: 0; text-align: center;">2D P-V Boundary Work</h4>
+                <div class="sim-controls" style="justify-content: center; margin-bottom: 1rem;">
+                    <label>Process:
+                        <select id="ch2-mob-process">
+                            <option value="isothermal">Isothermal</option>
+                            <option value="isobaric">Isobaric</option>
+                            <option value="adiabatic">Adiabatic</option>
+                        </select>
+                    </label>
+                </div>
+                <div style="flex: 1; position: relative;">
+                    <canvas id="ch2-mob-canvas" style="width: 100%; height: 100%; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 4px;"></canvas>
+                </div>
             </div>
 
             <hr class="chapter-divider">
@@ -196,7 +212,7 @@
                 <p>For an ideal gas, $h$ is also a function of temperature only, and its change is related to the specific heat at constant pressure: $dh = C_p \, dT$.</p>
             </article>
 
-            <!-- SIMULATOR CH 3 -->
+            <!-- SIMULATOR CH 3: DESKTOP -->
             <div id="sim-ch3-desktop" class="interactive-container desktop-only">
                 <div class="sim-overlay">
                     <h4>Virtual Joule's Experiment Lab</h4>
@@ -208,11 +224,26 @@
                     </div>
                 </div>
             </div>
+
             <!-- SIMULATOR CH 3: MOBILE -->
-            <div id="sim-ch3-mobile" class="interactive-container mobile-only" style="min-height: 250px; padding: 2rem; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
-                <h4 style="margin: 0 0 0.5rem 0;">Joule's Experiment</h4>
-                <p style="font-size: 0.8rem; color: var(--text-secondary);">(Open in desktop mode for 3D paddle wheel simulation)</p>
-                <div style="width: 100%; height: 100px; background: repeating-linear-gradient(45deg, var(--bg-panel), var(--bg-panel) 10px, var(--border-color) 10px, var(--border-color) 20px); border: 2px dashed var(--accent-mech); margin-top: 1rem;"></div>
+            <div id="sim-ch3-mobile" class="interactive-container mobile-only" style="min-height: 400px; padding: 2rem; display: flex; flex-direction: column;">
+                <h4 style="margin-top: 0; text-align: center;">Joule's Experiment (2D)</h4>
+                <div class="sim-controls" style="justify-content: center; margin-bottom: 1rem;">
+                    <button id="ch3-mob-drop" class="btn-retro">Drop Weights</button>
+                </div>
+                <div style="flex: 1; position: relative; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 4px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+                    <div style="position: relative; width: 60px; height: 200px; border: 2px solid #ccc; border-radius: 30px; background: rgba(255,255,255,0.1); margin-right: 20px;">
+                        <div id="ch3-mob-fluid" style="position: absolute; bottom: 0; left: 0; width: 100%; height: 50%; background: #0284c7; border-radius: 0 0 28px 28px; transition: background 0.5s;"></div>
+                    </div>
+                    <div style="display: flex; flex-direction: column; align-items: center; height: 200px; justify-content: space-between;">
+                        <div style="width: 20px; height: 20px; border-radius: 50%; background: #555;"></div>
+                        <div style="width: 2px; flex: 1; background: #fff;"></div>
+                        <div id="ch3-mob-weight" style="width: 40px; height: 40px; background: #e11d48; margin-top: 20px; transform: translateY(0); transition: transform 0.1s linear;"></div>
+                    </div>
+                </div>
+                <div style="text-align: center; margin-top: 1rem; font-family: var(--font-mono); color: var(--accent-mech);">
+                    Temp: <span id="ch3-mob-temp">20.0</span> °C
+                </div>
             </div>
             
             <hr class="chapter-divider">
@@ -244,7 +275,7 @@
                 <p>This equation is adapted for specific devices. For example, a <strong>Turbine</strong> produces power ($\dot{W}_{out} > 0$), is usually adiabatic ($\dot{Q} \approx 0$), and changes in kinetic and potential energy are often negligible. The SFEE reduces simply to $\dot{W}_{out} = \dot{m}(h_{in} - h_{out})$. Conversely, a <strong>Compressor</strong> requires power input to increase the pressure (and thus enthalpy) of a fluid.</p>
             </article>
 
-            <!-- SIMULATOR CH 4 -->
+            <!-- SIMULATOR CH 4: DESKTOP -->
             <div id="sim-ch4-desktop" class="interactive-container desktop-only">
                 <div class="sim-overlay">
                     <h4>3D Steady-Flow Device Sandbox</h4>
@@ -259,11 +290,22 @@
                     </div>
                 </div>
             </div>
+
             <!-- SIMULATOR CH 4: MOBILE -->
-            <div id="sim-ch4-mobile" class="interactive-container mobile-only" style="min-height: 250px; padding: 2rem; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
-                <h4 style="margin: 0 0 0.5rem 0;">Steady Flow Sandbox</h4>
-                <p style="font-size: 0.8rem; color: var(--text-secondary);">(Open in desktop mode for 3D Flow Vectors)</p>
-                <div style="width: 100%; height: 100px; background: repeating-linear-gradient(45deg, var(--bg-panel), var(--bg-panel) 10px, var(--border-color) 10px, var(--border-color) 20px); border: 2px dashed var(--accent-mech); margin-top: 1rem;"></div>
+            <div id="sim-ch4-mobile" class="interactive-container mobile-only" style="min-height: 400px; padding: 2rem; display: flex; flex-direction: column;">
+                <h4 style="margin-top: 0; text-align: center;">2D Steady Flow</h4>
+                <div class="sim-controls" style="justify-content: center; margin-bottom: 1rem;">
+                    <label>Device:
+                        <select id="ch4-mob-device">
+                            <option value="turbine">Steam Turbine</option>
+                            <option value="compressor">Air Compressor</option>
+                            <option value="nozzle">Nozzle</option>
+                        </select>
+                    </label>
+                </div>
+                <div style="flex: 1; position: relative;">
+                    <canvas id="ch4-mob-canvas" style="width: 100%; height: 100%; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 4px;"></canvas>
+                </div>
             </div>
 
             <hr class="chapter-divider">
@@ -296,7 +338,7 @@
                 </div>
             </article>
 
-            <!-- SIMULATOR CH 5 -->
+            <!-- SIMULATOR CH 5: DESKTOP -->
             <div id="sim-ch5-desktop" class="interactive-container desktop-only">
                 <div class="sim-overlay">
                     <h4>Dynamic Energy Flow (Sankey Architecture)</h4>
@@ -310,11 +352,17 @@
                     </div>
                 </div>
             </div>
+
             <!-- SIMULATOR CH 5: MOBILE -->
-            <div id="sim-ch5-mobile" class="interactive-container mobile-only" style="min-height: 250px; padding: 2rem; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
-                <h4 style="margin: 0 0 0.5rem 0;">Sankey Diagram Flow</h4>
-                <p style="font-size: 0.8rem; color: var(--text-secondary);">(Open in desktop mode for dynamic energy flow lines)</p>
-                <div style="width: 100%; height: 100px; background: repeating-linear-gradient(45deg, var(--bg-panel), var(--bg-panel) 10px, var(--border-color) 10px, var(--border-color) 20px); border: 2px dashed var(--accent-mech); margin-top: 1rem;"></div>
+            <div id="sim-ch5-mobile" class="interactive-container mobile-only" style="min-height: 400px; padding: 2rem; display: flex; flex-direction: column;">
+                <h4 style="margin-top: 0; text-align: center;">2D Sankey Diagram</h4>
+                <div class="sim-controls" style="justify-content: center; margin-bottom: 1rem;">
+                    <label>$T_H$: <input type="range" id="ch5-mob-th" min="300" max="1500" step="10" value="1000" style="width:80px;"></label>
+                    <label>$T_L$: <input type="range" id="ch5-mob-tl" min="200" max="500" step="10" value="300" style="width:80px;"></label>
+                </div>
+                <div style="flex: 1; position: relative;">
+                    <canvas id="ch5-mob-canvas" style="width: 100%; height: 100%; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 4px;"></canvas>
+                </div>
             </div>
 
             <hr class="chapter-divider">
@@ -346,7 +394,7 @@
                 <p>A process during which the entropy remains constant is an <strong>isentropic process</strong>. Many engineering devices (turbines, pumps, compressors) are analyzed by comparing their actual performance to an idealized isentropic process. On a Temperature-Entropy ($T-s$) diagram, an internally reversible, adiabatic (isentropic) process is a vertical line. The area under a reversible process curve on a $T-s$ diagram represents the heat transfer.</p>
             </article>
 
-            <!-- SIMULATOR CH 6 -->
+            <!-- SIMULATOR CH 6: DESKTOP -->
             <div id="sim-ch6-desktop" class="interactive-container desktop-only">
                 <div class="sim-overlay">
                     <h4>Microscopic Disorder & Entropy Particle Engine</h4>
@@ -355,11 +403,16 @@
                     </div>
                 </div>
             </div>
+
             <!-- SIMULATOR CH 6: MOBILE -->
-            <div id="sim-ch6-mobile" class="interactive-container mobile-only" style="min-height: 250px; padding: 2rem; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
-                <h4 style="margin: 0 0 0.5rem 0;">Entropy Particle Engine</h4>
-                <p style="font-size: 0.8rem; color: var(--text-secondary);">(Open in desktop mode for molecular collision engine)</p>
-                <div style="width: 100%; height: 100px; background: repeating-linear-gradient(45deg, var(--bg-panel), var(--bg-panel) 10px, var(--border-color) 10px, var(--border-color) 20px); border: 2px dashed var(--accent-mech); margin-top: 1rem;"></div>
+            <div id="sim-ch6-mobile" class="interactive-container mobile-only" style="min-height: 400px; padding: 2rem; display: flex; flex-direction: column;">
+                <h4 style="margin-top: 0; text-align: center;">2D Entropy Particles</h4>
+                <div class="sim-controls" style="justify-content: center; margin-bottom: 1rem;">
+                    <button id="ch6-mob-start" class="btn-retro">Remove Partition</button>
+                </div>
+                <div style="flex: 1; position: relative;">
+                    <canvas id="ch6-mob-canvas" style="width: 100%; height: 100%; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 4px;"></canvas>
+                </div>
             </div>
 
             <hr class="chapter-divider">
@@ -421,7 +474,7 @@
                 <p>When these states are plotted on a $T-v$ or $P-v$ diagram, they form a "Vapor Dome". The peak of the dome is the <strong>critical point</strong>, beyond which there is no distinct phase transition process (liquid and vapor states are indistinguishable).</p>
             </article>
 
-            <!-- SIMULATOR CH 8 -->
+            <!-- SIMULATOR CH 8: DESKTOP -->
             <div id="sim-ch8-desktop" class="interactive-container desktop-only">
                 <div class="sim-overlay">
                     <h4>3D Phase Dome & Vapor Quality Explorer</h4>
@@ -432,11 +485,18 @@
                     </div>
                 </div>
             </div>
+
             <!-- SIMULATOR CH 8: MOBILE -->
-            <div id="sim-ch8-mobile" class="interactive-container mobile-only" style="min-height: 250px; padding: 2rem; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
-                <h4 style="margin: 0 0 0.5rem 0;">Vapor Dome Explorer</h4>
-                <p style="font-size: 0.8rem; color: var(--text-secondary);">(Open in desktop mode for interactive 3D phase states)</p>
-                <div style="width: 100%; height: 100px; background: repeating-linear-gradient(45deg, var(--bg-panel), var(--bg-panel) 10px, var(--border-color) 10px, var(--border-color) 20px); border: 2px dashed var(--accent-mech); margin-top: 1rem;"></div>
+            <div id="sim-ch8-mobile" class="interactive-container mobile-only" style="min-height: 400px; padding: 2rem; display: flex; flex-direction: column;">
+                <h4 style="margin-top: 0; text-align: center;">2D Phase Dome</h4>
+                <div class="sim-controls" style="justify-content: center; margin-bottom: 1rem;">
+                    <label>Quality ($x$):
+                        <input type="range" id="ch8-mob-quality" min="0" max="1" step="0.05" value="0.5">
+                    </label>
+                </div>
+                <div style="flex: 1; position: relative;">
+                    <canvas id="ch8-mob-canvas" style="width: 100%; height: 100%; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 4px;"></canvas>
+                </div>
             </div>
 
             <hr class="chapter-divider">
@@ -466,7 +526,7 @@
                 <p><strong>Regeneration:</strong> Extracting ("bleeding") a portion of the hot steam from the turbine to preheat the liquid water (feedwater) before it enters the boiler, significantly reducing the required $Q_{in}$.</p>
             </article>
 
-            <!-- SIMULATOR CH 9 -->
+            <!-- SIMULATOR CH 9: DESKTOP -->
             <div id="sim-ch9-desktop" class="interactive-container desktop-only">
                 <div class="sim-overlay">
                     <h4>Interactive Power Plant Architect</h4>
@@ -477,11 +537,18 @@
                     </div>
                 </div>
             </div>
+
             <!-- SIMULATOR CH 9: MOBILE -->
-            <div id="sim-ch9-mobile" class="interactive-container mobile-only" style="min-height: 250px; padding: 2rem; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
-                <h4 style="margin: 0 0 0.5rem 0;">Power Plant Architect</h4>
-                <p style="font-size: 0.8rem; color: var(--text-secondary);">(Open in desktop mode for 3D Turbine/Boiler simulator)</p>
-                <div style="width: 100%; height: 100px; background: repeating-linear-gradient(45deg, var(--bg-panel), var(--bg-panel) 10px, var(--border-color) 10px, var(--border-color) 20px); border: 2px dashed var(--accent-mech); margin-top: 1rem;"></div>
+            <div id="sim-ch9-mobile" class="interactive-container mobile-only" style="min-height: 400px; padding: 2rem; display: flex; flex-direction: column;">
+                <h4 style="margin-top: 0; text-align: center;">2D Rankine Cycle</h4>
+                <div class="sim-controls" style="justify-content: center; margin-bottom: 1rem;">
+                    <label>Boiler P:
+                        <input type="range" id="ch9-mob-pressure" min="2" max="15" step="1" value="5">
+                    </label>
+                </div>
+                <div style="flex: 1; position: relative;">
+                    <canvas id="ch9-mob-canvas" style="width: 100%; height: 100%; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 4px;"></canvas>
+                </div>
             </div>
 
             <hr class="chapter-divider">
@@ -510,7 +577,7 @@
                 <p>The Brayton cycle models gas turbines (jet engines). Unlike piston engines (closed systems operating on a volume cycle), gas turbines are open, steady-flow systems. The ideal Brayton cycle utilizes an isentropic compressor, constant-pressure heat addition (combustion chamber), and an isentropic turbine. Its efficiency is governed by the <strong>pressure ratio</strong> ($r_p = P_{high} / P_{low}$) across the compressor.</p>
             </article>
 
-            <!-- SIMULATOR CH 10 -->
+            <!-- SIMULATOR CH 10: DESKTOP -->
             <div id="sim-ch10-desktop" class="interactive-container desktop-only">
                 <div class="sim-overlay">
                     <h4>3D IC Engine Cutaway & Kinematics</h4>
@@ -519,18 +586,25 @@
                     </div>
                 </div>
             </div>
+
             <!-- SIMULATOR CH 10: MOBILE -->
-            <div id="sim-ch10-mobile" class="interactive-container mobile-only" style="min-height: 250px; padding: 2rem; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
-                <h4 style="margin: 0 0 0.5rem 0;">IC Engine Kinematics</h4>
-                <p style="font-size: 0.8rem; color: var(--text-secondary);">(Open in desktop mode for 3D engine cutaway)</p>
-                <div style="width: 100%; height: 100px; background: repeating-linear-gradient(45deg, var(--bg-panel), var(--bg-panel) 10px, var(--border-color) 10px, var(--border-color) 20px); border: 2px dashed var(--accent-mech); margin-top: 1rem;"></div>
+            <div id="sim-ch10-mobile" class="interactive-container mobile-only" style="min-height: 400px; padding: 2rem; display: flex; flex-direction: column;">
+                <h4 style="margin-top: 0; text-align: center;">2D IC Engine</h4>
+                <div class="sim-controls" style="justify-content: center; margin-bottom: 1rem;">
+                    <button id="ch10-mob-animate" class="btn-retro">Play Stroke</button>
+                </div>
+                <div style="flex: 1; position: relative;">
+                    <canvas id="ch10-mob-canvas" style="width: 100%; height: 100%; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 4px;"></canvas>
+                </div>
             </div>
 
         </main>
     </div>
     
-    <!-- Link to our future Simulation Engine -->
+    <!-- Link to our Desktop Simulation Engine -->
     <script type="module" src="thermo-engine.js"></script>
+    <!-- Link to our Mobile Simulation Engine -->
+    <script src="mobile-engine.js"></script>
 
     <!-- UI Interaction Scripts -->
     <script>
