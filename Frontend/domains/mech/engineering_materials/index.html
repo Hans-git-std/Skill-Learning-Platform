@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SCME | Engineering Materials</title>
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- MathJax for rendering formulas -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']]
+        }
+      };
+    </script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <!-- Three.js and modules for 3D Simulators -->
+    <script async src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"></script>
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://unpkg.com/three@0.154.0/build/three.module.js",
+          "three/addons/": "https://unpkg.com/three@0.154.0/examples/jsm/"
+        }
+      }
+    </script>
+</head>
+<body>
+    <nav class="top-nav">
+        <div class="nav-left">
+            <h1 class="logo">SCME.</h1>
+            <a href="../../mech/index.html" class="btn-retro back-btn">← ME Hub</a>
+        </div>
+        <button id="theme-toggle" class="btn-retro">Toggle Theme</button>
+    </nav>
+
+    <div class="learning-environment">
+        <aside class="chapter-sidebar">
+            <h3>Engineering Materials</h3>
+            <ul class="chapter-list">
+                <li><a href="#ch1" class="active">1. Crystal Structures</a></li>
+                <li><a href="#ch2">2. Imperfections</a></li>
+                <li><a href="#ch3">3. Mech Properties</a></li>
+                <li><a href="#ch4">4. Phase Diagrams</a></li>
+                <li><a href="#ch5">5. Heat Treatment</a></li>
+                <li><a href="#ch6">6. Alloys</a></li>
+                <li><a href="#ch7">7. Ceramics</a></li>
+                <li><a href="#ch8">8. Polymers</a></li>
+                <li><a href="#ch9">9. Composites</a></li>
+                <li><a href="#ch10">10. Corrosion</a></li>
+                <li><a href="#ch11">11. EM Properties</a></li>
+                <li><a href="#ch12">12. Smart Materials</a></li>
+            </ul>
+        </aside>
+
+        <main class="reading-core">
+            
+            <!-- CHAPTER 1 -->
+            <header class="chapter-header" id="ch1">
+                <span class="chapter-badge">Chapter 1</span>
+                <h2>Introduction to Materials Science and Crystal Structures</h2>
+                <p class="chapter-subtitle">Atomic bonding, space lattices, and unit cells defining the physical nature of materials.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Materials Science explores the profound relationship between the microstructure of a material and its macroscopic properties. To understand why steel is strong, rubber stretches, and glass breaks, we must first look at the atomic scale. Most solid engineering materials are crystalline, meaning their atoms are arranged in a highly ordered, repeating 3D pattern called a <strong>crystal lattice</strong>.</p>
+                
+                <h3>1. The Unit Cell</h3>
+                <p>The smallest repeating volume of the lattice that retains the overall symmetry of the crystal is the unit cell. There are 14 distinct Bravais lattices, but the majority of metals fall into one of three highly symmetric crystal structures:</p>
+                <ul>
+                    <li><strong>Body-Centered Cubic (BCC):</strong> Atoms at each corner and one in the center (e.g., Iron at room temp, Tungsten, Chromium).</li>
+                    <li><strong>Face-Centered Cubic (FCC):</strong> Atoms at each corner and one at the center of each face (e.g., Aluminum, Copper, Gold). FCC structures typically exhibit higher ductility.</li>
+                    <li><strong>Hexagonal Close-Packed (HCP):</strong> A hexagonal prism with atoms at corners, center of basal planes, and three inside the prism (e.g., Titanium, Magnesium).</li>
+                </ul>
+
+                <h3>2. Atomic Packing Factor (APF)</h3>
+                <p>The APF represents the fraction of volume in a crystal structure that is occupied by constituent atoms. It is a critical metric for understanding density and plastic deformation capabilities.</p>
+                <div class="math-formula">
+                    $$ \text{APF} = \frac{\text{Volume of atoms in a unit cell}}{\text{Total volume of the unit cell}} = \frac{N \times \frac{4}{3}\pi R^3}{V_c} $$
+                </div>
+                <p>Where $N$ is the number of atoms per unit cell, $R$ is the atomic radius, and $V_c$ is the unit cell volume. For FCC and HCP, APF = 0.74 (maximum possible packing for identical spheres). For BCC, APF = 0.68.</p>
+            </article>
+
+            <!-- SIMULATOR CH 1 -->
+            <div class="simulator-wrapper">
+                <div id="sim-ch1-desktop" class="interactive-container desktop-only"></div>
+                <div id="sim-ch1-mobile" class="interactive-container mobile-only" style="min-height: 400px;"></div>
+                <div class="sim-controls">
+                    <label>Structure: 
+                        <select id="ch1-type">
+                            <option value="BCC">BCC</option>
+                            <option value="FCC">FCC</option>
+                            <option value="HCP">HCP</option>
+                        </select>
+                    </label>
+                </div>
+            </div>
+
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 2 -->
+            <header class="chapter-header" id="ch2">
+                <span class="chapter-badge">Chapter 2</span>
+                <h2>Imperfections and Defects in Solids</h2>
+                <p class="chapter-subtitle">Understanding that perfect crystals do not exist, and how defects control material strength.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>In reality, crystals are never perfect. They contain various defects which profoundly influence their mechanical, electrical, and optical properties. In fact, metallurgical engineering is largely the art of manipulating these defects to achieve desired properties.</p>
+                
+                <h3>1. Point Defects (0D)</h3>
+                <p>These are highly localized disruptions in the lattice:</p>
+                <ul>
+                    <li><strong>Vacancies:</strong> Missing atoms from standard lattice sites. The number of vacancies increases exponentially with temperature.</li>
+                    <li><strong>Interstitials:</strong> Extra atoms positioned in the empty spaces (interstices) between normal lattice atoms. Carbon in iron is a classic interstitial solid solution.</li>
+                    <li><strong>Substitutional:</strong> An impurity atom replacing a host atom.</li>
+                </ul>
+
+                <h3>2. Line Defects / Dislocations (1D)</h3>
+                <p>Dislocations are 1D defects around which some of the atoms are misaligned. They are the primary mechanism for plastic (permanent) deformation in metals. When a metal bends, it is because millions of dislocations are moving through the lattice.</p>
+                <ul>
+                    <li><strong>Edge Dislocation:</strong> An extra half-plane of atoms inserted into the crystal. The <em>Burgers vector</em> ($b$) is perpendicular to the dislocation line.</li>
+                    <li><strong>Screw Dislocation:</strong> Caused by shear stress applied to produce a distortion similar to a spiral ramp. The Burgers vector is parallel to the dislocation line.</li>
+                </ul>
+            </article>
+
+            <!-- SIMULATOR CH 2 -->
+            <div class="simulator-wrapper">
+                <div id="sim-ch2-desktop" class="interactive-container desktop-only"></div>
+                <div id="sim-ch2-mobile" class="interactive-container mobile-only" style="min-height: 400px;"></div>
+                <div class="sim-controls">
+                    <button id="ch2-shear" class="btn-retro">Apply Shear Stress</button>
+                    <button id="ch2-reset" class="btn-retro">Reset Lattice</button>
+                </div>
+            </div>
+
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 3 -->
+            <header class="chapter-header" id="ch3">
+                <span class="chapter-badge">Chapter 3</span>
+                <h2>Mechanical Properties of Materials</h2>
+                <p class="chapter-subtitle">Stress, strain, elasticity, plasticity, and failure mechanisms under load.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>The mechanical behavior of a material reflects its response or deformation to an applied load or force. Key design properties such as stiffness, strength, hardness, ductility, and toughness are extracted from standardized mechanical tests.</p>
+                
+                <h3>1. Engineering Stress and Strain</h3>
+                <p>To make the results of a tensile test independent of the specimen size, load and elongation are normalized to <strong>engineering stress</strong> ($\sigma$) and <strong>engineering strain</strong> ($\epsilon$).</p>
+                <div class="math-formula">
+                    $$ \sigma = \frac{F}{A_0} \quad \text{and} \quad \epsilon = \frac{\Delta L}{L_0} $$
+                </div>
+                <p>Where $F$ is the instantaneous load, $A_0$ is the original cross-sectional area, $\Delta L$ is the change in length, and $L_0$ is the original length.</p>
+                
+                <h3>2. Elastic and Plastic Deformation</h3>
+                <p>For low stress levels, deformation is elastic (reversible) and Hooke's Law applies: $\sigma = E\epsilon$, where $E$ is the Modulus of Elasticity (Young's modulus), representing the material's stiffness. Once the stress exceeds the <strong>Yield Strength</strong> ($\sigma_y$), the material deforms plastically (permanently). The maximum stress on the curve is the <strong>Ultimate Tensile Strength</strong> (UTS).</p>
+            </article>
+
+            <!-- SIMULATOR CH 3 -->
+            <div class="simulator-wrapper">
+                <div id="sim-ch3-desktop" class="interactive-container desktop-only"></div>
+                <div id="sim-ch3-mobile" class="interactive-container mobile-only" style="min-height: 400px;"></div>
+                <div class="sim-controls">
+                    <button id="ch3-test" class="btn-retro">Run Tensile Test</button>
+                    <label>Material:
+                        <select id="ch3-mat">
+                            <option value="steel">Mild Steel</option>
+                            <option value="aluminum">Aluminum</option>
+                            <option value="glass">Glass</option>
+                        </select>
+                    </label>
+                </div>
+            </div>
+            
+            <hr class="chapter-divider">
+            
+            <!-- CHAPTER 4 -->
+            <header class="chapter-header" id="ch4"><span class="chapter-badge">Chapter 4</span><h2>Phase Diagrams and Solid Solutions</h2><p class="chapter-subtitle">Mapping the states of matter and predicting microstructures of alloys.</p></header>
+            <article class="deep-dive-text">
+                <p>A phase diagram is a graphical representation of the phases present in a materials system at various temperatures, pressures, and compositions. It is a roadmap for metallurgists to design heat treatments and predict material behavior.</p>
+                <h3>1. The Gibbs Phase Rule</h3>
+                <p>The phase rule relates the number of phases ($P$) that can coexist in equilibrium to the number of components ($C$) and the degrees of freedom ($F$).</p>
+                <div class="math-formula">
+                    $$ P + F = C + 2 $$
+                </div>
+                <h3>2. The Iron-Carbon Phase Diagram</h3>
+                <p>This is arguably the most important phase diagram in engineering. It maps out phases like <strong>Ferrite</strong> (BCC iron, max 0.022% C), <strong>Austenite</strong> (FCC iron, highly ductile, max 2.14% C), and <strong>Cementite</strong> ($Fe_3C$, hard and brittle). At the eutectoid point (0.76% C, 727°C), austenite transforms into pearlite—a lamellar structure of alternating ferrite and cementite layers.</p>
+            </article>
+            <div class="simulator-wrapper">
+                <div id="sim-ch4-desktop" class="interactive-container desktop-only"></div>
+                <div id="sim-ch4-mobile" class="interactive-container mobile-only" style="min-height: 400px;"></div>
+                <div class="sim-controls">
+                    <label>Carbon %: <input type="range" id="ch4-c" min="0" max="2.14" step="0.05" value="0.76"></label>
+                    <label>Temperature °C: <input type="range" id="ch4-t" min="20" max="1500" step="10" value="727"></label>
+                </div>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 5 -->
+            <header class="chapter-header" id="ch5"><span class="chapter-badge">Chapter 5</span><h2>Heat Treatment of Steels</h2><p class="chapter-subtitle">Manipulating microstructures to achieve specific mechanical properties.</p></header>
+            <article class="deep-dive-text">
+                <p>Heat treatment involves controlled heating and cooling operations applied to metals to alter their mechanical properties—such as hardness, strength, or ductility—without changing the product shape.</p>
+                <h3>1. Time-Temperature-Transformation (TTT) Diagrams</h3>
+                <p>While phase diagrams assume infinitely slow cooling (equilibrium), TTT diagrams plot transformation kinetics against time and temperature. They reveal how rapid cooling (quenching) bypasses the formation of soft pearlite.</p>
+                <h3>2. Martensite Formation</h3>
+                <p>If steel is cooled fast enough to miss the "nose" of the TTT diagram, the carbon atoms become trapped in the lattice. The FCC austenite shears into a Body-Centered Tetragonal (BCT) structure known as <strong>Martensite</strong>. It is the hardest and most brittle phase of steel. Subsequent <em>tempering</em> (reheating below the eutectoid temp) allows some carbon to diffuse out, restoring ductility while maintaining high strength.</p>
+            </article>
+            <div class="simulator-wrapper">
+                <div id="sim-ch5-desktop" class="interactive-container desktop-only"></div>
+                <div id="sim-ch5-mobile" class="interactive-container mobile-only" style="min-height: 400px;"></div>
+                <div class="sim-controls">
+                    <button id="ch5-quench" class="btn-retro" style="background:#ef4444;">Water Quench</button>
+                    <button id="ch5-air" class="btn-retro" style="background:#10b981;">Air Cool</button>
+                </div>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 6 -->
+            <header class="chapter-header" id="ch6"><span class="chapter-badge">Chapter 6</span><h2>Ferrous and Non-Ferrous Alloys</h2><p class="chapter-subtitle">Categorizing metals based on their primary constituent and unique characteristics.</p></header>
+            <article class="deep-dive-text">
+                <p>Metals are broadly classified into ferrous (iron-based) and non-ferrous alloys. Each family offers unique combinations of strength, weight, conductivity, and corrosion resistance.</p>
+                <h3>1. Ferrous Alloys: Steels and Cast Irons</h3>
+                <p>Steels contain less than 2.14% carbon. Low-carbon steels are ductile and easily welded; high-carbon steels are hard and wear-resistant. Cast irons contain 2.14% to 6.7% carbon, giving them excellent castability and vibration damping (gray cast iron), though they are generally brittle.</p>
+                <h3>2. Non-Ferrous Superstars</h3>
+                <ul>
+                    <li><strong>Aluminum Alloys:</strong> High strength-to-weight ratio, face-centered cubic structure giving excellent ductility, and passive oxide layer for corrosion resistance.</li>
+                    <li><strong>Titanium Alloys:</strong> Exceptional corrosion resistance and high-temperature strength, often used in aerospace and medical implants.</li>
+                    <li><strong>Copper Alloys:</strong> Brass (Cu-Zn) and Bronze (Cu-Sn) offer superior thermal and electrical conductivity.</li>
+                </ul>
+            </article>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 7 -->
+            <header class="chapter-header" id="ch7"><span class="chapter-badge">Chapter 7</span><h2>Ceramics and Glasses</h2><p class="chapter-subtitle">Exploiting strong ionic and covalent bonds for high-temperature and structural applications.</p></header>
+            <article class="deep-dive-text">
+                <p>Ceramics are compounds between metallic and nonmetallic elements. They are typically hard, brittle, and have high melting points, low thermal conductivity, and excellent chemical stability.</p>
+                <h3>1. Crystal Structures in Ceramics</h3>
+                <p>Unlike metals, ceramic crystal structures must maintain electrical neutrality. The structure is determined by the magnitude of the electrical charge on each ion and the relative sizes of the cations and anions ($r_C / r_A$ ratio).</p>
+                <h3>2. Glasses and Amorphous Solids</h3>
+                <p>Glasses are non-crystalline (amorphous) silicates containing other oxides (CaO, $Na_2O$, etc.). They lack long-range order. By tempering glass (cooling the surface rapidly), residual compressive stresses are induced on the surface, significantly increasing its fracture strength.</p>
+            </article>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 8 -->
+            <header class="chapter-header" id="ch8"><span class="chapter-badge">Chapter 8</span><h2>Polymers and Plastics</h2><p class="chapter-subtitle">Engineering large organic macromolecules for diverse, lightweight applications.</p></header>
+            <article class="deep-dive-text">
+                <p>Polymers are long-chain molecules composed of repeating chemical units (mers) covalently bonded together. Secondary van der Waals forces hold adjacent chains together.</p>
+                <h3>1. Thermoplastics vs. Thermosets</h3>
+                <p><strong>Thermoplastics</strong> (like Polyethylene and PVC) soften when heated and harden when cooled—a reversible process due to weak intermolecular forces. <strong>Thermosets</strong> (like Epoxies and Phenolics) form heavily cross-linked 3D networks during curing. They will degrade rather than melt when reheated, making them stronger and more dimensionally stable.</p>
+                <h3>2. Viscoelasticity</h3>
+                <p>Amorphous polymers behave like a glass at low temperatures and like a rubbery liquid at high temperatures. The transition between these states occurs at the Glass Transition Temperature ($T_g$). Above $T_g$, the polymer exhibits viscoelasticity—a combination of elastic solid and viscous fluid behavior.</p>
+            </article>
+            <div class="simulator-wrapper">
+                <div id="sim-ch8-desktop" class="interactive-container desktop-only"></div>
+                <div id="sim-ch8-mobile" class="interactive-container mobile-only" style="min-height: 400px;"></div>
+                <div class="sim-controls">
+                    <label>Temperature: <input type="range" id="ch8-temp" min="20" max="200" value="20"></label>
+                </div>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 9 -->
+            <header class="chapter-header" id="ch9"><span class="chapter-badge">Chapter 9</span><h2>Composite Materials</h2><p class="chapter-subtitle">Combining macroscopic phases to engineer superior, tailored properties.</p></header>
+            <article class="deep-dive-text">
+                <p>A composite is a multiphase material that exhibits a significant proportion of the properties of both constituent phases such that a better combination of properties is realized. The phases are usually a continuous <strong>matrix</strong> and a dispersed <strong>reinforcement</strong>.</p>
+                <h3>1. Rule of Mixtures</h3>
+                <p>For a continuous fiber-reinforced composite loaded in the longitudinal direction (isostrain condition), the elastic modulus ($E_c$) can be predicted by the rule of mixtures:</p>
+                <div class="math-formula">
+                    $$ E_c = E_f V_f + E_m V_m $$
+                </div>
+                <p>Where $E_f, E_m$ are moduli of fiber and matrix, and $V_f, V_m$ are their respective volume fractions ($V_f + V_m = 1$). For transverse loading (isostress), the inverse rule of mixtures applies: $\frac{1}{E_c} = \frac{V_f}{E_f} + \frac{V_m}{E_m}$.</p>
+            </article>
+            <div class="simulator-wrapper">
+                <div id="sim-ch9-desktop" class="interactive-container desktop-only"></div>
+                <div id="sim-ch9-mobile" class="interactive-container mobile-only" style="min-height: 400px;"></div>
+                <div class="sim-controls">
+                    <label>Fiber Volume (Vf) %: <input type="range" id="ch9-vf" min="0" max="100" value="60"></label>
+                </div>
+            </div>
+            <hr class="chapter-divider">
+            
+            <!-- CHAPTER 10 -->
+            <header class="chapter-header" id="ch10"><span class="chapter-badge">Chapter 10</span><h2>Corrosion and Degradation</h2><p class="chapter-subtitle">The inevitable return of metals to their natural oxide states.</p></header>
+            <article class="deep-dive-text">
+                <p>Corrosion is the destructive electrochemical attack of a material by its environment. Understanding the thermodynamics of corrosion is essential for designing durable structures.</p>
+                <h3>1. The Electrochemical Cell</h3>
+                <p>Corrosion requires four components: an anode (where oxidation/metal loss occurs), a cathode (where reduction occurs), an electrolyte (to conduct ions), and an electrical connection (to conduct electrons).</p>
+                <h3>2. Galvanic Series and Cathodic Protection</h3>
+                <p>When two dissimilar metals are coupled in an electrolyte, the more reactive (anodic) metal corrodes faster. We exploit this via <strong>Cathodic Protection</strong>. By attaching a "sacrificial anode" (e.g., zinc or magnesium) to a steel structure, the steel becomes the cathode and is protected while the sacrificial anode corrodes.</p>
+            </article>
+            <div class="simulator-wrapper">
+                <div id="sim-ch10-desktop" class="interactive-container desktop-only"></div>
+                <div id="sim-ch10-mobile" class="interactive-container mobile-only" style="min-height: 400px;"></div>
+                <div class="sim-controls">
+                    <label>Environment: 
+                        <select id="ch10-env">
+                            <option value="water">Fresh Water</option>
+                            <option value="salt">Salt Water</option>
+                        </select>
+                    </label>
+                    <label>Add Sacrificial Zinc: <input type="checkbox" id="ch10-zinc"></label>
+                </div>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 11 -->
+            <header class="chapter-header" id="ch11"><span class="chapter-badge">Chapter 11</span><h2>Electrical and Magnetic Properties</h2><p class="chapter-subtitle">Band theory, semiconductors, and the physics of magnetic domains.</p></header>
+            <article class="deep-dive-text">
+                <p>The electrical and magnetic behaviors of materials are governed by their electronic band structures and the spin of electrons.</p>
+                <h3>1. Band Theory and Conductivity</h3>
+                <p>In metals, the valence band and conduction band overlap, allowing free movement of electrons. In insulators, a large band gap prevents electron excitation. <strong>Semiconductors</strong> (like Silicon) have a small band gap; their conductivity can be manipulated by adding impurities (doping) to create n-type (extra electrons) or p-type (extra holes) materials.</p>
+                <h3>2. Ferromagnetism and Hysteresis</h3>
+                <p>In ferromagnetic materials (Fe, Co, Ni), atomic magnetic moments align in clusters called domains. Applying an external magnetic field ($H$) aligns these domains, increasing the magnetic flux density ($B$). The lag in magnetization behind the applied field is called <strong>hysteresis</strong>. The area inside the hysteresis loop represents energy lost as heat during one cycle.</p>
+            </article>
+            <div class="simulator-wrapper">
+                <div id="sim-ch11-desktop" class="interactive-container desktop-only"></div>
+                <div id="sim-ch11-mobile" class="interactive-container mobile-only" style="min-height: 400px;"></div>
+                <div class="sim-controls">
+                    <label>Material: 
+                        <select id="ch11-mat">
+                            <option value="soft">Soft Magnetic (Transformer Core)</option>
+                            <option value="hard">Hard Magnetic (Permanent Magnet)</option>
+                        </select>
+                    </label>
+                </div>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 12 -->
+            <header class="chapter-header" id="ch12"><span class="chapter-badge">Chapter 12</span><h2>Advanced and Smart Materials</h2><p class="chapter-subtitle">Materials that sense and react to their environment.</p></header>
+            <article class="deep-dive-text">
+                <p>The frontier of materials science involves designing materials with tailored, dynamic responses to external stimuli (temperature, electric fields, stress).</p>
+                <h3>1. Shape Memory Alloys (SMAs)</h3>
+                <p>SMAs, like Nitinol (Nickel-Titanium), can undergo severe deformation and then return to their original shape when heated. This is due to a reversible, diffusionless solid-state phase transformation between Martensite and Austenite.</p>
+                <h3>2. Piezoelectric Materials</h3>
+                <p>Piezoelectric ceramics (like PZT) generate an electrical voltage when subjected to mechanical stress, and conversely, change shape when an electric field is applied. They are widely used as sensors and actuators.</p>
+            </article>
+
+        </main>
+    </div>
+    
+    <script>
+        // Theme toggle logic
+        const toggleBtn = document.getElementById('theme-toggle');
+        const htmlDoc = document.documentElement;
+        toggleBtn.addEventListener('click', () => {
+            if(htmlDoc.getAttribute('data-theme') === 'dark') {
+                htmlDoc.setAttribute('data-theme', 'light');
+            } else {
+                htmlDoc.setAttribute('data-theme', 'dark');
+            }
+        });
+
+        // Sidebar active link logic
+        const sections = document.querySelectorAll('.chapter-header');
+        const navLinks = document.querySelectorAll('.chapter-list a');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (scrollY >= sectionTop - 150) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === `#${current}`) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+    <!-- Link to our Desktop Simulation Engine -->
+    <script type="module" src="mat-desktop.js"></script>
+    <!-- Link to our Mobile Simulation Engine -->
+    <script src="mat-mobile.js"></script>
+</body>
+</html>
