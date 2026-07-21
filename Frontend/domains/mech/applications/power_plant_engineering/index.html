@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SCME | Power Plant Engineering</title>
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- MathJax for rendering formulas -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']]
+        }
+      };
+    </script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <!-- Three.js and modules for 3D Simulators -->
+    <script async src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"></script>
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://unpkg.com/three@0.154.0/build/three.module.js",
+          "three/addons/": "https://unpkg.com/three@0.154.0/examples/jsm/"
+        }
+      }
+    </script>
+</head>
+<body>
+    <nav class="top-nav">
+        <div class="nav-left">
+            <h1 class="logo">SCME.</h1>
+            <a href="../../index.html" class="btn-retro back-btn">← ME Hub</a>
+        </div>
+        <button id="theme-toggle" class="btn-retro">Toggle Theme</button>
+    </nav>
+
+    <div class="learning-environment">
+        <aside class="chapter-sidebar">
+            <h3>Power Plant Eng.</h3>
+            <ul class="chapter-list">
+                <li><a href="#ch1" class="active">1. Introduction</a></li>
+                <li><a href="#ch2">2. Steam Plants</a></li>
+                <li><a href="#ch3">3. Steam Generators</a></li>
+                <li><a href="#ch4">4. Turbines & Condensers</a></li>
+                <li><a href="#ch5">5. Gas Turbines</a></li>
+                <li><a href="#ch6">6. Combined Cycle</a></li>
+                <li><a href="#ch7">7. Diesel Plants</a></li>
+                <li><a href="#ch8">8. Hydroelectric</a></li>
+                <li><a href="#ch9">9. Nuclear Plants</a></li>
+                <li><a href="#ch10">10. Renewables</a></li>
+            </ul>
+        </aside>
+
+        <main class="reading-core">
+            
+            <!-- CHAPTER 1 -->
+            <header class="chapter-header" id="ch1">
+                <span class="chapter-badge">Chapter 1</span>
+                <h2>Introduction to Power Plants & Economics</h2>
+                <p class="chapter-subtitle">Grid load curves, demand factors, and the economics of power generation.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Power plant engineering is the study of energy conversion from primary sources (coal, nuclear, hydro, wind) into electrical energy on a massive, industrial scale. A power grid must instantly and continuously balance supply with a constantly fluctuating consumer demand.</p>
+                
+                <h3>1. Load Curves and Terminology</h3>
+                <p>A load curve is a graphical representation of the power demand on a grid over a specific time period (e.g., 24 hours). Analyzing this curve is critical for designing the mix of power plants.</p>
+                <ul>
+                    <li><strong>Base Load:</strong> The unvarying, minimum load that occurs throughout the day. Handled by large, highly efficient plants (Nuclear, Coal) that take days to start up but run continuously.</li>
+                    <li><strong>Peak Load:</strong> The maximum load occurring for short durations. Handled by highly responsive plants (Gas Turbines, Hydro) that can start in minutes but are expensive to run continuously.</li>
+                </ul>
+
+                <h3>2. Plant Performance Factors</h3>
+                <p>Engineers evaluate the economic viability and utilization of power plants using several key factors:</p>
+                <div class="math-formula">
+                    $$ \text{Load Factor} = \frac{\text{Average Load}}{\text{Maximum Demand}} $$
+                </div>
+                <div class="math-formula">
+                    $$ \text{Capacity Factor} = \frac{\text{Actual Energy Produced}}{\text{Maximum Possible Energy Produced (if running at full capacity 24/7)}} $$
+                </div>
+                <p>A high load factor means the equipment is utilized effectively, reducing the cost per unit of electricity generated.</p>
+
+                <h3>3. Power Plant Economics</h3>
+                <p>The cost of generating electricity consists of Fixed Costs (capital investment, interest, depreciation, taxes, insurance) and Running/Operating Costs (fuel, maintenance, labor). Base-load plants have massive fixed costs but very low running costs. Peak-load plants have low fixed costs but very high running costs.</p>
+            </article>
+
+            <!-- SIMULATOR CH 1 -->
+            <div id="sim-ch1" class="interactive-container">
+                <div class="desktop-only">
+                    <div class="sim-overlay">
+                        <h4>3D Grid Load Balancer</h4>
+                        <div class="sim-controls">
+                            <label>Time: <span id="ch1-time-3d">12:00</span></label>
+                            <button id="ch1-play-3d" class="btn-retro">Play Day Cycle</button>
+                        </div>
+                    </div>
+                    <canvas id="ch1-canvas-3d" class="webgl-canvas"></canvas>
+                </div>
+                <div class="mobile-only">
+                    <div class="sim-overlay">
+                        <h4>2D Grid Load Curve</h4>
+                        <div class="sim-controls">
+                            <label>Time: <span id="ch1-time-2d">12:00</span></label>
+                            <button id="ch1-play-2d" class="btn-retro">Play Day Cycle</button>
+                        </div>
+                    </div>
+                    <canvas id="ch1-canvas-2d" class="webgl-canvas"></canvas>
+                </div>
+            </div>
+
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 2 -->
+            <header class="chapter-header" id="ch2">
+                <span class="chapter-badge">Chapter 2</span>
+                <h2>Steam Power Plants (Rankine Cycle)</h2>
+                <p class="chapter-subtitle">Layout of thermal plants, Rankine modifications, and thermal efficiency.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Steam power plants (Thermal power plants) generate the majority of the world's electricity. They operate on the Rankine cycle, utilizing water as the working fluid undergoing phase changes.</p>
+                
+                <h3>1. General Layout</h3>
+                <p>A modern coal-fired steam plant consists of four primary circuits:</p>
+                <ol>
+                    <li><strong>Coal and Ash Circuit:</strong> Delivering pulverized coal to the boiler and removing ash.</li>
+                    <li><strong>Air and Gas Circuit:</strong> Supplying combustion air via forced draught fans and expelling flue gases via induced draught fans through an electrostatic precipitator and chimney.</li>
+                    <li><strong>Feedwater and Steam Circuit:</strong> The core Rankine cycle (Boiler $\rightarrow$ Turbine $\rightarrow$ Condenser $\rightarrow$ Pump).</li>
+                    <li><strong>Cooling Water Circuit:</strong> Supplying massive amounts of cold water (often from a river or cooling tower) to condense the exhaust steam.</li>
+                </ol>
+
+                <h3>2. Reheat Rankine Cycle</h3>
+                <p>To increase the mean temperature of heat addition and prevent excessive moisture in the low-pressure turbine stages, steam is expanded in a High-Pressure (HP) turbine, routed back to the boiler to be reheated at constant pressure, and then expanded in a Low-Pressure (LP) turbine.</p>
+
+                <h3>3. Regenerative Rankine Cycle</h3>
+                <p>Regeneration significantly increases the thermal efficiency of the cycle. A portion of the steam is extracted ("bled") from the turbine at intermediate pressures and routed to Feedwater Heaters. This pre-heats the liquid water returning to the boiler, raising the average temperature at which heat is added from the external fuel source.</p>
+                <div class="math-formula">
+                    $$ \eta_{th} = \frac{W_{turbine} - W_{pump}}{Q_{in}} $$
+                </div>
+            </article>
+
+            <!-- No Simulator for Chapter 2 -->
+
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 3 -->
+            <header class="chapter-header" id="ch3">
+                <span class="chapter-badge">Chapter 3</span>
+                <h2>Steam Generators (Boilers)</h2>
+                <p class="chapter-subtitle">Water-tube boilers, high-pressure operation, and draught systems.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>A steam generator or boiler is a complex heat exchanger that transfers the chemical energy of combustion into the working fluid (water) to produce high-pressure, superheated steam.</p>
+                
+                <h3>1. Classification of Boilers</h3>
+                <p>While early locomotives used fire-tube boilers (hot gases flow inside tubes, water surrounds them), all modern utility power plants use <strong>Water-Tube Boilers</strong>. In a water-tube boiler, water flows inside thousands of tubes, and the combustion gases flow across their exterior. This design allows for massive capacities and extreme pressures.</p>
+
+                <h3>2. High-Pressure Boilers</h3>
+                <p>Modern boilers operate at critical (22.12 MPa) or super-critical pressures to maximize Rankine efficiency. At super-critical pressures, there is no distinct boiling process; water flashes directly into steam without a liquid-vapor mixture phase. Examples include the Benson and Lamont boilers.</p>
+
+                <h3>3. Draught Systems</h3>
+                <p>Draught is the pressure difference required to force air into the furnace and push flue gases out the chimney. Natural draught uses the density difference of hot flue gas in a tall chimney. However, modern boilers have immense flow resistance (due to economizers and air pre-heaters) and require <strong>Mechanical Draught</strong>:</p>
+                <ul>
+                    <li><strong>Forced Draught (FD) Fan:</strong> Pushes fresh air into the furnace.</li>
+                    <li><strong>Induced Draught (ID) Fan:</strong> Pulls flue gases out of the furnace.</li>
+                    <li><strong>Balanced Draught:</strong> Uses both FD and ID fans to maintain the furnace pressure slightly below atmospheric pressure, preventing hot gases from leaking into the plant.</li>
+                </ul>
+            </article>
+
+            <!-- SIMULATOR CH 3 -->
+            <div id="sim-ch3" class="interactive-container">
+                <div class="desktop-only">
+                    <div class="sim-overlay">
+                        <h4>3D Boiler Fluid Dynamics</h4>
+                        <div class="sim-controls">
+                            <label>Fuel Feed Rate: <input type="range" id="ch3-fuel-3d" min="10" max="100" step="1" value="50"></label>
+                            <div class="sim-stats">Steam Temp: <span id="ch3-temp-3d">300</span> °C</div>
+                        </div>
+                    </div>
+                    <canvas id="ch3-canvas-3d" class="webgl-canvas"></canvas>
+                </div>
+                <div class="mobile-only">
+                    <div class="sim-overlay">
+                        <h4>2D Boiler Diagram</h4>
+                        <div class="sim-controls">
+                            <label>Fuel Feed: <input type="range" id="ch3-fuel-2d" min="10" max="100" step="1" value="50"></label>
+                            <div class="sim-stats">Steam Temp: <span id="ch3-temp-2d">300</span> °C</div>
+                        </div>
+                    </div>
+                    <canvas id="ch3-canvas-2d" class="webgl-canvas"></canvas>
+                </div>
+            </div>
+
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 4 -->
+            <header class="chapter-header" id="ch4">
+                <span class="chapter-badge">Chapter 4</span>
+                <h2>Steam Turbines & Condensers</h2>
+                <p class="chapter-subtitle">Impulse vs. reaction compounding, velocity triangles, and condensation.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>The steam turbine is the prime mover of the power plant, converting the thermal and kinetic energy of steam into rotational shaft work to drive the electrical generator.</p>
+                
+                <h3>1. Impulse vs. Reaction Turbines</h3>
+                <p>In an <strong>Impulse Turbine</strong> (e.g., de Laval), the steam expands entirely within stationary nozzles, acquiring massive kinetic energy. This high-velocity steam jet hits symmetrical rotor blades, which extract energy entirely by changing the direction of the steam (momentum transfer). The pressure across the moving blades remains constant.</p>
+                <p>In a <strong>Reaction Turbine</strong> (e.g., Parsons), the steam expands in both the stationary guide vanes and the moving rotor blades. The moving blades act as nozzles themselves. The rotor spins due to both the impulse force of the incoming steam and the reactive force of the steam accelerating out of the blades. There is a pressure drop across the moving blades.</p>
+
+                <h3>2. Velocity Triangles and Compounding</h3>
+                <p>Turbine blade design relies heavily on velocity vector triangles (inlet and outlet). To prevent a single turbine stage from spinning at excessively high (and dangerous) RPMs, the pressure drop or velocity drop is absorbed in multiple stages. This is called <strong>Compounding</strong> (Pressure compounding, Velocity compounding, or both).</p>
+                <div class="math-formula">
+                    $$ \text{Blade Work} = \dot{m} (V_{w1} \pm V_{w2}) u $$
+                </div>
+                <p>Where $V_{w}$ is the whirl velocity component, and $u$ is the blade tangential velocity.</p>
+
+                <h3>3. Steam Condensers</h3>
+                <p>The condenser creates a vacuum at the turbine exhaust, maximizing the pressure drop and work output of the turbine. It operates by passing thousands of tubes carrying cold cooling water through the exhaust steam. Surface condensers (where steam and cooling water do not mix) are exclusively used in modern plants.</p>
+            </article>
+
+            <!-- SIMULATOR CH 4 -->
+            <div id="sim-ch4" class="interactive-container">
+                <div class="desktop-only">
+                    <div class="sim-overlay">
+                        <h4>3D Velocity Triangle Generator</h4>
+                        <div class="sim-controls">
+                            <label>Steam Vel ($V_1$): <input type="range" id="ch4-v1-3d" min="100" max="800" step="10" value="400"></label>
+                            <label>Blade Speed ($u$): <input type="range" id="ch4-u-3d" min="50" max="400" step="10" value="150"></label>
+                            <label>Nozzle ($\alpha$): <input type="range" id="ch4-alpha-3d" min="10" max="45" step="1" value="20"></label>
+                        </div>
+                    </div>
+                    <canvas id="ch4-canvas-3d" class="webgl-canvas"></canvas>
+                </div>
+                <div class="mobile-only">
+                    <div class="sim-overlay">
+                        <h4>2D Velocity Vector Chart</h4>
+                        <div class="sim-controls">
+                            <label>$V_1$: <input type="range" id="ch4-v1-2d" min="100" max="800" step="10" value="400"></label>
+                            <label>$u$: <input type="range" id="ch4-u-2d" min="50" max="400" step="10" value="150"></label>
+                            <label>$\alpha$: <input type="range" id="ch4-alpha-2d" min="10" max="45" step="1" value="20"></label>
+                        </div>
+                    </div>
+                    <canvas id="ch4-canvas-2d" class="webgl-canvas"></canvas>
+                </div>
+            </div>
+
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 5 -->
+            <header class="chapter-header" id="ch5">
+                <span class="chapter-badge">Chapter 5</span>
+                <h2>Gas Turbine Power Plants (Brayton Cycle)</h2>
+                <p class="chapter-subtitle">Open cycles, compressors, combustors, and intercooling.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Gas turbine power plants operate on the Brayton cycle. Because they are compact, require little water, and can start up in minutes, they are heavily used for peak-load power generation and in aircraft propulsion.</p>
+                
+                <h3>1. The Simple Brayton Cycle</h3>
+                <p>An open-cycle gas turbine consists of three main components mounted on a single shaft: an axial compressor, a combustion chamber, and an axial turbine. Ambient air is drawn in, compressed, mixed with fuel (usually natural gas) and ignited. The high-temperature, high-pressure exhaust gas expands through the turbine, providing the power to drive the compressor and a generator.</p>
+                <p>The efficiency of the simple Brayton cycle depends on the pressure ratio ($r_p = P_2 / P_1$):</p>
+                <div class="math-formula">
+                    $$ \eta_{Brayton} = 1 - \frac{1}{r_p^{(k-1)/k}} $$
+                </div>
+
+                <h3>2. Improving Gas Turbine Efficiency</h3>
+                <p>A major drawback of the simple gas turbine is that the compressor consumes a massive percentage (up to 50%) of the turbine's power output (high back work ratio). Engineers use several modifications:</p>
+                <ul>
+                    <li><strong>Intercooling:</strong> Compressing the air in stages and cooling it between stages. Cold air is denser and requires much less work to compress, saving power.</li>
+                    <li><strong>Reheating:</strong> Expanding the gas in a high-pressure turbine, then adding more fuel in a second combustion chamber before expanding in a low-pressure turbine. Increases net work output.</li>
+                    <li><strong>Regeneration:</strong> The exhaust gas from a turbine is still extremely hot. A regenerator (heat exchanger) uses this exhaust to pre-heat the compressed air before it enters the combustor, saving fuel.</li>
+                </ul>
+            </article>
+
+            <!-- SIMULATOR CH 5 -->
+            <div id="sim-ch5" class="interactive-container">
+                <div class="desktop-only">
+                    <div class="sim-overlay">
+                        <h4>3D Brayton Cycle Builder</h4>
+                        <div class="sim-controls">
+                            <label><input type="checkbox" id="ch5-intercooler-3d"> Intercooler</label>
+                            <label><input type="checkbox" id="ch5-regenerator-3d"> Regenerator</label>
+                            <label><input type="checkbox" id="ch5-reheater-3d"> Reheater</label>
+                        </div>
+                    </div>
+                    <canvas id="ch5-canvas-3d" class="webgl-canvas"></canvas>
+                </div>
+                <div class="mobile-only">
+                    <div class="sim-overlay">
+                        <h4>2D Gas Turbine Diagram</h4>
+                        <div class="sim-controls">
+                            <label><input type="checkbox" id="ch5-intercooler-2d"> Intercooler</label>
+                            <label><input type="checkbox" id="ch5-regenerator-2d"> Regenerator</label>
+                            <label><input type="checkbox" id="ch5-reheater-2d"> Reheater</label>
+                        </div>
+                    </div>
+                    <canvas id="ch5-canvas-2d" class="webgl-canvas"></canvas>
+                </div>
+            </div>
+
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 6 -->
+            <header class="chapter-header" id="ch6">
+                <span class="chapter-badge">Chapter 6</span>
+                <h2>Combined Cycle Power Plants</h2>
+                <p class="chapter-subtitle">Synergizing Brayton and Rankine cycles for ultimate efficiency.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Even highly optimized standalone Rankine (Steam) or Brayton (Gas) cycles struggle to exceed 40-45% thermal efficiency. The remaining energy is lost to the environment as waste heat. A Combined Cycle Power Plant (CCPP) elegantly merges the two to achieve efficiencies exceeding 60%.</p>
+                
+                <h3>1. The Concept of Topping and Bottoming</h3>
+                <p>A gas turbine operates at extremely high temperatures (up to 1500°C) but exhausts gas at around 500-600°C. This exhaust is still hot enough to boil water. A steam turbine operates well at these medium temperatures.</p>
+                <p>In a CCPP, the Gas Turbine acts as the <strong>Topping Cycle</strong>. Instead of venting its exhaust to the atmosphere, the exhaust gas is routed into a massive heat exchanger called a <strong>Heat Recovery Steam Generator (HRSG)</strong>.</p>
+                
+                <h3>2. Heat Recovery Steam Generator (HRSG)</h3>
+                <p>The HRSG acts as the boiler for the <strong>Bottoming Cycle</strong> (the Steam Turbine). It contains economizer, evaporator, and superheater tube banks. As the hot gas turbine exhaust passes over these tubes, it boils water into high-pressure steam, which is then piped to a steam turbine.</p>
+                
+                <h3>3. Total Efficiency</h3>
+                <p>Because the bottoming cycle runs on "free" waste heat from the topping cycle, the overall efficiency is the sum of both, minus their product:</p>
+                <div class="math-formula">
+                    $$ \eta_{CC} = \eta_{Gas} + \eta_{Steam} - (\eta_{Gas} \times \eta_{Steam}) $$
+                </div>
+                <p>This massive leap in efficiency makes Combined Cycle Natural Gas plants the standard for new fossil-fuel construction worldwide.</p>
+            </article>
+
+            <!-- SIMULATOR CH 6 -->
+            <div id="sim-ch6" class="interactive-container">
+                <div class="desktop-only">
+                    <div class="sim-overlay">
+                        <h4>3D Combined Cycle Energy Flow (Sankey)</h4>
+                        <div class="sim-controls">
+                            <label>Gas Turbine Firing Temp: <input type="range" id="ch6-temp-3d" min="1000" max="1600" step="50" value="1300"></label>
+                            <div class="sim-stats">Total Plant $\eta$: <span id="ch6-eff-3d">55.0</span>%</div>
+                        </div>
+                    </div>
+                    <canvas id="ch6-canvas-3d" class="webgl-canvas"></canvas>
+                </div>
+                <div class="mobile-only">
+                    <div class="sim-overlay">
+                        <h4>2D CCPP Energy Flow</h4>
+                        <div class="sim-controls">
+                            <label>Firing Temp: <input type="range" id="ch6-temp-2d" min="1000" max="1600" step="50" value="1300"></label>
+                            <div class="sim-stats">Plant $\eta$: <span id="ch6-eff-2d">55.0</span>%</div>
+                        </div>
+                    </div>
+                    <canvas id="ch6-canvas-2d" class="webgl-canvas"></canvas>
+                </div>
+            </div>
+
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 7 -->
+            <header class="chapter-header" id="ch7">
+                <span class="chapter-badge">Chapter 7</span>
+                <h2>Diesel Engine Power Plants</h2>
+                <p class="chapter-subtitle">Backup power, off-grid systems, and large-scale generators.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Diesel power plants use large, stationary internal combustion engines (compression ignition) coupled to generators. While rarely used for base-load power on major grids due to high fuel costs, they fill critical niches.</p>
+                
+                <h3>1. Applications</h3>
+                <ul>
+                    <li><strong>Emergency/Standby Power:</strong> Hospitals, data centers, and nuclear power plants rely on diesel generators to start within seconds during grid blackouts.</li>
+                    <li><strong>Peak Shaving:</strong> Running for short periods during maximum grid demand to offset expensive utility peak rates.</li>
+                    <li><strong>Off-Grid/Island Power:</strong> The primary power source for remote communities, islands, and mining operations isolated from a national grid.</li>
+                </ul>
+
+                <h3>2. Plant Systems</h3>
+                <p>A commercial diesel plant requires significant auxiliary systems to operate the massive engines:</p>
+                <ul>
+                    <li><strong>Starting System:</strong> Large engines cannot be started electrically. They use compressed air injected directly into the cylinders to force the pistons down until the engine fires.</li>
+                    <li><strong>Cooling System:</strong> Massive radiators or heat exchangers using external water sources.</li>
+                    <li><strong>Lubrication System:</strong> Includes oil pumps, strainers, centrifuges (to remove carbon soot), and oil coolers.</li>
+                    <li><strong>Fuel System:</strong> Bulk storage tanks, transfer pumps, day tanks, filters, and high-pressure injection pumps.</li>
+                </ul>
+            </article>
+
+            <!-- No Simulator for Chapter 7 -->
+
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 8 -->
+            <header class="chapter-header" id="ch8">
+                <span class="chapter-badge">Chapter 8</span>
+                <h2>Hydroelectric Power Plants</h2>
+                <p class="chapter-subtitle">Hydrology, dams, penstocks, and hydraulic turbines.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Hydroelectric plants convert the potential energy of water stored at an elevation into kinetic energy, and then into electrical energy. They are highly efficient, emit zero greenhouse gases during operation, and can respond to grid demand almost instantaneously.</p>
+                
+                <h3>1. Key Components</h3>
+                <ul>
+                    <li><strong>Dam & Reservoir:</strong> Stores water and creates the "Head" (the vertical distance the water falls).</li>
+                    <li><strong>Penstock:</strong> The massive pipe that carries water under high pressure from the dam to the turbine.</li>
+                    <li><strong>Surge Tank:</strong> A vertical chamber on the penstock that absorbs pressure shockwaves (water hammer) if the turbine valves close suddenly.</li>
+                    <li><strong>Tailrace:</strong> The channel that carries water away from the turbine back to the river.</li>
+                </ul>
+
+                <h3>2. Hydraulic Turbines</h3>
+                <p>The choice of turbine depends strictly on the Head and Flow Rate of the site:</p>
+                <ul>
+                    <li><strong>Pelton Wheel (Impulse):</strong> Used for <strong>High Head</strong> (above 250m) and low flow. Water is accelerated through nozzles into high-speed jets that strike bucket-shaped blades in the open air.</li>
+                    <li><strong>Francis Turbine (Reaction):</strong> Used for <strong>Medium Head</strong> (30m to 250m) and medium flow. Water enters a volute casing under pressure, passes through guide vanes, and flows radially inward through the rotor, then axially out.</li>
+                    <li><strong>Kaplan Turbine (Reaction):</strong> Used for <strong>Low Head</strong> (under 30m) and massive flow rates (e.g., run-of-the-river). It looks like a ship's propeller and features adjustable blade pitch to maintain efficiency at varying flow rates.</li>
+                </ul>
+                <div class="math-formula">
+                    $$ \text{Hydraulic Power} = \rho \cdot g \cdot Q \cdot H \cdot \eta $$
+                </div>
+            </article>
+
+            <!-- SIMULATOR CH 8 -->
+            <div id="sim-ch8" class="interactive-container">
+                <div class="desktop-only">
+                    <div class="sim-overlay">
+                        <h4>3D Hydro-Turbine Selector</h4>
+                        <div class="sim-controls">
+                            <label>Water Head (m): <input type="range" id="ch8-head-3d" min="10" max="500" step="10" value="100"></label>
+                            <div class="sim-stats">Recommended: <span id="ch8-type-3d">Francis</span> Turbine</div>
+                        </div>
+                    </div>
+                    <canvas id="ch8-canvas-3d" class="webgl-canvas"></canvas>
+                </div>
+                <div class="mobile-only">
+                    <div class="sim-overlay">
+                        <h4>2D Turbine Diagram</h4>
+                        <div class="sim-controls">
+                            <label>Head (m): <input type="range" id="ch8-head-2d" min="10" max="500" step="10" value="100"></label>
+                            <div class="sim-stats">Type: <span id="ch8-type-2d">Francis</span></div>
+                        </div>
+                    </div>
+                    <canvas id="ch8-canvas-2d" class="webgl-canvas"></canvas>
+                </div>
+            </div>
+
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 9 -->
+            <header class="chapter-header" id="ch9">
+                <span class="chapter-badge">Chapter 9</span>
+                <h2>Nuclear Power Plants</h2>
+                <p class="chapter-subtitle">Fission, reactor physics, and primary cooling loops.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Nuclear power plants are essentially thermal power plants (Rankine cycle) where the coal boiler is replaced by a nuclear reactor. They provide massive base-load power with zero carbon emissions.</p>
+                
+                <h3>1. Nuclear Fission</h3>
+                <p>When a heavy isotope (like Uranium-235) absorbs a slow-moving neutron, it becomes highly unstable and splits into two lighter fragments. This fission event releases a massive amount of thermal energy and 2 or 3 additional high-speed neutrons. If at least one of these neutrons hits another U-235 nucleus, a self-sustaining chain reaction occurs.</p>
+
+                <h3>2. Reactor Core Components</h3>
+                <ul>
+                    <li><strong>Fuel Rods:</strong> Zirconium alloy tubes filled with enriched Uranium dioxide pellets.</li>
+                    <li><strong>Moderator:</strong> High-speed neutrons are unlikely to cause fission. A moderator (like ordinary water, heavy water, or graphite) is used to slow down the neutrons via collision, turning them into "thermal" neutrons.</li>
+                    <li><strong>Control Rods:</strong> Made of neutron-absorbing materials (Boron, Cadmium). By inserting or withdrawing these rods into the core, operators control the neutron flux and the reaction rate.</li>
+                    <li><strong>Coolant:</strong> A fluid (usually water, sometimes gas or liquid metal) that flows through the core to extract the intense heat generated by fission.</li>
+                </ul>
+
+                <h3>3. Reactor Types</h3>
+                <p>In a <strong>Pressurized Water Reactor (PWR)</strong>, the primary coolant water is kept under immense pressure so it doesn't boil. It transfers its heat to a secondary water loop in a steam generator, creating steam for the turbine. The radioactive primary loop never touches the turbine. In a <strong>Boiling Water Reactor (BWR)</strong>, the water is allowed to boil directly in the core, and that steam goes straight to the turbine.</p>
+            </article>
+
+            <!-- SIMULATOR CH 9 -->
+            <div id="sim-ch9" class="interactive-container">
+                <div class="desktop-only">
+                    <div class="sim-overlay">
+                        <h4>3D Reactor Core Control</h4>
+                        <div class="sim-controls">
+                            <label>Control Rods: <input type="range" id="ch9-rods-3d" min="0" max="100" step="1" value="50"></label>
+                            <div class="sim-stats">Core Temp: <span id="ch9-temp-3d">300</span> °C</div>
+                            <div class="sim-stats" id="ch9-status-3d">STATUS: STABLE</div>
+                        </div>
+                    </div>
+                    <canvas id="ch9-canvas-3d" class="webgl-canvas"></canvas>
+                </div>
+                <div class="mobile-only">
+                    <div class="sim-overlay">
+                        <h4>2D Reactor Panel</h4>
+                        <div class="sim-controls">
+                            <label>Rods: <input type="range" id="ch9-rods-2d" min="0" max="100" step="1" value="50"></label>
+                            <div class="sim-stats">Temp: <span id="ch9-temp-2d">300</span> °C</div>
+                        </div>
+                    </div>
+                    <canvas id="ch9-canvas-2d" class="webgl-canvas"></canvas>
+                </div>
+            </div>
+
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 10 -->
+            <header class="chapter-header" id="ch10">
+                <span class="chapter-badge">Chapter 10</span>
+                <h2>Renewable & Non-Conventional Plants</h2>
+                <p class="chapter-subtitle">Solar, wind, geothermal, and the future of the grid.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>As the grid transitions away from fossil fuels, power plant engineering is shifting focus towards renewable energy integration, energy storage, and distributed generation.</p>
+                
+                <h3>1. Wind Power</h3>
+                <p>Wind turbines extract kinetic energy from the wind. The maximum theoretical efficiency of a wind turbine is limited to 59.3% by Betz's Law, because the wind must retain some kinetic energy to exit the rear of the turbine.</p>
+                <div class="math-formula">
+                    $$ P_{wind} = \frac{1}{2} \rho A v^3 \cdot C_p $$
+                </div>
+                <p>Where $C_p$ is the power coefficient. Power output is extremely sensitive to wind speed ($v^3$). Modern Horizontal Axis Wind Turbines (HAWT) actively pitch their blades to optimize aerodynamic lift and stall the blades in dangerously high winds to protect the generator.</p>
+
+                <h3>2. Solar Energy</h3>
+                <ul>
+                    <li><strong>Solar Photovoltaic (PV):</strong> Uses semiconductor materials to convert photons directly into DC electricity. Inverters then convert this to grid-synchronized AC.</li>
+                    <li><strong>Concentrated Solar Power (CSP):</strong> Massive fields of tracking mirrors (heliostats) focus sunlight onto a central receiver tower, melting salt to 1000°C. This heat is then used in a standard Rankine cycle boiler. CSP has the immense advantage of thermal energy storage, allowing the plant to generate steam long after the sun goes down.</li>
+                </ul>
+
+                <h3>3. Geothermal & Fuel Cells</h3>
+                <p>Geothermal plants tap into underground reservoirs of steam or hot water to drive turbines. Fuel Cells convert the chemical energy of hydrogen directly into electricity via an electrochemical reaction (reverse electrolysis), bypassing combustion and the Carnot limit entirely.</p>
+            </article>
+
+            <!-- SIMULATOR CH 10 -->
+            <div id="sim-ch10" class="interactive-container">
+                <div class="desktop-only">
+                    <div class="sim-overlay">
+                        <h4>3D Wind Farm Aerodynamics</h4>
+                        <div class="sim-controls">
+                            <label>Wind Speed (m/s): <input type="range" id="ch10-wind-3d" min="2" max="25" step="1" value="10"></label>
+                            <label>Blade Pitch: <input type="range" id="ch10-pitch-3d" min="-5" max="30" step="1" value="5"></label>
+                            <div class="sim-stats">Power Output: <span id="ch10-power-3d">0</span> kW</div>
+                        </div>
+                    </div>
+                    <canvas id="ch10-canvas-3d" class="webgl-canvas"></canvas>
+                </div>
+                <div class="mobile-only">
+                    <div class="sim-overlay">
+                        <h4>2D Turbine Efficiency</h4>
+                        <div class="sim-controls">
+                            <label>Wind: <input type="range" id="ch10-wind-2d" min="2" max="25" step="1" value="10"></label>
+                            <div class="sim-stats">Power: <span id="ch10-power-2d">0</span> kW</div>
+                        </div>
+                    </div>
+                    <canvas id="ch10-canvas-2d" class="webgl-canvas"></canvas>
+                </div>
+            </div>
+
+        </main>
+    </div>
+    
+    <!-- Link to our Desktop Simulation Engine -->
+    <script type="module" src="power-plant-3d.js"></script>
+    <!-- Link to our Mobile Simulation Engine -->
+    <script src="power-plant-2d.js"></script>
+    <script>
+        // Simple Theme Toggle
+        document.getElementById('theme-toggle').addEventListener('click', () => {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            html.setAttribute('data-theme', currentTheme === 'dark' ? 'light' : 'dark');
+        });
+    </script>
+</body>
+</html>
