@@ -1,0 +1,85 @@
+/* --- Local Nav Tweak --- */
+.nav-left {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.back-btn {
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.center-header {
+    text-align: center;
+}
+
+/* --- Glass Environment Setup --- */
+.glass-environment {
+   flex-grow: 1;
+   background-image: linear-gradient(rgba(244, 244, 245, 0.8), rgba(244, 244, 245, 0.8));
+   background-size: cover;
+   background-position: center;
+   background-attachment: fixed;
+   display: flex;
+   flex-direction: column;
+}
+
+[data-theme="dark"] .glass-environment {
+   background-image: linear-gradient(rgba(9, 9, 11, 0.8), rgba(9, 9, 11, 0.8));
+}
+
+/* --- Under Development Card --- */
+.under-development-card {
+    max-width: 600px;
+    margin: 2rem auto;
+    padding: 4rem 2rem;
+    border-radius: 20px;
+    text-align: center;
+    
+    background: rgba(255, 255, 255, 0.3); 
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="dark"] .under-development-card {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.icon-container {
+    margin-bottom: 1.5rem;
+    color: var(--accent);
+    animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+.under-development-card h3 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    color: var(--text-main);
+}
+
+.under-development-card p {
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 2.5rem;
+}
+
+.return-btn {
+    text-decoration: none;
+    display: inline-block;
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+}
