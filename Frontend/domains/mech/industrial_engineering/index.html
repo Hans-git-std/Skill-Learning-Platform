@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SCME | Industrial Engineering</title>
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- MathJax for rendering formulas -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']]
+        }
+      };
+    </script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <!-- Three.js and modules for 3D Simulators -->
+    <script async src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"></script>
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://unpkg.com/three@0.154.0/build/three.module.js",
+          "three/addons/": "https://unpkg.com/three@0.154.0/examples/jsm/"
+        }
+      }
+    </script>
+</head>
+<body>
+    <nav class="top-nav">
+        <div class="nav-left">
+            <h1 class="logo">SCME.</h1>
+            <a href="../../mech/index.html" class="btn-retro back-btn">← ME Hub</a>
+        </div>
+        <button id="theme-toggle" class="btn-retro">Toggle Theme</button>
+    </nav>
+
+    <div class="learning-environment">
+        <aside class="chapter-sidebar">
+            <h3>Industrial Engineering</h3>
+            <ul class="chapter-list">
+                <li><a href="#ch1" class="active">1. Intro & Productivity</a></li>
+                <li><a href="#ch2">2. Method Study</a></li>
+                <li><a href="#ch3">3. Work Measurement</a></li>
+                <li><a href="#ch4">4. Plant Layout</a></li>
+                <li><a href="#ch5">5. PPC</a></li>
+                <li><a href="#ch6">6. Inventory Control</a></li>
+                <li><a href="#ch7">7. Quality Control</a></li>
+                <li><a href="#ch8">8. Linear Programming</a></li>
+                <li><a href="#ch9">9. Queuing Theory</a></li>
+                <li><a href="#ch10">10. Forecasting</a></li>
+                <li><a href="#ch11">11. Maintenance</a></li>
+                <li><a href="#ch12">12. Ergonomics</a></li>
+            </ul>
+        </aside>
+
+        <main class="reading-core">
+            
+            <!-- CHAPTER 1 -->
+            <header class="chapter-header" id="ch1">
+                <span class="chapter-badge">Chapter 1</span>
+                <h2>Introduction to Industrial Engineering & Productivity</h2>
+                <p class="chapter-subtitle">Defining the scope, systems optimization, and measuring operational efficiency.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Industrial Engineering (IE) is concerned with the design, improvement, and installation of integrated systems of people, materials, information, equipment, and energy. It draws upon specialized knowledge in mathematics, physical, and social sciences together with principles of engineering analysis and design to specify, predict, and evaluate the results obtained from such systems.</p>
+                
+                <h3>1. Productivity and Efficiency</h3>
+                <p><strong>Productivity</strong> is fundamentally the ratio of output to input. It is the primary metric by which industrial engineers assess the health of a manufacturing or service operation. High productivity implies a more efficient use of resources (labor, capital, materials, energy).</p>
+                <div class="math-formula">
+                    $$ \text{Productivity} = \frac{\text{Total Output}}{\text{Total Input}} $$
+                </div>
+                <p>Productivity can be categorized into:</p>
+                <ul>
+                    <li><strong>Partial Productivity:</strong> The ratio of output to a single class of input (e.g., labor productivity = Units produced / Labor hours).</li>
+                    <li><strong>Total Factor Productivity:</strong> The ratio of net output to the sum of associated labor and capital inputs.</li>
+                    <li><strong>Total Productivity:</strong> The ratio of total output to the sum of all input factors.</li>
+                </ul>
+
+                <h3>2. The Role of the Industrial Engineer</h3>
+                <p>The modern IE operates at the intersection of engineering and management. While mechanical engineers design the machine, the industrial engineer designs the system that utilizes the machine efficiently alongside human operators. This requires a strong understanding of systems thinking, operations research, and human factors.</p>
+            </article>
+            
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 2 -->
+            <header class="chapter-header" id="ch2">
+                <span class="chapter-badge">Chapter 2</span>
+                <h2>Work Study and Method Study</h2>
+                <p class="chapter-subtitle">Systematic examination of work methods to improve efficiency and reduce fatigue.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Work study is a generic term for those techniques, particularly method study and work measurement, which are used in the examination of human work in all its contexts. It aims at the systematic investigation of all the factors which affect the efficiency and economy of the situation being reviewed.</p>
+                
+                <h3>1. Method Study Procedure</h3>
+                <p>Method study is the systematic recording and critical examination of existing and proposed ways of doing work, as a means of developing and applying easier and more effective methods. The standard procedure involves the acronym <strong>SREDIM</strong>:</p>
+                <ul>
+                    <li><strong>Select:</strong> Choose the work to be studied (e.g., bottleneck operations).</li>
+                    <li><strong>Record:</strong> Use charting techniques like Flow Process Charts or String Diagrams to document current methods.</li>
+                    <li><strong>Examine:</strong> Critically analyze recorded facts (The questioning technique: What, Why, Who, Where, When, How).</li>
+                    <li><strong>Develop:</strong> Create the most practical, economic, and effective method.</li>
+                    <li><strong>Install:</strong> Implement the new method as standard practice.</li>
+                    <li><strong>Maintain:</strong> Ensure the new standard is followed over time.</li>
+                </ul>
+
+                <h3>2. Principles of Motion Economy</h3>
+                <p>Developed largely by Frank and Lillian Gilbreth, these principles are rules and suggestions to improve manual work and reduce fatigue. They are classified into three categories: use of the human body, arrangement of the workplace, and design of tools and equipment. For example, motions of the arms should be made in opposite and symmetrical directions simultaneously.</p>
+            </article>
+
+            <!-- SIMULATOR CH 2 -->
+            <div class="simulator-wrapper">
+                <div id="sim-ch2-desktop" class="interactive-container desktop-only"></div>
+                <div id="sim-ch2-mobile" class="interactive-container mobile-only" style="min-height: 400px;"></div>
+                <div class="sim-controls">
+                    <label>St 1 Time: <input type="range" id="ch2-st1" min="1" max="10" value="5"></label>
+                    <label>St 2 Time: <input type="range" id="ch2-st2" min="1" max="10" value="8"></label>
+                    <label>St 3 Time: <input type="range" id="ch2-st3" min="1" max="10" value="4"></label>
+                    <label>St 4 Time: <input type="range" id="ch2-st4" min="1" max="10" value="6"></label>
+                </div>
+            </div>
+
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 3 -->
+            <header class="chapter-header" id="ch3">
+                <span class="chapter-badge">Chapter 3</span>
+                <h2>Time Study and Work Measurement</h2>
+                <p class="chapter-subtitle">Establishing standard times for qualified workers to carry out specified jobs.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>While method study focuses on *how* a job is done, work measurement focuses on *how long* it should take. The primary purpose is to establish standard times for planning, costing, and incentive schemes.</p>
+                
+                <h3>1. Stopwatch Time Study</h3>
+                <p>This is the most common technique. The job is broken down into small, measurable elements. An analyst uses a stopwatch to record the observed time ($OT$) for each element over multiple cycles.</p>
+                
+                <h3>2. Rating and Normal Time</h3>
+                <p>Because workers operate at different paces, the analyst must apply a <strong>Performance Rating</strong> ($PR$) to adjust the observed time to what a "normal" or "standard" worker would achieve. The resulting time is the Normal Time ($NT$):</p>
+                <div class="math-formula">
+                    $$ NT = OT \times \frac{PR}{100} $$
+                </div>
+                
+                <h3>3. Allowances and Standard Time</h3>
+                <p>Workers cannot work continuously without rest. Allowances are added to the Normal Time to account for personal needs, basic fatigue, and unavoidable delays (PF&D). The final time is the Standard Time ($ST$):</p>
+                <div class="math-formula">
+                    $$ ST = NT \times (1 + \text{Allowances}) $$
+                </div>
+                <p>This Standard Time becomes the baseline for production scheduling and capacity planning.</p>
+            </article>
+
+            <!-- SIMULATOR CH 3 -->
+            <div class="simulator-wrapper">
+                <div id="sim-ch3-desktop" class="interactive-container desktop-only"></div>
+                <div id="sim-ch3-mobile" class="interactive-container mobile-only" style="min-height: 400px;"></div>
+                <div class="sim-controls">
+                    <button id="ch3-toggle" class="btn-retro">Start / Stop</button>
+                    <button id="ch3-record" class="btn-retro">Record Time</button>
+                    <span id="ch3-records" style="margin-left:10px; color:#10b981;"></span>
+                </div>
+            </div>
+            
+            <hr class="chapter-divider">
+            
+            <!-- CHAPTER 4 -->
+            <header class="chapter-header" id="ch4"><span class="chapter-badge">Chapter 4</span><h2>Plant Layout and Material Handling</h2><p class="chapter-subtitle">Spatial optimization of resources to minimize transportation costs and bottlenecks.</p></header>
+            <article class="deep-dive-text">
+                <p>The objective of a plant layout is to arrange machines, workstations, and storage areas so that the movement of materials and personnel is optimized. A good layout reduces material handling costs, which can account for 20% to 50% of the total manufacturing cost.</p>
+                <h3>1. Types of Layouts</h3>
+                <ul>
+                    <li><strong>Product (Line) Layout:</strong> Machines are arranged according to the sequence of operations. Ideal for mass production.</li>
+                    <li><strong>Process (Functional) Layout:</strong> Similar machines are grouped together. High flexibility for job-shop production.</li>
+                    <li><strong>Fixed-Position Layout:</strong> The product remains stationary (e.g., shipbuilding), and workers/equipment move to it.</li>
+                </ul>
+                <h3>2. Material Handling Principles</h3>
+                <p>Material handling is the art and science of moving, storing, and controlling materials. The guiding principle is to move material over the shortest distance, using gravity where possible, and employing unit loads (handling multiple items as a single unit on pallets).</p>
+            </article>
+            <div class="simulator-wrapper">
+                <div id="sim-ch4-desktop" class="interactive-container desktop-only"></div>
+                <div id="sim-ch4-mobile" class="interactive-container mobile-only" style="min-height: 400px;"></div>
+                <div class="sim-controls">
+                    <button id="ch4-randomize" class="btn-retro">Randomize Flow Volumes</button>
+                </div>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 5 -->
+            <header class="chapter-header" id="ch5"><span class="chapter-badge">Chapter 5</span><h2>Production Planning and Control (PPC)</h2><p class="chapter-subtitle">The nervous system of a manufacturing facility.</p></header>
+            <article class="deep-dive-text">
+                <p>PPC is the direction and coordination of a firm's material and physical facilities towards the attainment of pre-specified production goals in the most efficient way available.</p>
+                <h3>1. Routing and Scheduling</h3>
+                <p><strong>Routing</strong> dictates the path that a part takes through the factory, establishing the sequence of operations. <strong>Scheduling</strong> assigns a time frame to those operations. The Gantt chart is a fundamental visual tool used here.</p>
+                <h3>2. Dispatching and Follow-up</h3>
+                <p><strong>Dispatching</strong> is the physical release of work orders to the shop floor. <strong>Follow-up</strong> (or expediting) ensures that the execution aligns with the schedule and addresses bottlenecks.</p>
+            </article>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 6 -->
+            <header class="chapter-header" id="ch6"><span class="chapter-badge">Chapter 6</span><h2>Inventory Management and Control</h2><p class="chapter-subtitle">Balancing the costs of ordering against the costs of holding stock.</p></header>
+            <article class="deep-dive-text">
+                <p>Inventory represents capital tied up in materials. While it acts as a buffer against uncertainty, excess inventory hides inefficiencies and incurs significant holding costs.</p>
+                <h3>1. The Economic Order Quantity (EOQ) Model</h3>
+                <p>The classic EOQ model minimizes the sum of holding costs ($H$) and ordering costs ($S$) given a constant demand rate ($D$).</p>
+                <div class="math-formula">
+                    $$ EOQ = \sqrt{\frac{2 \cdot D \cdot S}{H}} $$
+                </div>
+                <h3>2. ABC Analysis</h3>
+                <p>Based on the Pareto principle (80/20 rule), inventory is classified into three categories: 'A' items (high value, tight control), 'B' items (moderate value), and 'C' items (low value, bulk control).</p>
+            </article>
+            <div class="simulator-wrapper">
+                <div id="sim-ch6-desktop" class="interactive-container desktop-only"></div>
+                <div id="sim-ch6-mobile" class="interactive-container mobile-only" style="min-height: 400px;"></div>
+                <div class="sim-controls">
+                    <label>Demand (D): <input type="range" id="ch6-d" min="100" max="5000" step="100" value="1000"></label>
+                    <label>Holding Cost (H): <input type="range" id="ch6-h" min="1" max="10" step="0.5" value="2"></label>
+                </div>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 7 -->
+            <header class="chapter-header" id="ch7"><span class="chapter-badge">Chapter 7</span><h2>Quality Control and SPC</h2><p class="chapter-subtitle">Ensuring product standards through statistical analysis of process variations.</p></header>
+            <article class="deep-dive-text">
+                <p>Quality Control is the process of monitoring specific project results to determine if they comply with relevant standards. Statistical Process Control (SPC) uses statistical methods to monitor and control a process.</p>
+                <h3>1. Control Charts for Variables</h3>
+                <p>The $\bar{X}$ (X-bar) chart tracks the process mean, while the $R$ (Range) chart tracks the process variability over time. Control limits are typically set at $\pm 3\sigma$ from the centerline.</p>
+                <div class="math-formula">
+                    $$ UCL_{\bar{X}} = \bar{\bar{X}} + A_2 \bar{R} \quad \text{and} \quad LCL_{\bar{X}} = \bar{\bar{X}} - A_2 \bar{R} $$
+                </div>
+                <h3>2. Acceptance Sampling</h3>
+                <p>Instead of 100% inspection, a random sample is taken from a lot. Based on the number of defects found, the entire lot is either accepted or rejected.</p>
+            </article>
+            <div class="simulator-wrapper">
+                <div id="sim-ch7-desktop" class="interactive-container desktop-only"></div>
+                <div id="sim-ch7-mobile" class="interactive-container mobile-only" style="min-height: 400px;"></div>
+                <div class="sim-controls">
+                    <button id="ch7-shift" class="btn-retro" style="background:#ef4444;">Induce Process Shift</button>
+                    <button id="ch7-fix" class="btn-retro" style="background:#10b981;">Fix Process</button>
+                </div>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 8 -->
+            <header class="chapter-header" id="ch8"><span class="chapter-badge">Chapter 8</span><h2>Linear Programming</h2><p class="chapter-subtitle">Mathematical modeling for resource allocation optimization.</p></header>
+            <article class="deep-dive-text">
+                <p>Linear Programming (LP) is a powerful mathematical technique used to find the best possible outcome (such as maximum profit or lowest cost) in a given mathematical model whose requirements are represented by linear relationships.</p>
+                <h3>1. Formulation</h3>
+                <p>An LP problem consists of a linear <strong>objective function</strong> to be maximized or minimized, subject to a set of linear <strong>constraints</strong> representing limited resources.</p>
+                <div class="math-formula">
+                    $$ \text{Maximize } Z = c_1 x_1 + c_2 x_2 $$
+                    $$ \text{Subject to: } a_{11}x_1 + a_{12}x_2 \leq b_1 $$
+                </div>
+                <h3>2. Solution Methods</h3>
+                <p>For two variables, the <strong>Graphical Method</strong> visualizes the feasible region. For multi-variable problems, the algebraic <strong>Simplex Method</strong> systematically moves from one vertex of the feasible region to a better one until the optimum is found.</p>
+            </article>
+            <div class="simulator-wrapper">
+                <div id="sim-ch8-desktop" class="interactive-container desktop-only"></div>
+                <div id="sim-ch8-mobile" class="interactive-container mobile-only" style="min-height: 400px;"></div>
+                <div class="sim-controls">
+                    <label>Constraint 1 Limit: <input type="range" id="ch8-b1" min="5" max="20" value="10"></label>
+                    <label>Constraint 2 Limit: <input type="range" id="ch8-b2" min="5" max="20" value="12"></label>
+                </div>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 9 -->
+            <header class="chapter-header" id="ch9"><span class="chapter-badge">Chapter 9</span><h2>Queuing Theory and Simulation</h2><p class="chapter-subtitle">The mathematical study of waiting lines and service systems.</p></header>
+            <article class="deep-dive-text">
+                <p>Waiting lines occur when the current demand for a service exceeds the current capacity to provide that service. Queuing theory balances the cost of providing service against the cost of customers waiting.</p>
+                <h3>1. Kendall's Notation</h3>
+                <p>Queuing systems are described using A/B/c notation (e.g., M/M/1), where A is the arrival distribution (M = Markovian/Poisson), B is the service distribution, and c is the number of servers.</p>
+                <h3>2. Performance Metrics</h3>
+                <p>Key metrics include the average number of entities in the system ($L_s$) and the average wait time ($W_q$). The server utilization ($\rho$) is the arrival rate ($\lambda$) divided by the service rate ($\mu$).</p>
+                <div class="math-formula">
+                    $$ \rho = \frac{\lambda}{\mu} \quad (\text{For stability, } \rho < 1) $$
+                </div>
+            </article>
+            <div class="simulator-wrapper">
+                <div id="sim-ch9-desktop" class="interactive-container desktop-only"></div>
+                <div id="sim-ch9-mobile" class="interactive-container mobile-only" style="min-height: 400px;"></div>
+                <div class="sim-controls">
+                    <label>Arrival Rate (λ): <input type="range" id="ch9-lambda" min="0.01" max="0.1" step="0.01" value="0.02"></label>
+                    <label>Service Rate (μ): <input type="range" id="ch9-mu" min="0.01" max="0.1" step="0.01" value="0.05"></label>
+                </div>
+            </div>
+            <hr class="chapter-divider">
+            
+            <!-- CHAPTER 10 -->
+            <header class="chapter-header" id="ch10"><span class="chapter-badge">Chapter 10</span><h2>Forecasting and Time Series</h2><p class="chapter-subtitle">Predicting future demand using historical data patterns.</p></header>
+            <article class="deep-dive-text">
+                <p>Forecasting provides the foundation for strategic and operational planning. Time series methods assume that past patterns (trend, seasonality, cycle, randomness) will continue into the future.</p>
+                <h3>1. Exponential Smoothing</h3>
+                <p>A popular method that weights recent observations more heavily than older ones using a smoothing constant $\alpha$.</p>
+                <div class="math-formula">
+                    $$ F_{t+1} = \alpha A_t + (1 - \alpha) F_t $$
+                </div>
+                <h3>2. Forecast Error Measurement</h3>
+                <p>Accuracy is measured using Mean Absolute Deviation (MAD), Mean Squared Error (MSE), or Mean Absolute Percentage Error (MAPE) to evaluate the robustness of the model.</p>
+            </article>
+            <div class="simulator-wrapper">
+                <div id="sim-ch10-desktop" class="interactive-container desktop-only"></div>
+                <div id="sim-ch10-mobile" class="interactive-container mobile-only" style="min-height: 400px;"></div>
+                <div class="sim-controls">
+                    <label>Smoothing (α): <input type="range" id="ch10-alpha" min="0.05" max="0.95" step="0.05" value="0.2"></label>
+                </div>
+            </div>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 11 -->
+            <header class="chapter-header" id="ch11"><span class="chapter-badge">Chapter 11</span><h2>Maintenance Management</h2><p class="chapter-subtitle">Ensuring system reliability and minimizing equipment downtime.</p></header>
+            <article class="deep-dive-text">
+                <p>Maintenance is crucial for keeping production equipment in an operable condition. The optimal maintenance policy balances the cost of preventive measures against the catastrophic cost of unexpected breakdowns.</p>
+                <h3>1. Reliability Engineering</h3>
+                <p>Reliability $R(t)$ is the probability that a component will perform its intended function for a specified time without failure. For a constant failure rate $\lambda$, reliability follows an exponential distribution:</p>
+                <div class="math-formula">
+                    $$ R(t) = e^{-\lambda t} $$
+                </div>
+                <h3>2. Preventive vs. Breakdown Maintenance</h3>
+                <p>Preventive Maintenance (PM) involves routine inspections and servicing. Breakdown Maintenance is reactive. Complex systems often employ Total Productive Maintenance (TPM) where operators perform routine maintenance.</p>
+            </article>
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 12 -->
+            <header class="chapter-header" id="ch12"><span class="chapter-badge">Chapter 12</span><h2>Ergonomics</h2><p class="chapter-subtitle">Fitting the task to the human to enhance comfort, safety, and efficiency.</p></header>
+            <article class="deep-dive-text">
+                <p>Also known as Human Factors Engineering, ergonomics studies the interaction between humans and the elements of a system. It considers anatomical, physiological, and biomechanical capabilities.</p>
+                <h3>1. Biomechanics and NIOSH Lifting Equation</h3>
+                <p>To prevent lower back injuries, the NIOSH equation calculates a Recommended Weight Limit (RWL) based on multipliers for distance, frequency, and coupling.</p>
+                <h3>2. Workspace Design</h3>
+                <p>Proper workspace design respects the "normal" and "maximum" reach envelopes of operators. It also encompasses environmental factors like illumination, noise levels, and thermal comfort.</p>
+            </article>
+            <div class="simulator-wrapper">
+                <div id="sim-ch12-desktop" class="interactive-container desktop-only"></div>
+                <div id="sim-ch12-mobile" class="interactive-container mobile-only" style="min-height: 400px;"></div>
+                <div class="sim-controls">
+                    <label>Spine Flexion (°): <input type="range" id="ch12-angle" min="0" max="90" value="0"></label>
+                    <label>Load Weight (kg): <input type="range" id="ch12-weight" min="5" max="40" value="10"></label>
+                </div>
+            </div>
+
+        </main>
+    </div>
+    
+    <script>
+        // Theme toggle logic
+        const toggleBtn = document.getElementById('theme-toggle');
+        const htmlDoc = document.documentElement;
+        toggleBtn.addEventListener('click', () => {
+            if(htmlDoc.getAttribute('data-theme') === 'dark') {
+                htmlDoc.setAttribute('data-theme', 'light');
+            } else {
+                htmlDoc.setAttribute('data-theme', 'dark');
+            }
+        });
+
+        // Sidebar active link logic
+        const sections = document.querySelectorAll('.chapter-header');
+        const navLinks = document.querySelectorAll('.chapter-list a');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (scrollY >= sectionTop - 150) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === `#${current}`) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+    <!-- Link to our Desktop Simulation Engine -->
+    <script type="module" src="ie-desktop.js"></script>
+    <!-- Link to our Mobile Simulation Engine -->
+    <script src="ie-mobile.js"></script>
+</body>
+</html>
