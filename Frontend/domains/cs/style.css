@@ -77,21 +77,21 @@
 /* --- Domain Background Adapters --- */
 /* Default: Mobile Images */
 :root {
-    --cs-bg-image: url('../../assets/images/cs-light-mobile.jpg');
+    --cs-bg-image: url(../../assets/images/cs-light-mob-and-desktop.png);
 }
 
 [data-theme="dark"] {
-    --cs-bg-image: url('../../assets/images/cs-dark-mobile.jpg');
+    --cs-bg-image: url(../../assets/images/cs-dark-mob.png);
 }
 
 /* Override: Desktop Images */
 @media (min-width: 768px) {
     :root {
-        --cs-bg-image: url('../../assets/images/cs-light-desktop.jpg');
+        --cs-bg-image: url(../../assets/images/cs-light-mob-and-desktop.png);
     }
     
     [data-theme="dark"] {
-        --cs-bg-image: url('../../assets/images/cs-dark-desktop.jpg');
+        --cs-bg-image: url(../../assets/images/cs-dark-desktop.png);
     }
 }
 
