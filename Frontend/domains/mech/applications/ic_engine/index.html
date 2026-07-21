@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SCME | IC Engines</title>
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- MathJax for rendering formulas -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']]
+        }
+      };
+    </script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <!-- Three.js and modules for 3D Simulators -->
+    <script async src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"></script>
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://unpkg.com/three@0.154.0/build/three.module.js",
+          "three/addons/": "https://unpkg.com/three@0.154.0/examples/jsm/"
+        }
+      }
+    </script>
+</head>
+<body>
+    <nav class="top-nav">
+        <div class="nav-left">
+            <h1 class="logo">SCME.</h1>
+            <a href="../../index.html" class="btn-retro back-btn">← ME Hub</a>
+        </div>
+        <button id="theme-toggle" class="btn-retro">Toggle Theme</button>
+    </nav>
+
+    <div class="learning-environment">
+        <aside class="chapter-sidebar">
+            <h3>IC Engines</h3>
+            <ul class="chapter-list">
+                <li><a href="#ch1" class="active">1. Introduction</a></li>
+                <li><a href="#ch2">2. Engine Cycles</a></li>
+                <li><a href="#ch3">3. Actual Cycles</a></li>
+                <li><a href="#ch4">4. SI Combustion</a></li>
+                <li><a href="#ch5">5. CI Combustion</a></li>
+                <li><a href="#ch6">6. Fuels</a></li>
+                <li><a href="#ch7">7. Injection Systems</a></li>
+                <li><a href="#ch8">8. Cooling & Lube</a></li>
+                <li><a href="#ch9">9. Supercharging</a></li>
+                <li><a href="#ch10">10. Emissions</a></li>
+            </ul>
+        </aside>
+
+        <main class="reading-core">
+            
+            <!-- CHAPTER 1 -->
+            <header class="chapter-header" id="ch1">
+                <span class="chapter-badge">Chapter 1</span>
+                <h2>Introduction & Engine Classification</h2>
+                <p class="chapter-subtitle">Nomenclature, basic principles, and classification of internal combustion engines.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Internal Combustion (IC) Engines are heat engines that convert the chemical energy of a fuel into mechanical energy. The combustion of fuel takes place inside a combustion chamber which is an integral part of the engine working fluid circuit.</p>
+                
+                <h3>1. Fundamental Nomenclature</h3>
+                <p>Understanding the geometric and operational parameters is crucial. Key terms include:</p>
+                <ul>
+                    <li><strong>Bore ($d$):</strong> The nominal inner diameter of the working cylinder.</li>
+                    <li><strong>Stroke ($L$):</strong> The nominal distance through which a working piston moves between two successive reversals of its direction of motion (TDC to BDC).</li>
+                    <li><strong>Top Dead Center (TDC):</strong> The position of the piston when it is furthest from the crankshaft.</li>
+                    <li><strong>Bottom Dead Center (BDC):</strong> The position of the piston when it is nearest to the crankshaft.</li>
+                    <li><strong>Clearance Volume ($V_c$):</strong> The volume contained in the cylinder above the top of the piston when it is at TDC.</li>
+                    <li><strong>Swept Volume ($V_s$):</strong> The volume swept by the piston moving from one dead center to the other. $V_s = \frac{\pi}{4} d^2 L$.</li>
+                </ul>
+
+                <h3>2. Compression Ratio ($r$)</h3>
+                <p>The compression ratio is a fundamental parameter that dictates the theoretical efficiency of the engine. It is defined as the ratio of total cylinder volume when the piston is at BDC to the clearance volume.</p>
+                <div class="math-formula">
+                    $$ r = \frac{V_{total}}{V_c} = \frac{V_c + V_s}{V_c} = 1 + \frac{V_s}{V_c} $$
+                </div>
+
+                <h3>3. Engine Classification</h3>
+                <p>Engines are broadly classified based on their operating cycle and ignition method:</p>
+                <ul>
+                    <li><strong>Spark Ignition (SI) Engines:</strong> Often running on gasoline, these engines mix fuel and air before compression. A spark plug initiates combustion.</li>
+                    <li><strong>Compression Ignition (CI) Engines:</strong> Running on diesel, they compress only air to a high temperature, after which fuel is injected and self-ignites.</li>
+                    <li><strong>4-Stroke vs. 2-Stroke:</strong> 4-stroke engines complete a cycle in four piston strokes (two crankshaft revolutions). 2-stroke engines complete it in two strokes (one revolution).</li>
+                </ul>
+            </article>
+
+            <!-- SIMULATOR CH 1: DESKTOP & MOBILE -->
+            <div id="sim-ch1" class="interactive-container">
+                <div class="desktop-only">
+                    <div class="sim-overlay">
+                        <h4>3D Engine Tear-Down</h4>
+                        <div class="sim-controls">
+                            <label>View:
+                                <select id="ch1-view-3d">
+                                    <option value="assembled">Fully Assembled</option>
+                                    <option value="cutaway">Cutaway</option>
+                                    <option value="internals">Internals Only</option>
+                                </select>
+                            </label>
+                            <label>Crank Angle:
+                                <input type="range" id="ch1-crank-3d" min="0" max="720" step="1" value="0">
+                            </label>
+                        </div>
+                    </div>
+                    <canvas id="ch1-canvas-3d" class="webgl-canvas"></canvas>
+                </div>
+                <div class="mobile-only">
+                    <div class="sim-overlay">
+                        <h4>2D Engine Kinematics</h4>
+                        <div class="sim-controls">
+                            <label>Crank Angle:
+                                <input type="range" id="ch1-crank-2d" min="0" max="720" step="1" value="0">
+                            </label>
+                        </div>
+                    </div>
+                    <canvas id="ch1-canvas-2d" class="webgl-canvas"></canvas>
+                </div>
+            </div>
+            
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 2 -->
+            <header class="chapter-header" id="ch2">
+                <span class="chapter-badge">Chapter 2</span>
+                <h2>Engine Cycles & Performance Parameters</h2>
+                <p class="chapter-subtitle">Air-standard cycles, Otto, Diesel, and Dual cycles, and performance metrics.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>To mathematically model the complex processes within an engine, we use Air-Standard assumptions, treating the working fluid purely as an ideal gas (air) undergoing a closed thermodynamic cycle.</p>
+                
+                <h3>1. The Otto Cycle (Constant Volume)</h3>
+                <p>The ideal cycle for SI engines. It consists of isentropic compression, constant-volume heat addition, isentropic expansion, and constant-volume heat rejection.</p>
+                <p>The thermal efficiency ($\eta_{Otto}$) is solely a function of the compression ratio ($r$) and the specific heat ratio ($k$):</p>
+                <div class="math-formula">
+                    $$ \eta_{Otto} = 1 - \frac{1}{r^{k-1}} $$
+                </div>
+
+                <h3>2. The Diesel Cycle (Constant Pressure)</h3>
+                <p>The ideal cycle for CI engines. Due to the slower combustion of injected fuel, heat addition is modeled at constant pressure. This introduces a new parameter: the <strong>Cut-off Ratio ($\rho$)</strong>, defined as the ratio of cylinder volumes after and before the combustion process ($\rho = V_3 / V_2$).</p>
+                <div class="math-formula">
+                    $$ \eta_{Diesel} = 1 - \frac{1}{r^{k-1}} \left[ \frac{\rho^k - 1}{k(\rho - 1)} \right] $$
+                </div>
+                <p>For the same compression ratio, $\eta_{Otto} > \eta_{Diesel}$. However, actual diesel engines operate at much higher compression ratios, making them practically more efficient.</p>
+
+                <h3>3. Engine Performance Parameters</h3>
+                <p>To evaluate and compare actual engines, we define several parameters:</p>
+                <ul>
+                    <li><strong>Indicated Power (IP):</strong> The total power developed by combustion within the cylinders.</li>
+                    <li><strong>Brake Power (BP):</strong> The actual power available at the crankshaft. BP = IP - Friction Power (FP).</li>
+                    <li><strong>Brake Specific Fuel Consumption (bsfc):</strong> Mass of fuel consumed per unit of brake power produced.</li>
+                </ul>
+                <div class="math-formula">
+                    $$ \text{bsfc} = \frac{\dot{m}_f}{BP} \quad \text{(kg / kW.hr)} $$
+                </div>
+                <p><strong>Mean Effective Pressure (mep):</strong> A fictitious constant pressure that, if it acted on the piston during the entire power stroke, would produce the same amount of net work as that produced during the actual cycle. $W_{net} = mep \times V_s$.</p>
+            </article>
+
+            <!-- SIMULATOR CH 2: DESKTOP & MOBILE -->
+            <div id="sim-ch2" class="interactive-container">
+                <div class="desktop-only">
+                    <div class="sim-overlay">
+                        <h4>3D Dynamic P-V & T-S Cycle Engine</h4>
+                        <div class="sim-controls">
+                            <label>Cycle:
+                                <select id="ch2-cycle-3d">
+                                    <option value="otto">Otto</option>
+                                    <option value="diesel">Diesel</option>
+                                </select>
+                            </label>
+                            <label>$r$: <input type="range" id="ch2-r-3d" min="5" max="25" step="1" value="10"></label>
+                            <label>$\rho$: <input type="range" id="ch2-rho-3d" min="1.1" max="3" step="0.1" value="1.5"></label>
+                        </div>
+                        <div class="sim-stats">$\eta_{th}$: <span id="ch2-eff-3d">60.1</span>%</div>
+                    </div>
+                    <canvas id="ch2-canvas-3d" class="webgl-canvas"></canvas>
+                </div>
+                <div class="mobile-only">
+                    <div class="sim-overlay">
+                        <h4>2D P-V Chart Explorer</h4>
+                        <div class="sim-controls">
+                            <label>Cycle:
+                                <select id="ch2-cycle-2d">
+                                    <option value="otto">Otto</option>
+                                    <option value="diesel">Diesel</option>
+                                </select>
+                            </label>
+                            <label>$r$: <input type="range" id="ch2-r-2d" min="5" max="25" step="1" value="10"></label>
+                            <label>$\rho$: <input type="range" id="ch2-rho-2d" min="1.1" max="3" step="0.1" value="1.5"></label>
+                        </div>
+                        <div class="sim-stats">$\eta_{th}$: <span id="ch2-eff-2d">60.1</span>%</div>
+                    </div>
+                    <canvas id="ch2-canvas-2d" class="webgl-canvas"></canvas>
+                </div>
+            </div>
+
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 3 -->
+            <header class="chapter-header" id="ch3">
+                <span class="chapter-badge">Chapter 3</span>
+                <h2>Fuel-Air Cycles & Actual Cycles</h2>
+                <p class="chapter-subtitle">Deviations from ideality: specific heats, dissociation, and pumping losses.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Air-standard cycles severely overpredict engine efficiency and power output because they ignore the physical realities of the working fluid and combustion. The Fuel-Air cycle provides a closer approximation by accounting for the actual composition of the cylinder contents.</p>
+                
+                <h3>1. Variation of Specific Heats</h3>
+                <p>In the air-standard cycle, specific heats ($C_p, C_v$) are assumed constant. In reality, specific heats increase significantly with temperature. Because $C_v$ increases at high temperatures, a given amount of heat addition produces a smaller temperature and pressure rise than it would if $C_v$ were constant. This reduces peak pressure and limits the expansion work.</p>
+
+                <h3>2. Dissociation</h3>
+                <p>At extreme temperatures (above 2000 K) typical of combustion, the combustion products ($CO_2, H_2O$) begin to break down (dissociate) into $CO, H_2, O_2$, etc. Dissociation is highly endothermic (absorbs heat). This heavily suppresses the peak cycle temperature and pressure.</p>
+                <div class="math-formula">
+                    $$ CO_2 \rightleftharpoons CO + \frac{1}{2} O_2 \quad (\Delta H > 0) $$
+                </div>
+                <p>As the gas expands and cools, the reaction reverses and releases heat, but it happens late in the expansion stroke, meaning much of this energy is lost to the exhaust rather than converted to work.</p>
+
+                <h3>3. Actual Cycles and Time Loss</h3>
+                <p>The actual cycle deviates further due to progressive combustion. Heat addition is not instantaneous (not perfectly constant volume). The finite time required for flame propagation leads to a "rounded" peak on the P-V diagram, known as time loss or burning time loss. Additionally, actual engines suffer from heat loss to cylinder walls and pumping work during intake and exhaust strokes.</p>
+            </article>
+
+            <!-- SIMULATOR CH 3: DESKTOP & MOBILE -->
+            <div id="sim-ch3" class="interactive-container">
+                <div class="desktop-only">
+                    <div class="sim-overlay">
+                        <h4>3D Cycle Deviation Mapping</h4>
+                        <div class="sim-controls">
+                            <label><input type="checkbox" id="ch3-var-cp-3d"> Var. Specific Heat</label>
+                            <label><input type="checkbox" id="ch3-dissoc-3d"> Dissociation</label>
+                            <label><input type="checkbox" id="ch3-time-loss-3d"> Time Loss</label>
+                            <label><input type="checkbox" id="ch3-pump-loss-3d"> Pumping Loss</label>
+                        </div>
+                    </div>
+                    <canvas id="ch3-canvas-3d" class="webgl-canvas"></canvas>
+                </div>
+                <div class="mobile-only">
+                    <div class="sim-overlay">
+                        <h4>2D Deviation Visualizer</h4>
+                        <div class="sim-controls">
+                            <label><input type="checkbox" id="ch3-var-cp-2d"> Var. $C_p$</label>
+                            <label><input type="checkbox" id="ch3-dissoc-2d"> Dissoc.</label>
+                            <label><input type="checkbox" id="ch3-time-loss-2d"> Time</label>
+                            <label><input type="checkbox" id="ch3-pump-loss-2d"> Pump</label>
+                        </div>
+                    </div>
+                    <canvas id="ch3-canvas-2d" class="webgl-canvas"></canvas>
+                </div>
+            </div>
+
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 4 -->
+            <header class="chapter-header" id="ch4">
+                <span class="chapter-badge">Chapter 4</span>
+                <h2>Combustion in SI Engines</h2>
+                <p class="chapter-subtitle">Flame propagation, abnormal combustion, and engine knock.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>In a Spark-Ignition engine, combustion is initiated by a spark and propagates through the homogeneous air-fuel mixture as a turbulent flame front.</p>
+                
+                <h3>1. Stages of Combustion</h3>
+                <p>Ricardo defined three stages of combustion in SI engines:</p>
+                <ol>
+                    <li><strong>Ignition Lag (Preparation phase):</strong> The time interval between the spark and the beginning of a noticeable pressure rise. Chemical reactions are initiating, but releasing negligible heat.</li>
+                    <li><strong>Flame Propagation:</strong> The turbulent flame front sweeps across the cylinder, consuming the bulk of the mixture. This is where the steep pressure rise occurs.</li>
+                    <li><strong>Afterburning:</strong> Combustion continues even after peak pressure, burning the unburned mixture near the cylinder walls and expanding gas.</li>
+                </ol>
+
+                <h3>2. Abnormal Combustion & Knock</h3>
+                <p>As the flame front travels, it compresses the unburned mixture (the "end gas") ahead of it. This compression drastically increases the pressure and temperature of the end gas. If the temperature of the end gas exceeds its auto-ignition temperature before the flame front arrives, it will ignite spontaneously and explosively.</p>
+                <p>This auto-ignition creates massive high-frequency pressure waves that reverberate through the cylinder, causing a metallic pinging sound known as <strong>Knock</strong> or <strong>Detonation</strong>. Knock causes severe mechanical damage, extreme heat transfer to the piston, and loss of power.</p>
+
+                <h3>3. Octane Rating</h3>
+                <p>A fuel's resistance to knock is quantified by its <strong>Octane Number</strong>. Iso-octane is highly resistant to knock (rated 100), while normal heptane knocks easily (rated 0). Higher compression ratios require higher octane fuels.</p>
+            </article>
+
+            <!-- SIMULATOR CH 4: DESKTOP & MOBILE -->
+            <div id="sim-ch4" class="interactive-container">
+                <div class="desktop-only">
+                    <div class="sim-overlay">
+                        <h4>3D Flame Propagation & Knock (High-Fidelity)</h4>
+                        <div class="sim-controls">
+                            <label>Octane Rating: <input type="range" id="ch4-octane-3d" min="80" max="100" step="1" value="95"></label>
+                            <label>Spark Adv: <input type="range" id="ch4-spark-3d" min="0" max="40" step="1" value="20"></label>
+                            <button id="ch4-ignite-3d" class="btn-retro">Ignite</button>
+                        </div>
+                        <div class="sim-stats">
+                            <div>Temp: <span id="ch4-temp-3d">300</span> K</div>
+                            <div>Pressure: <span id="ch4-press-3d">1.0</span> bar</div>
+                            <div>Status: <span id="ch4-status-3d" style="color: #10b981;">Normal</span></div>
+                        </div>
+                    </div>
+                    <canvas id="ch4-canvas-3d" class="webgl-canvas"></canvas>
+                </div>
+                <div class="mobile-only">
+                    <div class="sim-overlay">
+                        <h4>2D Flame Front Simulator</h4>
+                        <div class="sim-controls">
+                            <label>Octane: <input type="range" id="ch4-octane-2d" min="80" max="100" step="1" value="95"></label>
+                            <label>Spark: <input type="range" id="ch4-spark-2d" min="0" max="40" step="1" value="20"></label>
+                            <button id="ch4-ignite-2d" class="btn-retro">Ignite</button>
+                        </div>
+                        <div class="sim-stats">Status: <span id="ch4-status-2d">Normal</span></div>
+                    </div>
+                    <canvas id="ch4-canvas-2d" class="webgl-canvas"></canvas>
+                </div>
+            </div>
+
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 5 -->
+            <header class="chapter-header" id="ch5">
+                <span class="chapter-badge">Chapter 5</span>
+                <h2>Combustion in CI Engines</h2>
+                <p class="chapter-subtitle">Compression ignition, delay period, and diesel knock.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>In a Compression-Ignition engine, air is compressed to a very high pressure and temperature. Fuel is injected directly into this hot air, vaporizes, mixes, and auto-ignites. The mixture is heterogeneous, unlike the SI engine.</p>
+                
+                <h3>1. Stages of Combustion in CI Engines</h3>
+                <p>Combustion in a CI engine proceeds in four distinct stages:</p>
+                <ol>
+                    <li><strong>Ignition Delay:</strong> The time between the start of injection and the start of ignition. Physical delay (atomization, vaporization, mixing) and chemical delay (pre-flame reactions) both contribute.</li>
+                    <li><strong>Rapid/Uncontrolled Combustion:</strong> The fuel accumulated during the delay period auto-ignites almost simultaneously, causing a rapid, uncontrolled rise in pressure.</li>
+                    <li><strong>Controlled Combustion:</strong> After the accumulated fuel has burned, subsequent fuel burns almost immediately upon injection. The rate of combustion is controlled by the rate of injection.</li>
+                    <li><strong>Afterburning:</strong> Unburned fuel finds oxygen late in the expansion stroke.</li>
+                </ol>
+
+                <h3>2. Diesel Knock</h3>
+                <p>Diesel knock is fundamentally different from SI knock. In a CI engine, if the ignition delay is too long, a massive amount of fuel accumulates in the cylinder. When it finally ignites, the uncontrolled combustion phase is extremely violent, causing a sudden, massive pressure spike.</p>
+                <p>Therefore, to prevent knock in a CI engine, we want a <em>short</em> ignition delay. This is the exact opposite of an SI engine, where we want a fuel that resists auto-ignition (long delay).</p>
+                
+                <h3>3. Cetane Rating</h3>
+                <p>A fuel's ability to auto-ignite quickly (short delay) is measured by its <strong>Cetane Number</strong>. Higher cetane means a shorter delay period and smoother combustion in a diesel engine.</p>
+            </article>
+
+            <!-- SIMULATOR CH 5: DESKTOP & MOBILE -->
+            <div id="sim-ch5" class="interactive-container">
+                <div class="desktop-only">
+                    <div class="sim-overlay">
+                        <h4>3D Fuel Spray Physics Lab</h4>
+                        <div class="sim-controls">
+                            <label>Inj. Press (Bar): <input type="range" id="ch5-pressure-3d" min="200" max="2500" step="100" value="1000"></label>
+                            <label>Air Temp (K): <input type="range" id="ch5-temp-3d" min="700" max="1100" step="50" value="900"></label>
+                            <button id="ch5-inject-3d" class="btn-retro">Inject Fuel</button>
+                        </div>
+                        <div class="sim-stats">
+                            <div>Sauter Mean Dia: <span id="ch5-smd-3d">--</span> μm</div>
+                            <div>Penetration: <span id="ch5-pen-3d">--</span> mm</div>
+                        </div>
+                    </div>
+                    <canvas id="ch5-canvas-3d" class="webgl-canvas"></canvas>
+                </div>
+                <div class="mobile-only">
+                    <div class="sim-overlay">
+                        <h4>2D Spray Cone Analyzer</h4>
+                        <div class="sim-controls">
+                            <label>Press: <input type="range" id="ch5-pressure-2d" min="200" max="2500" step="100" value="1000"></label>
+                            <button id="ch5-inject-2d" class="btn-retro">Inject</button>
+                        </div>
+                    </div>
+                    <canvas id="ch5-canvas-2d" class="webgl-canvas"></canvas>
+                </div>
+            </div>
+
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 6 -->
+            <header class="chapter-header" id="ch6">
+                <span class="chapter-badge">Chapter 6</span>
+                <h2>Engine Fuels & Alternate Fuels</h2>
+                <p class="chapter-subtitle">Hydrocarbon families, fuel volatility, and modern alternative fuels.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>The performance and emissions of an IC engine are heavily dependent on the chemical composition and physical properties of the fuel. Conventional fuels are derived from petroleum and are mixtures of various hydrocarbons.</p>
+                
+                <h3>1. Hydrocarbon Families</h3>
+                <ul>
+                    <li><strong>Paraffins ($C_n H_{2n+2}$):</strong> Straight-chain hydrocarbons (e.g., n-octane) which are poor SI fuels (knock easily) but excellent CI fuels.</li>
+                    <li><strong>Isoparaffins:</strong> Branched-chain hydrocarbons (e.g., iso-octane) which are excellent SI fuels.</li>
+                    <li><strong>Olefins & Naphthenes:</strong> Ring structures that generally have high octane numbers.</li>
+                    <li><strong>Aromatics (e.g., Benzene):</strong> High carbon ratio, very high knock resistance, but tend to produce more soot and emissions.</li>
+                </ul>
+
+                <h3>2. Volatility</h3>
+                <p>Volatility is the tendency of a liquid fuel to vaporize. For SI engines, the fuel must be volatile enough to form a combustible mixture for cold starting, but not so volatile that it boils in the fuel lines (vapor lock). Distillation curves dictate the fuel's suitability for different climates.</p>
+
+                <h3>3. Alternative Fuels</h3>
+                <p>To reduce dependence on fossil fuels and mitigate emissions, engineers design engines to run on alternatives:</p>
+                <ul>
+                    <li><strong>Alcohols (Ethanol/Methanol):</strong> High octane rating, oxygenated (burns cleaner), but lower energy density than gasoline. Requires richer mixtures.</li>
+                    <li><strong>Natural Gas (CNG):</strong> Primarily methane. Extremely high octane number, very clean burning, but requires high-pressure storage tanks.</li>
+                    <li><strong>Hydrogen ($H_2$):</strong> The ultimate clean fuel (produces only water). Extremely wide flammability limits and high flame speed, but prone to pre-ignition and poses severe storage challenges.</li>
+                    <li><strong>Biodiesel:</strong> Derived from vegetable oils or animal fats. Similar properties to petroleum diesel, but higher viscosity and oxygen content.</li>
+                </ul>
+            </article>
+
+            <!-- SIMULATOR CH 6: DESKTOP & MOBILE -->
+            <div id="sim-ch6" class="interactive-container">
+                <div class="desktop-only">
+                    <div class="sim-overlay">
+                        <h4>3D Molecular Fuel Visualizer</h4>
+                        <div class="sim-controls">
+                            <label>Fuel Type:
+                                <select id="ch6-fuel-3d">
+                                    <option value="octane">Iso-Octane (Petrol)</option>
+                                    <option value="dodecane">n-Dodecane (Diesel)</option>
+                                    <option value="ethanol">Ethanol</option>
+                                    <option value="hydrogen">Hydrogen</option>
+                                </select>
+                            </label>
+                        </div>
+                        <div class="sim-stats">
+                            <div>Energy Density: <span id="ch6-energy-3d">44.4</span> MJ/kg</div>
+                            <div>Octane Number: <span id="ch6-octane-3d">100</span></div>
+                        </div>
+                    </div>
+                    <canvas id="ch6-canvas-3d" class="webgl-canvas"></canvas>
+                </div>
+                <div class="mobile-only">
+                    <div class="sim-overlay">
+                        <h4>2D Fuel Property Chart</h4>
+                        <div class="sim-controls">
+                            <label>Fuel:
+                                <select id="ch6-fuel-2d">
+                                    <option value="octane">Petrol</option>
+                                    <option value="dodecane">Diesel</option>
+                                    <option value="ethanol">Ethanol</option>
+                                </select>
+                            </label>
+                        </div>
+                    </div>
+                    <canvas id="ch6-canvas-2d" class="webgl-canvas"></canvas>
+                </div>
+            </div>
+            
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 7 -->
+            <header class="chapter-header" id="ch7">
+                <span class="chapter-badge">Chapter 7</span>
+                <h2>Fuel Injection & Carburetion Systems</h2>
+                <p class="chapter-subtitle">From simple carburetors to modern Common Rail Direct Injection.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>The fuel delivery system must provide the engine with precisely the right amount of fuel at exactly the right time, atomized appropriately for the operating condition.</p>
+                
+                <h3>1. Carburetion (Legacy SI)</h3>
+                <p>A carburetor relies on the Bernoulli principle. As intake air flows through a venturi (a restriction), its velocity increases and pressure drops. This vacuum draws liquid fuel from a float bowl, atomizing it into the airstream. Modern engines have abandoned carburetors because they cannot precisely control the air-fuel ratio on a per-cylinder, per-cycle basis, which is required for modern emission control.</p>
+
+                <h3>2. Electronic Fuel Injection (EFI) for SI Engines</h3>
+                <p>Modern SI engines use electronic injectors controlled by an ECU (Engine Control Unit).
+                <ul>
+                    <li><strong>MPFI (Multi-Point Fuel Injection):</strong> One injector per cylinder, spraying fuel onto the back of the hot intake valve.</li>
+                    <li><strong>GDI (Gasoline Direct Injection):</strong> Fuel is injected at high pressure directly into the combustion chamber, similar to a diesel engine. This allows for stratified charge combustion and higher compression ratios.</li>
+                </ul></p>
+
+                <h3>3. CRDI (Common Rail Direct Injection) for CI Engines</h3>
+                <p>In older diesel systems, injection pressure depended on engine speed. Modern diesels use CRDI. A high-pressure pump continuously stores fuel in a manifold (the "Common Rail") at extreme pressures (up to 2500 bar). Electronic injectors (solenoid or piezoelectric) open and close to spray this highly pressurized fuel into the cylinders. This decoupling of pressure from engine speed allows for multiple, precise injection events per cycle, drastically reducing diesel knock and emissions.</p>
+            </article>
+
+            <!-- SIMULATOR CH 7: DESKTOP & MOBILE -->
+            <div id="sim-ch7" class="interactive-container">
+                <div class="desktop-only">
+                    <div class="sim-overlay">
+                        <h4>3D CRDI System Explorer</h4>
+                        <div class="sim-controls">
+                            <label>Rail Pressure (Bar): <input type="range" id="ch7-pressure-3d" min="300" max="2500" step="100" value="1500"></label>
+                            <button id="ch7-pulse-3d" class="btn-retro">Trigger Injection</button>
+                        </div>
+                    </div>
+                    <canvas id="ch7-canvas-3d" class="webgl-canvas"></canvas>
+                </div>
+                <div class="mobile-only">
+                    <div class="sim-overlay">
+                        <h4>2D CRDI Pulse Timing</h4>
+                        <div class="sim-controls">
+                            <label>Pressure: <input type="range" id="ch7-pressure-2d" min="300" max="2500" step="100" value="1500"></label>
+                            <button id="ch7-pulse-2d" class="btn-retro">Trigger</button>
+                        </div>
+                    </div>
+                    <canvas id="ch7-canvas-2d" class="webgl-canvas"></canvas>
+                </div>
+            </div>
+
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 8 -->
+            <header class="chapter-header" id="ch8">
+                <span class="chapter-badge">Chapter 8</span>
+                <h2>Engine Cooling & Lubrication Systems</h2>
+                <p class="chapter-subtitle">Thermal management, fluid dynamics, and hydrodynamic lubrication.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>IC engines generate massive amounts of heat. Only about 30% of the energy in the fuel is converted to useful work; the rest is lost to the exhaust and the engine structure. Without cooling, the engine metals would melt or fail structurally.</p>
+                
+                <h3>1. Cooling Systems</h3>
+                <ul>
+                    <li><strong>Air Cooling:</strong> Fins are cast onto the cylinder block and head to increase surface area. Convection transfers heat to passing air. Common in motorcycles and light aircraft.</li>
+                    <li><strong>Liquid Cooling (Water Cooling):</strong> A water pump circulates a coolant mixture through water jackets surrounding the cylinders. The hot coolant flows to a radiator, where it is cooled by air flow before returning to the engine. A thermostat regulates the flow to maintain optimal operating temperature.</li>
+                </ul>
+
+                <h3>2. Lubrication & Tribology</h3>
+                <p>Lubrication reduces friction and wear between moving parts, carries away heat, and cleans the engine. The primary operating mode for bearings (like the crankshaft journals) is <strong>Hydrodynamic Lubrication</strong>.</p>
+                <p>In hydrodynamic lubrication, the rotating shaft drags viscous oil into a converging wedge. This creates a high-pressure oil film that completely separates the metal surfaces, preventing metal-to-metal contact. The load capacity of this bearing is governed by the Reynolds Equation, depending heavily on oil viscosity, shaft speed, and clearance.</p>
+                <div class="math-formula">
+                    $$ \text{Sommerfeld Number } (S) = \left( \frac{r}{c} \right)^2 \frac{\mu N}{P} $$
+                </div>
+                <p>Where $\mu$ is viscosity, $N$ is speed, $P$ is bearing pressure, $r$ is journal radius, and $c$ is clearance.</p>
+            </article>
+
+            <!-- SIMULATOR CH 8: DESKTOP & MOBILE -->
+            <div id="sim-ch8" class="interactive-container">
+                <div class="desktop-only">
+                    <div class="sim-overlay">
+                        <h4>3D Thermal Block Flow Camera</h4>
+                        <div class="sim-controls">
+                            <label>Engine Load: <input type="range" id="ch8-load-3d" min="0" max="100" step="1" value="50"></label>
+                            <label>Water Pump: <input type="checkbox" id="ch8-pump-3d" checked></label>
+                            <label>Radiator Fan: <input type="checkbox" id="ch8-fan-3d" checked></label>
+                        </div>
+                    </div>
+                    <canvas id="ch8-canvas-3d" class="webgl-canvas"></canvas>
+                </div>
+                <div class="mobile-only">
+                    <div class="sim-overlay">
+                        <h4>2D Heat Exchange Circuit</h4>
+                        <div class="sim-controls">
+                            <label>Load: <input type="range" id="ch8-load-2d" min="0" max="100" step="1" value="50"></label>
+                            <label>Pump: <input type="checkbox" id="ch8-pump-2d" checked></label>
+                        </div>
+                    </div>
+                    <canvas id="ch8-canvas-2d" class="webgl-canvas"></canvas>
+                </div>
+            </div>
+
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 9 -->
+            <header class="chapter-header" id="ch9">
+                <span class="chapter-badge">Chapter 9</span>
+                <h2>Supercharging & Turbocharging</h2>
+                <p class="chapter-subtitle">Forced induction, compressor thermodynamics, and intercooling.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>The power output of an engine is limited by the mass of air it can ingest. To increase power without increasing engine size, engineers use forced induction: compressing the intake air to increase its density.</p>
+                
+                <h3>1. Supercharging</h3>
+                <p>A supercharger is a compressor driven mechanically by the engine's crankshaft (usually via a belt). It provides instant boost, increasing power immediately. However, driving the supercharger consumes a significant portion of the engine's gross power output (parasitic loss), reducing overall thermal efficiency.</p>
+
+                <h3>2. Turbocharging</h3>
+                <p>A turbocharger is driven by the engine's exhaust gas. The hot, high-velocity exhaust gas spins a turbine, which is connected via a shaft to a compressor in the intake tract. Turbochargers recover waste energy from the exhaust, improving overall engine efficiency. However, they suffer from "turbo lag" — a delay in boost response until exhaust flow builds up.</p>
+                
+                <h3>3. Intercooling</h3>
+                <p>When air is compressed by a supercharger or turbocharger, its temperature rises significantly (isentropic compression). Hot air is less dense and, in SI engines, highly prone to knock. An intercooler (charge air cooler) is a heat exchanger placed between the compressor and the engine to cool the compressed air, increasing its density further and suppressing knock.</p>
+                <div class="math-formula">
+                    $$ \frac{T_2}{T_1} = \left( \frac{P_2}{P_1} \right)^{\frac{n-1}{n}} $$
+                </div>
+            </article>
+
+            <!-- SIMULATOR CH 9: DESKTOP & MOBILE -->
+            <div id="sim-ch9" class="interactive-container">
+                <div class="desktop-only">
+                    <div class="sim-overlay">
+                        <h4>3D Turbocharger & Wastegate Dynamics</h4>
+                        <div class="sim-controls">
+                            <label>Throttle (%): <input type="range" id="ch9-throttle-3d" min="10" max="100" step="1" value="30"></label>
+                            <div class="sim-stats">Boost: <span id="ch9-boost-3d">0.0</span> psi</div>
+                            <div class="sim-stats">Turbine RPM: <span id="ch9-rpm-3d">25000</span></div>
+                        </div>
+                    </div>
+                    <canvas id="ch9-canvas-3d" class="webgl-canvas"></canvas>
+                </div>
+                <div class="mobile-only">
+                    <div class="sim-overlay">
+                        <h4>2D Turbo Lag Visualizer</h4>
+                        <div class="sim-controls">
+                            <label>Throttle: <input type="range" id="ch9-throttle-2d" min="10" max="100" step="1" value="30"></label>
+                        </div>
+                        <div class="sim-stats">Boost: <span id="ch9-boost-2d">0.0</span> psi</div>
+                    </div>
+                    <canvas id="ch9-canvas-2d" class="webgl-canvas"></canvas>
+                </div>
+            </div>
+
+            <hr class="chapter-divider">
+
+            <!-- CHAPTER 10 -->
+            <header class="chapter-header" id="ch10">
+                <span class="chapter-badge">Chapter 10</span>
+                <h2>Engine Emissions & Control</h2>
+                <p class="chapter-subtitle">Pollutant formation, catalytic converters, and EGR systems.</p>
+            </header>
+            <article class="deep-dive-text">
+                <p>Internal combustion engines are major contributors to air pollution. Strict environmental regulations require engines to mitigate the formation of harmful exhaust emissions.</p>
+                
+                <h3>1. Primary Pollutants</h3>
+                <ul>
+                    <li><strong>Nitrogen Oxides (NOx):</strong> Formed when nitrogen in the air reacts with oxygen at extremely high combustion temperatures. Highly toxic and causes smog.</li>
+                    <li><strong>Carbon Monoxide (CO):</strong> A byproduct of incomplete combustion due to rich mixtures (insufficient oxygen).</li>
+                    <li><strong>Unburned Hydrocarbons (UHC):</strong> Fuel that escapes combustion, often trapped in cylinder crevices or the quench layer near cold walls.</li>
+                    <li><strong>Particulate Matter (PM / Soot):</strong> Primarily an issue in diesel engines, formed in fuel-rich regions of the heterogeneous spray.</li>
+                </ul>
+
+                <h3>2. In-Cylinder Control: EGR</h3>
+                <p>Exhaust Gas Recirculation (EGR) routes a portion of the inert exhaust gas back into the intake manifold. This dilutes the fresh air-fuel mixture, slowing combustion and significantly lowering the peak combustion temperature. Lowering peak temperature is the most effective way to reduce NOx formation.</p>
+
+                <h3>3. Aftertreatment: Catalytic Converters</h3>
+                <p>A Three-Way Catalytic Converter (TWC) uses precious metals (Platinum, Palladium, Rhodium) to simultaneously reduce NOx and oxidize CO and UHC into harmless $N_2$, $CO_2$, and $H_2O$.</p>
+                <div class="math-formula">
+                    $$ 2NO + 2CO \rightarrow N_2 + 2CO_2 $$
+                    $$ 2CO + O_2 \rightarrow 2CO_2 $$
+                    $$ C_xH_y + \left(x + \frac{y}{4}\right)O_2 \rightarrow xCO_2 + \frac{y}{2}H_2O $$
+                </div>
+                <p>For a TWC to operate efficiently, the engine MUST operate exactly at the stoichiometric air-fuel ratio ($\lambda = 1$). An oxygen sensor in the exhaust provides feedback to the ECU to continuously adjust fuel injection.</p>
+            </article>
+
+            <!-- SIMULATOR CH 10: DESKTOP & MOBILE -->
+            <div id="sim-ch10" class="interactive-container">
+                <div class="desktop-only">
+                    <div class="sim-overlay">
+                        <h4>3D Catalytic Converter & EGR Flow</h4>
+                        <div class="sim-controls">
+                            <label>Air-Fuel Ratio ($\lambda$): <input type="range" id="ch10-afr-3d" min="0.8" max="1.2" step="0.05" value="1.0"></label>
+                            <label>EGR Valve (%): <input type="range" id="ch10-egr-3d" min="0" max="100" step="10" value="0"></label>
+                        </div>
+                        <div class="sim-stats">
+                            <div>NOx: <span id="ch10-nox-3d">Low</span></div>
+                            <div>CO: <span id="ch10-co-3d">Low</span></div>
+                        </div>
+                    </div>
+                    <canvas id="ch10-canvas-3d" class="webgl-canvas"></canvas>
+                </div>
+                <div class="mobile-only">
+                    <div class="sim-overlay">
+                        <h4>2D Emissions Monitor</h4>
+                        <div class="sim-controls">
+                            <label>AFR: <input type="range" id="ch10-afr-2d" min="0.8" max="1.2" step="0.05" value="1.0"></label>
+                        </div>
+                    </div>
+                    <canvas id="ch10-canvas-2d" class="webgl-canvas"></canvas>
+                </div>
+            </div>
+
+        </main>
+    </div>
+    
+    <!-- Link to our Desktop Simulation Engine -->
+    <script type="module" src="ic-engine-3d.js"></script>
+    <!-- Link to our Mobile Simulation Engine -->
+    <script src="ic-engine-2d.js"></script>
+    <script>
+        // Simple Theme Toggle
+        document.getElementById('theme-toggle').addEventListener('click', () => {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            html.setAttribute('data-theme', currentTheme === 'dark' ? 'light' : 'dark');
+        });
+    </script>
+</body>
+</html>
