@@ -1,21 +1,31 @@
 // Power Plant Engineering 3D Simulators
 import * as THREE from 'three';
 function init3DScene(canvasId, setupCallback, animateCallback) {
+    if (window.innerWidth <= 768) return; // Avoid running heavy WebGL renderers on mobile
     const canvas = document.getElementById(canvasId);
-    if (!canvas) return;
+    if (!canvas || canvas.clientWidth === 0) return;
     
-    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
-    renderer.setPixelRatio(window.devicePixelRatio);
+    let renderer;
+    try {
+        renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+        renderer.setPixelRatio(window.devicePixelRatio);
+    } catch (e) {
+        console.warn("WebGL initialization skipped for " + canvasId, e);
+        return;
+    }
     
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(45, canvas.clientWidth / canvas.clientHeight, 0.1, 100);
+    const aspect = (canvas.clientHeight > 0) ? (canvas.clientWidth / canvas.clientHeight) : 1;
+    const camera = new THREE.PerspectiveCamera(45, aspect, 0.1, 100);
     
     function resize() {
         const w = canvas.clientWidth;
         const h = canvas.clientHeight;
-        renderer.setSize(w, h, false);
-        camera.aspect = w / h;
-        camera.updateProjectionMatrix();
+        if (w > 0 && h > 0) {
+            renderer.setSize(w, h, false);
+            camera.aspect = w / h;
+            camera.updateProjectionMatrix();
+        }
     }
     window.addEventListener('resize', resize);
     resize();
@@ -24,10 +34,20 @@ function init3DScene(canvasId, setupCallback, animateCallback) {
     
     setupCallback({ scene, camera, renderer });
     
+    let isVisible = true;
+    if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver((entries) => {
+            isVisible = entries[0].isIntersecting;
+        }, { threshold: 0.05 });
+        observer.observe(canvas);
+    }
+
     function animate() {
         requestAnimationFrame(animate);
-        if (animateCallback) animateCallback({ scene, camera, clock });
-        renderer.render(scene, camera);
+        if (isVisible && canvas.clientWidth > 0 && canvas.clientHeight > 0) {
+            if (animateCallback) animateCallback({ scene, camera, clock });
+            renderer.render(scene, camera);
+        }
     }
     animate();
 }

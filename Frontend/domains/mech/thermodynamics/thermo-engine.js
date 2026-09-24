@@ -3,16 +3,25 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 // --- SHARED UTILITIES ---
 function createEngineScene(containerId) {
+    if (window.innerWidth <= 768) return null;
     const container = document.getElementById(containerId);
-    if (!container) return null;
+    if (!container || container.clientWidth === 0 || container.clientHeight === 0) return null;
+
+    let renderer;
+    try {
+        renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+    } catch (e) {
+        console.warn("WebGL initialization skipped for " + containerId, e);
+        return null;
+    }
 
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x18181b);
 
-    const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setSize(container.clientWidth, container.clientHeight);
-    renderer.setPixelRatio(window.devicePixelRatio);
+    const aspect = container.clientHeight > 0 ? (container.clientWidth / container.clientHeight) : 1;
+    const camera = new THREE.PerspectiveCamera(45, aspect, 0.1, 1000);
     
     // Mount renderer canvas
     renderer.domElement.classList.add('webgl-canvas');

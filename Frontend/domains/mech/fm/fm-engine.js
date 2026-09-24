@@ -2,20 +2,8 @@
 
 document.addEventListener('DOMContentLoaded', () => {
     
-    // Theme Toggle
-    const themeToggleBtn = document.getElementById('theme-toggle');
-    const htmlElement = document.documentElement;
+    // Theme is centrally managed by core.js
 
-    // Check local storage for theme preference
-    const currentTheme = localStorage.getItem('scme-theme') || 'dark';
-    htmlElement.setAttribute('data-theme', currentTheme);
-
-    themeToggleBtn.addEventListener('click', () => {
-        const isDark = htmlElement.getAttribute('data-theme') === 'dark';
-        const newTheme = isDark ? 'light' : 'dark';
-        htmlElement.setAttribute('data-theme', newTheme);
-        localStorage.setItem('scme-theme', newTheme);
-    });
 
     // Smooth Scrolling & Sidebar Active State
     const chapterLinks = document.querySelectorAll('.chapter-list a');

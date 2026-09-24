@@ -323,3 +323,282 @@ init2DScene('ch10-canvas-2d', (ctx, w, h) => {
         ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + Math.cos(a)*40, cy + Math.sin(a)*40); ctx.stroke();
     }
 });
+
+// ---------------------------------------------------------
+// CHAPTER 2: Steam Power Plants (Rankine Cycle T-s Engine)
+// ---------------------------------------------------------
+init2DScene('ch2-canvas', (ctx, w, h) => {
+    ctx.clearRect(0, 0, w, h);
+    if (ctx.flowOffset === undefined) ctx.flowOffset = 0;
+    ctx.flowOffset = (ctx.flowOffset + 1) % 40;
+
+    const pBoiler = parseFloat(document.getElementById('ch2-boiler-p')?.value || 60);
+    const tSuper = parseFloat(document.getElementById('ch2-temp')?.value || 500);
+    const pCond = parseFloat(document.getElementById('ch2-cond-p')?.value || 0.08);
+
+    const spanP = document.getElementById('ch2-p-val');
+    const spanT = document.getElementById('ch2-t-val');
+    const spanPc = document.getElementById('ch2-pc-val');
+    if (spanP) spanP.innerText = pBoiler;
+    if (spanT) spanT.innerText = tSuper;
+    if (spanPc) spanPc.innerText = pCond;
+
+    // Thermodynamic Calculations (Rankine Cycle Approximation)
+    const h1 = 2500 + 2.1 * tSuper + (pBoiler * 0.8); // Superheated steam
+    const s1 = 6.8 + (tSuper / 1000) - Math.log(pBoiler / 10) * 0.15;
+    const sf = 0.6, sg = 8.1, hf = 175, hfg = 2400;
+    const x2 = Math.min(0.98, Math.max(0.78, (s1 - sf) / (sg - sf)));
+    const h2 = hf + x2 * hfg; // Turbine exit
+    const h3 = hf; // Condenser exit
+    const wp = (pBoiler - pCond * 10) * 0.1; // Pump work
+    const h4 = h3 + wp; // Boiler inlet
+    const wt = Math.max(100, Math.round(h1 - h2));
+    const qin = Math.max(500, Math.round(h1 - h4));
+    const eta = Math.min(48, Math.max(22, (((wt - wp) / qin) * 100))).toFixed(1);
+
+    const spanWt = document.getElementById('ch2-wt');
+    const spanQin = document.getElementById('ch2-qin');
+    const spanEta = document.getElementById('ch2-eta');
+    if (spanWt) spanWt.innerText = wt;
+    if (spanQin) spanQin.innerText = qin;
+    if (spanEta) spanEta.innerText = `${eta}%`;
+
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    const textColor = isDark ? '#fafafa' : '#18181b';
+    const gridColor = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)';
+
+    // Left half: T-s Diagram
+    const tsW = Math.min(w * 0.48, 320);
+    const tsH = h - 40;
+    const ox = 40, oy = h - 30;
+
+    // Axes
+    ctx.strokeStyle = gridColor;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(ox, oy); ctx.lineTo(ox + tsW, oy);
+    ctx.moveTo(ox, oy); ctx.lineTo(ox, oy - tsH);
+    ctx.stroke();
+
+    ctx.fillStyle = textColor;
+    ctx.font = '10px monospace';
+    ctx.fillText('Entropy (s) →', ox + tsW - 70, oy + 15);
+    ctx.fillText('Temp (T) ↑', ox - 30, oy - tsH + 12);
+
+    // Draw Saturation Vapor Dome
+    ctx.strokeStyle = '#0284c7';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    for (let s = 0; s <= 100; s += 2) {
+        const normS = s / 100;
+        const normT = Math.sin(normS * Math.PI) * 0.72; // bell curve dome
+        const dx = ox + normS * tsW;
+        const dy = oy - normT * tsH;
+        if (s === 0) ctx.moveTo(dx, dy); else ctx.lineTo(dx, dy);
+    }
+    ctx.stroke();
+
+    // Rankine Cycle Points on T-s
+    const p1x = ox + (s1 / 8.5) * tsW, p1y = oy - Math.min(tsH * 0.95, (tSuper / 650) * tsH);
+    const p2x = ox + (s1 / 8.5) * tsW, p2y = oy - (tsH * 0.22); // Turbine expansion
+    const p3x = ox + (sf / 8.5) * tsW, p3y = oy - (tsH * 0.22); // Condenser
+    const p4x = ox + (sf / 8.5) * tsW, p4y = oy - (tsH * 0.25); // Pump
+
+    ctx.strokeStyle = '#f59e0b';
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.moveTo(p4x, p4y);
+    ctx.lineTo(ox + 0.3 * tsW, oy - tsH * 0.55); // Heating along isobar
+    ctx.lineTo(p1x, p1y); // Superheat peak
+    ctx.lineTo(p2x, p2y); // Isentropic expansion
+    ctx.lineTo(p3x, p3y); // Heat rejection
+    ctx.closePath();
+    ctx.stroke();
+
+    // State dots
+    [p1x, p2x, p3x, p4x].forEach((px, idx) => {
+        const py = [p1y, p2y, p3y, p4y][idx];
+        ctx.fillStyle = '#ef4444';
+        ctx.beginPath(); ctx.arc(px, py, 4, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = textColor;
+        ctx.fillText(`State ${idx + 1}`, px + 6, py - 4);
+    });
+
+    // Right half: Component Cycle Flow Diagram
+    const rx = Math.max(tsW + 70, w * 0.52);
+    const rw = w - rx - 20;
+    const cy = h / 2;
+
+    const boilerBox = { x: rx + rw * 0.05, y: cy - 90, w: rw * 0.38, h: 55, name: 'Boiler / SG', col: '#ef4444' };
+    const turbBox   = { x: rx + rw * 0.55, y: cy - 90, w: rw * 0.38, h: 55, name: 'Turbine', col: '#f59e0b' };
+    const condBox   = { x: rx + rw * 0.55, y: cy + 40, w: rw * 0.38, h: 55, name: 'Condenser', col: '#0284c7' };
+    const pumpBox   = { x: rx + rw * 0.05, y: cy + 40, w: rw * 0.38, h: 55, name: 'Feed Pump', col: '#10b981' };
+
+    [boilerBox, turbBox, condBox, pumpBox].forEach(b => {
+        ctx.fillStyle = isDark ? '#27272a' : '#f4f4f5';
+        ctx.strokeStyle = b.col;
+        ctx.lineWidth = 2;
+        ctx.strokeRect(b.x, b.y, b.w, b.h);
+        ctx.fillRect(b.x, b.y, b.w, b.h);
+        ctx.fillStyle = textColor;
+        ctx.font = 'bold 11px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(b.name, b.x + b.w / 2, b.y + b.h / 2 + 4);
+    });
+    ctx.textAlign = 'left';
+
+    // Flow Pipes with animated dashes
+    ctx.strokeStyle = isDark ? '#94a3b8' : '#64748b';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([6, 6]);
+    ctx.lineDashOffset = -ctx.flowOffset;
+
+    ctx.beginPath();
+    // Boiler to Turbine
+    ctx.moveTo(boilerBox.x + boilerBox.w, boilerBox.y + boilerBox.h / 2);
+    ctx.lineTo(turbBox.x, turbBox.y + turbBox.h / 2);
+    // Turbine to Condenser
+    ctx.moveTo(turbBox.x + turbBox.w / 2, turbBox.y + turbBox.h);
+    ctx.lineTo(condBox.x + condBox.w / 2, condBox.y);
+    // Condenser to Pump
+    ctx.moveTo(condBox.x, condBox.y + condBox.h / 2);
+    ctx.lineTo(pumpBox.x + pumpBox.w, pumpBox.y + pumpBox.h / 2);
+    // Pump to Boiler
+    ctx.moveTo(pumpBox.x + pumpBox.w / 2, pumpBox.y);
+    ctx.lineTo(boilerBox.x + boilerBox.w / 2, boilerBox.y + boilerBox.h);
+    ctx.stroke();
+    ctx.setLineDash([]); // Reset dash
+});
+
+// ---------------------------------------------------------
+// CHAPTER 7: Diesel Engine Power Plants (Load & Governor Engine)
+// ---------------------------------------------------------
+init2DScene('ch7-canvas', (ctx, w, h) => {
+    ctx.clearRect(0, 0, w, h);
+    if (ctx.crankAngle === undefined) ctx.crankAngle = 0;
+
+    const load = parseFloat(document.getElementById('ch7-load')?.value || 75);
+    const cr = parseFloat(document.getElementById('ch7-cr')?.value || 17);
+
+    const spanLoad = document.getElementById('ch7-load-val');
+    const spanCr = document.getElementById('ch7-cr-val');
+    if (spanLoad) spanLoad.innerText = load;
+    if (spanCr) spanCr.innerText = cr;
+
+    // Performance physics calculations
+    const gamma = 1.35;
+    const rc = 1 + (load / 100) * 1.5; // Cutoff ratio increases with fuel load
+    const dieselEff = (1 - (1 / Math.pow(cr, gamma - 1)) * ((Math.pow(rc, gamma) - 1) / (gamma * (rc - 1)))) * 100;
+    const eff = Math.min(46, Math.max(28, dieselEff)).toFixed(1);
+    const bsfc = (200 + Math.pow(Math.abs(load - 75), 1.5) * 0.6 + (20 - cr) * 2).toFixed(0);
+    const freq = (50.0 - (load > 100 ? (load - 100) * 0.08 : 0)).toFixed(1);
+
+    const spanBsfc = document.getElementById('ch7-bsfc');
+    const spanFreq = document.getElementById('ch7-freq');
+    const spanEff = document.getElementById('ch7-eff');
+    if (spanBsfc) spanBsfc.innerText = bsfc;
+    if (spanFreq) spanFreq.innerText = freq;
+    if (spanEff) spanEff.innerText = `${eff}%`;
+
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    const textColor = isDark ? '#fafafa' : '#18181b';
+
+    // Engine speed tied to frequency
+    const rpmSpeed = (parseFloat(freq) / 50) * 0.12;
+    ctx.crankAngle = (ctx.crankAngle + rpmSpeed) % (Math.PI * 2);
+
+    // Left side: Animated 2-Cylinder Engine & Crankshaft
+    const cx = Math.min(w * 0.28, 180);
+    const cy = h / 2 + 30;
+    const strokeR = 25, rodL = 65;
+
+    for (let cyl = 0; cyl < 2; cyl++) {
+        const cylX = cx + (cyl - 0.5) * 60;
+        const angle = ctx.crankAngle + (cyl * Math.PI);
+        const pinX = cylX + Math.sin(angle) * strokeR;
+        const pinY = cy - Math.cos(angle) * strokeR;
+        const pistonY = cy - (Math.cos(angle) * strokeR + Math.sqrt(rodL * rodL - Math.pow(Math.sin(angle) * strokeR, 2)));
+
+        // Cylinder walls
+        ctx.strokeStyle = isDark ? '#52525b' : '#a1a1aa';
+        ctx.lineWidth = 3;
+        ctx.strokeRect(cylX - 22, cy - 130, 44, 85);
+
+        // Combustion flash during expansion
+        if (Math.cos(angle) > 0.8 && cyl === 0) {
+            ctx.fillStyle = 'rgba(245, 158, 11, 0.4)';
+            ctx.fillRect(cylX - 20, cy - 128, 40, pistonY - (cy - 128));
+        }
+
+        // Connecting rod
+        ctx.strokeStyle = '#94a3b8';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(cylX, cy);
+        ctx.lineTo(pinX, pinY);
+        ctx.lineTo(cylX, pistonY);
+        ctx.stroke();
+
+        // Piston block
+        ctx.fillStyle = isDark ? '#d4d4d8' : '#71717a';
+        ctx.fillRect(cylX - 20, pistonY - 20, 40, 20);
+
+        // Crank circle
+        ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+        ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.arc(cylX, cy, strokeR, 0, Math.PI * 2); ctx.stroke();
+    }
+
+    // Center: Mechanical Centrifugal Governor
+    const govX = Math.min(w * 0.55, 340);
+    const govY = h / 2 - 10;
+    const flySpread = 15 + (1 - (parseFloat(freq) / 52)) * 25; // Governor balls expand with speed
+
+    ctx.strokeStyle = '#38bdf8';
+    ctx.lineWidth = 2.5;
+    // Central spindle
+    ctx.beginPath(); ctx.moveTo(govX, govY - 50); ctx.lineTo(govX, govY + 50); ctx.stroke();
+    // Fly arms
+    ctx.beginPath();
+    ctx.moveTo(govX, govY - 35); ctx.lineTo(govX - flySpread, govY); ctx.lineTo(govX, govY + 35);
+    ctx.moveTo(govX, govY - 35); ctx.lineTo(govX + flySpread, govY); ctx.lineTo(govX, govY + 35);
+    ctx.stroke();
+
+    // Flyballs
+    ctx.fillStyle = '#f59e0b';
+    ctx.beginPath(); ctx.arc(govX - flySpread, govY, 6, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(govX + flySpread, govY, 6, 0, Math.PI * 2); ctx.fill();
+
+    ctx.fillStyle = textColor;
+    ctx.font = '11px monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText('Watt Governor', govX, govY + 70);
+
+    // Right: Alternator Output & Frequency Gauge
+    const altX = Math.max(govX + 90, w * 0.78);
+    const altY = h / 2 - 15;
+    const radius = Math.min(h * 0.35, 60);
+
+    ctx.beginPath();
+    ctx.arc(altX, altY, radius, 0, Math.PI * 2);
+    ctx.strokeStyle = '#10b981';
+    ctx.lineWidth = 3;
+    ctx.stroke();
+
+    // Meter Needle
+    const needleAngle = Math.PI * 0.75 + ((parseFloat(freq) - 48) / 4) * Math.PI * 1.5;
+    ctx.strokeStyle = '#ef4444';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(altX, altY);
+    ctx.lineTo(altX + Math.cos(needleAngle) * (radius - 10), altY + Math.sin(needleAngle) * (radius - 10));
+    ctx.stroke();
+
+    ctx.fillStyle = textColor;
+    ctx.font = 'bold 12px monospace';
+    ctx.fillText(`${freq} Hz`, altX, altY + 25);
+    ctx.font = '10px monospace';
+    ctx.fillText(`Load: ${load}%`, altX, altY + radius + 20);
+    ctx.textAlign = 'left';
+});
+

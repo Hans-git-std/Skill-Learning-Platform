@@ -15,10 +15,20 @@
 .glass-environment {
    flex-grow: 1;
     /* The linear-gradient acts as a subtle readability overlay */
-    background-image: linear-gradient(rgba(244, 244, 245, 0.6), rgba(244, 244, 245, 0.6)), var(--cs-bg-image);
+    background-image: linear-gradient(rgba(244, 244, 245, 0.7), rgba(244, 244, 245, 0.7)), var(--cs-bg-image);
     background-size: cover;
     background-position: center;
-    background-attachment: fixed;
+    background-attachment: scroll;
+}
+
+[data-theme="dark"] .glass-environment {
+    background-image: linear-gradient(rgba(9, 9, 11, 0.85), rgba(9, 9, 11, 0.85)), var(--cs-bg-image);
+}
+
+@media (min-width: 1024px) {
+    .glass-environment {
+        background-attachment: fixed;
+    }
 }
 
 /* --- The Glass Grid --- */

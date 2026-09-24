@@ -24,6 +24,9 @@
                 <li><a href="#ch2">2. Pointers & Contiguous Memory</a></li>
                 <li><a href="#ch3">3. Trees, Tries & Graphs</a></li>
                 <li><a href="#ch4">4. Dynamic Programming</a></li>
+                <li><a href="#ch5">5. Self-Balancing Trees (AVL & Red-Black)</a></li>
+                <li><a href="#ch6">6. Graph Algorithms & Shortest Paths</a></li>
+                <li><a href="#ch7">7. Hash Tables & Amortized Complexity</a></li>
             </ul>
         </aside>
 
@@ -227,6 +230,110 @@
                 </div>
                 <p class="engine-caption" style="margin-top: 1.5rem;">Formula: grid[row][col] = grid[row-1][col] + grid[row][col-1]</p>
             </div>
+
+            <!-- ==========================================
+                 CHAPTER 5: SELF-BALANCING TREES
+            =========================================== -->
+            <hr class="chapter-divider" id="ch5">
+
+            <header class="chapter-header">
+                <span class="chapter-badge">Chapter 5</span>
+                <h2>Self-Balancing Trees (AVL vs. Red-Black)</h2>
+                <p class="chapter-subtitle">Preventing tree degeneration and bounding worst-case search complexity to O(log n).</p>
+            </header>
+
+            <article class="deep-dive-text">
+                <p>A naive Binary Search Tree (BST) promises $O(\log n)$ search, insertion, and deletion. But this promise hinges on a critical assumption: that input data arrives in randomized order. In real-world production environments, data frequently arrives pre-sorted (timestamps, sequential IDs, alphabetical names).</p>
+                <p>If you insert pre-sorted numbers <code>[10, 20, 30, 40, 50]</code> into an ordinary BST, every node becomes a right child of its predecessor. The tree degenerates into a linear linked list. Search complexity collapses from $O(\log n)$ to an abysmal $O(n)$, and deep traversals trigger call stack overflows.</p>
+
+                <h3>1. AVL Trees (Strict Height Balance)</h3>
+                <p>Invented in 1962 by Adelson-Velsky and Landis, the <strong>AVL tree</strong> was the first self-balancing BST in computer science. It maintains a strict balance invariant: for every node, the height difference between its left and right subtrees (the <em>Balance Factor</em>) must be within $\{-1, 0, +1\}$:</p>
+                <div class="math-formula">
+                    $$ BF(node) = \text{height}(node.left) - \text{height}(node.right) \in \{-1, 0, 1\} $$
+                </div>
+                <p>When an insertion or deletion pushes $BF$ to $\pm 2$, the tree performs <strong>rotations</strong> to restore balance:</p>
+                <ul>
+                    <li><strong>Left-Left (LL) & Right-Right (RR):</strong> Repaired via a single right or left rotation.</li>
+                    <li><strong>Left-Right (LR) & Right-Left (RL):</strong> Repaired via a double rotation (child rotates first, then parent).</li>
+                </ul>
+                <p>Because AVL trees enforce strict balance, their maximum height never exceeds $1.44 \log_2(n)$. Lookups are exceptionally fast, making AVL trees ideal for read-heavy workloads like database index caches.</p>
+
+                <h3>2. Red-Black Trees (Relaxed Balance for Fast Writes)</h3>
+                <p>AVL trees pay a heavy penalty on writes: a single insertion can trigger cascading rotations up to the root. In 1978, Guibas and Sedgewick formalized the <strong>Red-Black Tree</strong>, which relaxes the balance condition to ensure no insertion ever requires more than two rotations.</p>
+                <p>Every node is painted either Red or Black, governed by five strict invariants:</p>
+                <ol>
+                    <li>Every node is either <strong>Red</strong> or <strong>Black</strong>.</li>
+                    <li>The root node is always <strong>Black</strong>.</li>
+                    <li>All leaf nodes (NIL sentinels) are <strong>Black</strong>.</li>
+                    <li>If a node is Red, both of its children must be Black (no two consecutive Red nodes).</li>
+                    <li>Every path from a given node to any of its descendant NIL leaves must contain the exact same number of Black nodes (<em>Black-Height</em>).</li>
+                </ol>
+
+                <blockquote>
+                    <strong>Kernel Architect's Insight:</strong><br>
+                    Why does the Linux kernel use Red-Black trees (<code>rbtree</code>) for its Completely Fair Scheduler (CFS), memory-mapped virtual memory areas (VMAs), and epoll file descriptors? Because real-time kernels handle millions of insertions and deletions per second. Red-Black trees guarantee $O(\log n)$ bounds while requiring far fewer expensive rebalancing rotations than AVL trees. C++'s <code>std::map</code> and Java's <code>TreeMap</code> both standardize on Red-Black trees.
+                </blockquote>
+            </article>
+
+            <!-- ==========================================
+                 CHAPTER 6: GRAPH ALGORITHMS
+            =========================================== -->
+            <hr class="chapter-divider" id="ch6">
+
+            <header class="chapter-header">
+                <span class="chapter-badge">Chapter 6</span>
+                <h2>Graph Algorithms & Shortest Path Topologies</h2>
+                <p class="chapter-subtitle">Modeling relationships, dependency graphs, and optimal network routes.</p>
+            </header>
+
+            <article class="deep-dive-text">
+                <p>Trees are simply graphs without cycles. When you introduce arbitrary connections, bidirectional edges, and weighted costs, you enter the domain of <strong>Graph Theory</strong>. Graphs model packet routing across internet Autonomous Systems (BGP), dependency resolution in build systems (Webpack, Make), and social network connections.</p>
+
+                <h3>1. Storage: Adjacency Matrix vs. Adjacency List</h3>
+                <ul>
+                    <li><strong>Adjacency Matrix:</strong> A 2D $V \times V$ boolean array. Edge existence lookup is instantaneous $O(1)$, but space consumption is $O(V^2)$. For sparse graphs (like the internet, where a router connects to only 4 neighbours out of 100 million hosts), $99.99\%$ of the matrix is wasted empty memory.</li>
+                    <li><strong>Adjacency List:</strong> An array of lists where vertex $u$ stores only its actual neighbours. Space complexity drops to $O(V + E)$, providing superior cache locality for real-world graphs.</li>
+                </ul>
+
+                <h3>2. Traversal: BFS vs. DFS</h3>
+                <p><strong>Breadth-First Search (BFS):</strong> Explores neighbours in concentric rings using a FIFO Queue. BFS is mathematically guaranteed to find the shortest path in unweighted graphs in $O(V + E)$ time.</p>
+                <p><strong>Depth-First Search (DFS):</strong> Plunges deep down each branch using the Call Stack before backtracking. DFS is the backbone for detecting cycles, finding strongly connected components (Kosaraju's algorithm), and computing topological orderings.</p>
+
+                <h3>3. Dijkstra's Algorithm (Weighted Shortest Path)</h3>
+                <p>When edges carry weights (latency, distance, financial cost), BFS fails. Edsger Dijkstra solved this by combining greedy frontier exploration with a <strong>Min-Priority Queue (Binary Heap)</strong>:</p>
+                <div class="math-formula">
+                    $$ \text{Relaxation Step: if } d[u] + w(u, v) < d[v] \implies d[v] \leftarrow d[u] + w(u, v) $$
+                </div>
+                <p>By always expanding the unsettled node with the lowest cumulative distance, Dijkstra finds the single-source shortest path in $O((V + E) \log V)$ time. However, Dijkstra assumes non-negative edge weights. If negative weights exist (like cash-back incentives or energy regeneration), <strong>Bellman-Ford</strong> ($O(V \cdot E)$) must be used to detect negative weight cycles.</p>
+            </article>
+
+            <!-- ==========================================
+                 CHAPTER 7: HASH TABLES & AMORTIZED COMPLEXITY
+            =========================================== -->
+            <hr class="chapter-divider" id="ch7">
+
+            <header class="chapter-header">
+                <span class="chapter-badge">Chapter 7</span>
+                <h2>Hash Tables, Collision Resolution & Amortized Analysis</h2>
+                <p class="chapter-subtitle">Achieving true O(1) performance through mathematical hashing and dynamic resizing.</p>
+            </header>
+
+            <article class="deep-dive-text">
+                <p>The Hash Map is universally regarded as the most versatile data structure in software engineering. It powers database primary key indexes, Redis in-memory caches, Python dictionaries, and JavaScript object properties. In theory, it provides instant $O(1)$ lookups. In practice, achieving true $O(1)$ requires careful collision mitigation.</p>
+
+                <h3>1. The Hash Function & The Avalanche Effect</h3>
+                <p>A hash function takes an arbitrary key (string, UUID, object pointer) and maps it to a 64-bit integer, which is then mapped to a bucket index via <code>index = hash(key) % capacity</code>. A production hash function (like MurmurHash3, CityHash, or SipHash) must exhibit the <strong>Avalanche Effect</strong>: changing a single bit in the input key should randomly flip $50\%$ of the output bits, spreading items uniformly across buckets.</p>
+
+                <h3>2. Collision Resolution</h3>
+                <p>Because the set of possible keys is infinitely larger than the array size, collisions ($hash(k_1) = hash(k_2)$) are mathematically inevitable (Pigeonhole Principle). Systems resolve collisions through two primary paradigms:</p>
+                <ul>
+                    <li><strong>Separate Chaining:</strong> Each array slot holds a linked list of collided key-value pairs. In Java 8+, if a single bucket's chain length exceeds 8, the JVM automatically converts the linked list into a Red-Black Tree, preventing malicious adversaries from degrading Hash Map lookups into $O(n)$ denial-of-service bottlenecks.</li>
+                    <li><strong>Open Addressing (Linear / Quadratic Probing):</strong> All entries reside directly within the array table. When a collision occurs at index $i$, the engine probes sequential slots ($i+1, i+2, \dots$) until an empty bucket is found. This maximizes CPU L1 cache line utilization by eliminating pointer chasing.</li>
+                </ul>
+
+                <h3>3. Load Factor & Amortized O(1) Complexity</h3>
+                <p>The <strong>Load Factor</strong> ($\alpha = N / M$) measures table congestion. When $\alpha \ge 0.75$, the table allocates a new array of double capacity ($2M$) and rehashes every existing element. While this single resize operation takes $O(n)$ time, it happens so infrequently that the cost is distributed ("amortized") across thousands of preceding operations. Mathematically, the amortized cost per insertion remains strictly $O(1)$.</p>
+            </article>
         </main>
     </div>
 

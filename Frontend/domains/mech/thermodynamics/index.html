@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SCME | Thermodynamics</title>
     <link rel="stylesheet" href="style.css">
     
@@ -15,7 +15,6 @@
         }
       };
     </script>
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     
     <!-- Three.js and modules for 3D Simulators -->
@@ -448,7 +447,45 @@
                 <p>For an ideal gas where $v = RT/P$, the bracketed term evaluates exactly to zero, proving mathematically that the enthalpy of an ideal gas is a function of temperature alone.</p>
             </article>
 
-            <!-- No Simulator for Chapter 7 - Pure Mathematics -->
+            <!-- SIMULATOR CH 7: MAXWELL RELATIONS & CLAPEYRON SLOPE -->
+            <div id="sim-ch7" class="interactive-container" style="padding: 1.5rem; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; margin: 2rem 0;">
+                <h4 style="text-align: center; margin-top: 0; color: var(--text-main);">Interactive Engine: Maxwell Relations & Clapeyron Phase Slope</h4>
+                <p style="text-align: center; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem;">Explore the mathematical tangent $(dP/dT)_{sat}$ of phase transitions and compute latent heat $h_{fg}$ via the Clapeyron relation.</p>
+                <div class="sim-controls" style="display: flex; gap: 1.5rem; justify-content: center; align-items: center; flex-wrap: wrap; margin-bottom: 1rem;">
+                    <label style="font-size: 0.85rem; font-weight: bold;">Substance:
+                        <select id="ch7-substance" class="btn-retro" style="padding: 0.3rem 0.6rem; font-size: 0.85rem;">
+                            <option value="water">Water (H₂O)</option>
+                            <option value="r134a">Refrigerant (R-134a)</option>
+                        </select>
+                    </label>
+                    <label style="font-size: 0.85rem; font-weight: bold;">Saturation Temp $T_{sat}$ (°C):
+                        <input type="range" id="ch7-temp" min="40" max="200" value="100" style="width: 140px;">
+                        <span id="ch7-temp-val" style="font-family: monospace; color: #3b82f6;">100°C</span>
+                    </label>
+                    <label style="font-size: 0.85rem; font-weight: bold;">Maxwell Relation:
+                        <select id="ch7-maxwell-select" class="btn-retro" style="padding: 0.3rem 0.6rem; font-size: 0.85rem;">
+                            <option value="1">(∂T/∂v)s = -(∂P/∂s)v  [from du]</option>
+                            <option value="2">(∂T/∂P)s =  (∂v/∂s)P  [from dh]</option>
+                            <option value="3">(∂P/∂T)v =  (∂s/∂v)T  [from da]</option>
+                            <option value="4">(∂v/∂T)P = -(∂s/∂P)T  [from dg]</option>
+                        </select>
+                    </label>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr; gap: 1.5rem; margin-top: 1rem;" class="architecture-layout">
+                    <div style="min-height: 280px; position: relative; background: var(--bg-secondary, rgba(0,0,0,0.15)); border: 1px solid var(--border-color); border-radius: 6px; overflow: hidden;">
+                        <canvas id="ch7-canvas" style="display: block; width: 100%; height: 280px;"></canvas>
+                    </div>
+                    <div style="display: flex; flex-direction: column; justify-content: space-around; padding: 1rem; background: rgba(0,0,0,0.05); border-radius: 6px; border: 1px solid var(--border-color); font-family: monospace; font-size: 0.85rem;">
+                        <div><strong>Saturation Pressure $P_{sat}$:</strong> <span id="ch7-p-sat" style="color: #3b82f6;">101.3 kPa</span></div>
+                        <div><strong>Clapeyron Slope $(dP/dT)_{sat}$:</strong> <span id="ch7-slope" style="color: #f59e0b;">3.61 kPa/K</span></div>
+                        <div><strong>Specific Volume Change $v_{fg}$:</strong> <span id="ch7-vfg" style="color: #10b981;">1.672 m³/kg</span></div>
+                        <div><strong>Calculated Enthalpy $h_{fg} = T \cdot v_{fg} \cdot (dP/dT)$:</strong> <span id="ch7-hfg" style="color: #ec4899; font-weight: bold;">2257.0 kJ/kg</span></div>
+                        <div id="ch7-maxwell-explanation" style="font-family: sans-serif; font-size: 0.8rem; color: var(--text-muted); padding-top: 0.5rem; border-top: 1px solid var(--border-color);">
+                            Maxwell Relation 1 connects the isentropic temperature change during volume expansion to the isochoric pressure change with entropy.
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <hr class="chapter-divider">
 
@@ -626,19 +663,8 @@
                 });
             });
         });
-
-        // Theme Toggle
-        const themeBtn = document.getElementById('theme-toggle');
-        const htmlElement = document.documentElement;
-        
-        themeBtn.addEventListener('click', () => {
-            const currentTheme = htmlElement.getAttribute('data-theme');
-            if (currentTheme === 'dark') {
-                htmlElement.removeAttribute('data-theme');
-            } else {
-                htmlElement.setAttribute('data-theme', 'dark');
-            }
-        });
     </script>
+    <div id="global-footer"></div>
+    <script src="../../../core.js"></script>
 </body>
 </html>

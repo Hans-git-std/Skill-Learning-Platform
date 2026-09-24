@@ -1,18 +1,27 @@
 import * as THREE from 'three';
 
-// Utility to initialize 3D Scenes
+// Utility to initialize 3D Scenes safely
 function init3DScene(canvasId, setupCallback, animateCallback) {
+    if (window.innerWidth <= 768) return null; // Avoid running heavy WebGL renderers on mobile
     const canvas = document.getElementById(canvasId);
-    if (!canvas) return null;
+    if (!canvas || canvas.clientWidth === 0) return null;
 
-    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+    let renderer;
+    try {
+        renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+    } catch (e) {
+        console.warn("WebGL initialization skipped for " + canvasId, e);
+        return null;
+    }
+
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(45, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
+    const aspect = (canvas.clientHeight > 0) ? (canvas.clientWidth / canvas.clientHeight) : 1;
+    const camera = new THREE.PerspectiveCamera(45, aspect, 0.1, 1000);
     
     const resize = () => {
         const width = canvas.clientWidth;
         const height = canvas.clientHeight;
-        if (canvas.width !== width || canvas.height !== height) {
+        if (width > 0 && height > 0 && (canvas.width !== width || canvas.height !== height)) {
             renderer.setSize(width, height, false);
             camera.aspect = width / height;
             camera.updateProjectionMatrix();
@@ -22,10 +31,18 @@ function init3DScene(canvasId, setupCallback, animateCallback) {
     const context = { renderer, scene, camera, clock: new THREE.Clock() };
     setupCallback(context);
 
+    let isVisible = true;
+    if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver((entries) => {
+            isVisible = entries[0].isIntersecting;
+        }, { threshold: 0.05 });
+        observer.observe(canvas);
+    }
+
     const renderLoop = () => {
-        if (canvas.clientWidth > 0 && canvas.clientHeight > 0) {
+        if (isVisible && canvas.clientWidth > 0 && canvas.clientHeight > 0) {
             resize();
-            animateCallback(context);
+            if (animateCallback) animateCallback(context);
             renderer.render(scene, camera);
         }
         requestAnimationFrame(renderLoop);

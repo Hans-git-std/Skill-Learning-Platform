@@ -24,6 +24,9 @@
                 <li><a href="#ch2">2. CPU Scheduling</a></li>
                 <li><a href="#ch3">3. Virtual Memory & Paging</a></li>
                 <li><a href="#ch4">4. Deadlocks & Synchronization</a></li>
+                <li><a href="#ch5">5. File Systems & Inodes</a></li>
+                <li><a href="#ch6">6. Inter-Process Communication (IPC)</a></li>
+                <li><a href="#ch7">7. Namespaces, Cgroups & Containers</a></li>
             </ul>
         </aside>
 
@@ -305,6 +308,147 @@
                 </div>
                 <p class="engine-caption">Banker's Algorithm: 5 processes, 3 resource types (A=10, B=5, C=7). Find the safe sequence or detect deadlock.</p>
             </div>
+
+            <!-- ==========================================
+                 CHAPTER 5: FILE SYSTEMS & INODES
+            =========================================== -->
+            <hr class="chapter-divider" id="ch5">
+
+            <header class="chapter-header">
+                <span class="chapter-badge">Chapter 5</span>
+                <h2>File Systems & Inode Architecture</h2>
+                <p class="chapter-subtitle">How operating systems structure raw persistent storage blocks into hierarchical files.</p>
+            </header>
+
+            <article class="deep-dive-text">
+                <p>To an NVMe SSD or spinning hard drive, persistent storage is simply a massive linear array of billions of 512-byte or 4KB sectors. The hardware has no concept of a "folder", a "filename", or "read/write permissions". The <strong>File System</strong> is the kernel subsystem responsible for translating human-readable paths (like <code>/var/log/syslog</code>) into physical storage sector addresses.</p>
+
+                <h3>1. The Inode (Index Node)</h3>
+                <p>In Unix-like systems (Linux ext4, macOS APFS, FreeBSD UFS), every single file and directory is represented by an integer data structure called an <strong>Inode</strong>. The inode contains all metadata about the file <em>except its name</em>:</p>
+                <ul>
+                    <li><strong>File Type & Permissions:</strong> Regular file, directory, symlink, socket; read/write/execute bits (e.g. <code>0755</code>).</li>
+                    <li><strong>Owner & Group:</strong> UID and GID owning the file.</li>
+                    <li><strong>File Size:</strong> Exact byte length.</li>
+                    <li><strong>Timestamps:</strong> Access time (<code>atime</code>), modification time (<code>mtime</code>), and metadata change time (<code>ctime</code>).</li>
+                    <li><strong>Link Count (<code>i_nlink</code>):</strong> Number of directory entries currently pointing to this inode.</li>
+                    <li><strong>Block Pointers:</strong> The physical disk sector addresses where file contents are stored.</li>
+                </ul>
+
+                <h3>2. Multi-Level Block Addressing</h3>
+                <p>How does an inode point to both a 20-byte text file and a 50 GB 4K video? Classic Unix systems use a multi-tier block hierarchy:</p>
+                <ul>
+                    <li><strong>12 Direct Pointers:</strong> Point directly to 12 data blocks (12 × 4KB = 48 KB). Small files can be accessed in a single I/O read!</li>
+                    <li><strong>Single Indirect Pointer:</strong> Points to an indexing block containing 1024 direct pointers (1024 × 4KB = 4 MB).</li>
+                    <li><strong>Double Indirect Pointer:</strong> Points to a block containing 1024 single indirect pointers (1024 × 1024 × 4KB = 4 GB).</li>
+                    <li><strong>Triple Indirect Pointer:</strong> Allows file sizes to scale to 4 Terabytes. (Modern ext4 utilizes <em>Extents</em> to allocate contiguous block runs instead of individual pointers, drastically reducing fragmentation).</li>
+                </ul>
+
+                <h3>3. Directories, Hard Links, and Unlinking</h3>
+                <p>A directory in Linux is fundamentally just a special file whose contents are a list of tuples: <code>(filename, inode_number)</code>. These entries are called <strong>dentries</strong>.</p>
+                <p>When you create a <strong>Hard Link</strong> (<code>ln report.pdf backup.pdf</code>), you do not duplicate the file data. The kernel merely writes a new dentry with the name <code>backup.pdf</code> pointing to the existing inode, and increments <code>i_nlink</code> from 1 to 2. When you run <code>rm report.pdf</code>, the file is NOT deleted. The kernel simply decrements <code>i_nlink</code> to 1. The underlying disk blocks are only reclaimed when <code>i_nlink</code> drops to zero AND no open process holds an active file descriptor to it.</p>
+            </article>
+
+            <!-- SIMULATOR 5: INODE ENGINE -->
+            <div id="inode-engine" class="interactive-container" style="background: rgba(0,0,0,0.15); border: 1px solid var(--border-color); border-radius: 8px; padding: 1.5rem; margin-top: 1.5rem;">
+                <h4 style="text-align: center; margin-top: 0; color: var(--text-main);">Interactive Engine: Inode File System & Hard Link Visualizer</h4>
+                <div class="engine-controls" style="display: flex; gap: 0.75rem; align-items: center; justify-content: center; flex-wrap: wrap; margin-bottom: 1rem;">
+                    <button id="btn-inode-create" class="btn-retro" style="border-color: #3b82f6; color: #3b82f6;">Create File</button>
+                    <button id="btn-inode-append" class="btn-retro success-btn">Append 4KB Data</button>
+                    <button id="btn-inode-hardlink" class="btn-retro" style="border-color: #8b5cf6; color: #8b5cf6;">Create Hard Link</button>
+                    <button id="btn-inode-delete" class="btn-retro danger-btn">Unlink (rm)</button>
+                    <button id="btn-inode-reset" class="btn-retro">Reset</button>
+                </div>
+
+                <div class="architecture-layout" style="margin-top: 1rem;">
+                    <div class="sys-component phase-tier" style="min-height: 240px;">
+                        <h4>Inode Structure (#48291)</h4>
+                        <div style="padding: 0.5rem; background: rgba(0,0,0,0.2); border-radius: 4px; font-family: monospace; font-size: 0.8rem; margin-bottom: 0.5rem;">
+                            <div>Status: <span id="inode-num-val" style="color: #3b82f6; font-weight: bold;">Inode #48291</span></div>
+                            <div>Reference Count (i_nlink): <span id="inode-links-val" style="color: #10b981; font-weight: bold;">1</span></div>
+                            <div>File Size: <span id="inode-size-val" style="color: #f59e0b; font-weight: bold;">4 KB</span></div>
+                            <div>Total Blocks: <span id="inode-blocks-val" style="color: #ec4899; font-weight: bold;">1</span></div>
+                        </div>
+
+                        <div style="font-size: 0.8rem; font-weight: bold; margin-bottom: 0.3rem;">Direct Block Pointers:</div>
+                        <div id="inode-direct-blocks" style="display: flex; gap: 0.4rem; margin-bottom: 0.75rem;"></div>
+
+                        <div style="font-size: 0.8rem; font-weight: bold; margin-bottom: 0.3rem;">Indirect Block Pointers:</div>
+                        <div id="inode-indirect-blocks" style="display: flex; gap: 0.4rem;"></div>
+                    </div>
+
+                    <div class="sys-component phase-tier" style="min-height: 240px;">
+                        <h4>Directory Entries & Kernel Event Log</h4>
+                        <div style="font-size: 0.8rem; font-weight: bold; margin-bottom: 0.3rem;">Active Dentries:</div>
+                        <div id="dentry-list" style="display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 0.75rem;"></div>
+
+                        <div style="font-size: 0.8rem; font-weight: bold; margin-bottom: 0.3rem;">VFS Log:</div>
+                        <div id="inode-log" class="pipeline-box code-box" style="height: 120px; overflow-y: auto;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==========================================
+                 CHAPTER 6: INTER-PROCESS COMMUNICATION (IPC)
+            =========================================== -->
+            <hr class="chapter-divider" id="ch6">
+
+            <header class="chapter-header">
+                <span class="chapter-badge">Chapter 6</span>
+                <h2>Inter-Process Communication (IPC) & Kernel Synchronization</h2>
+                <p class="chapter-subtitle">Bridging memory-isolated processes and orchestrating lockless concurrency.</p>
+            </header>
+
+            <article class="deep-dive-text">
+                <p>Virtual memory provides strict process isolation: Process A cannot read or write Process B's memory without triggering a Hardware Protection Fault (SIGSEGV). But modern systems require processes to cooperate (e.g., a web server worker delegating database requests to a cache daemon). The kernel provides specialized <strong>IPC mechanisms</strong> tailored to different performance requirements.</p>
+
+                <h3>1. Anonymous Pipes and Named FIFOs</h3>
+                <p>When you run <code>cat access.log | grep "500" | wc -l</code> in bash, the kernel creates two <strong>anonymous pipes</strong>. A pipe is a unidirectional ring buffer in kernel memory (typically 64 KB). The standard output of the first process writes to the pipe's write descriptor, and the second process reads from the read descriptor. If the buffer fills, the writer blocks until the reader consumes data. <strong>Named FIFOs</strong> (<code>mkfifo</code>) behave identically but have a filesystem entry so unrelated processes can rendezvous.</p>
+
+                <h3>2. POSIX Shared Memory (shm_open / mmap)</h3>
+                <p>Pipes and sockets require multiple data copies: User Space → Kernel Buffer → User Space. For extreme performance (e.g. trading platforms or video processing), processes use <strong>Shared Memory</strong>. The kernel maps the exact same physical RAM frames into the virtual address spaces of both processes via <code>mmap()</code>. Data written by Process A is instantly readable by Process B with zero kernel intervention. Because there is no kernel gatekeeper, developers must coordinate access using POSIX mutexes or spinlocks.</p>
+
+                <h3>3. Unix Domain Sockets (UDS)</h3>
+                <p>Unlike network TCP sockets (<code>127.0.0.1:8080</code>), <strong>Unix Domain Sockets</strong> (<code>/var/run/docker.sock</code>) execute entirely in kernel memory without routing through the network stack. They skip packet framing, TCP checksums, and IP routing overhead, achieving roughly double the throughput of loopback TCP. Furthermore, Unix Domain Sockets allow <em>file descriptor passing</em>: Process A can open a file or socket and pass its actual live file descriptor to Process B via <code>sendmsg()</code> using <code>SCM_RIGHTS</code>.</p>
+            </article>
+
+            <!-- ==========================================
+                 CHAPTER 7: NAMESPACES, CGROUPS & CONTAINERS
+            =========================================== -->
+            <hr class="chapter-divider" id="ch7">
+
+            <header class="chapter-header">
+                <span class="chapter-badge">Chapter 7</span>
+                <h2>Linux Namespaces, Control Groups & Containers</h2>
+                <p class="chapter-subtitle">The kernel primitives powering modern cloud infrastructure and Docker.</p>
+            </header>
+
+            <article class="deep-dive-text">
+                <p>There is no such thing as a "container" in the Linux kernel. Docker, Kubernetes, and containerd do not create virtual machines with simulated BIOS hardware. A container is simply a standard, native Linux process wrapped in two kernel isolation technologies: <strong>Namespaces</strong> (what the process can <em>see</em>) and <strong>Control Groups</strong> (what the process can <em>use</em>).</p>
+
+                <h3>1. The Seven Linux Namespaces (Isolation)</h3>
+                <p>Namespaces partition global system resources into isolated virtual views:</p>
+                <ul>
+                    <li><strong>PID Namespace:</strong> The container process thinks it is PID 1 (init), while on the host operating system it might be PID 49201.</li>
+                    <li><strong>NET Namespace:</strong> Gives the container its own virtual network interface (<code>eth0</code>), private IP address, routing table, and firewall iptables rules.</li>
+                    <li><strong>MNT (Mount) Namespace:</strong> Isolates the filesystem tree. The container sees its own root filesystem (<code>/</code>) completely divorced from the host's <code>/</code>.</li>
+                    <li><strong>IPC Namespace:</strong> Prevents container processes from accessing shared memory segments or message queues on the host.</li>
+                    <li><strong>UTS Namespace:</strong> Allows the container to have its own hostname.</li>
+                    <li><strong>USER Namespace:</strong> Maps UID 0 (root) inside the container to an unprivileged UID (e.g. UID 10001) on the host, preventing host takeover during container breakout.</li>
+                </ul>
+
+                <h3>2. Control Groups (cgroups v2: Resource Limiting)</h3>
+                <p>Namespaces hide the rest of the system, but without resource controls, a single buggy container could consume $100\%$ of host CPU and RAM, starving other workloads. <strong>Control Groups (cgroups)</strong> meter and throttle physical resource consumption:</p>
+                <ul>
+                    <li><strong>CPU Throttling:</strong> Enforced by the Completely Fair Scheduler (CFS) via <code>cpu.max</code> (e.g., 200,000 microseconds per 100,000 microsecond period = exactly 2.0 CPU cores).</li>
+                    <li><strong>Memory Limits:</strong> Controlled by <code>memory.max</code>. If a container exceeds its memory limit and cannot swap, the kernel's Out-Of-Memory (OOM) Killer immediately terminates the container process with <strong>Exit Code 137 (SIGKILL)</strong>.</li>
+                    <li><strong>Block I/O:</strong> Limits read/write IOPS and byte throughput per disk device.</li>
+                </ul>
+
+                <blockquote>
+                    <strong>Cloud Native Architecture: OverlayFS</strong><br>
+                    Container images are stored in read-only layers (LowerDirs). When a container spins up, the kernel mounts a thin read-write layer (UpperDir) on top using <strong>OverlayFS</strong>. When a container modifies an existing file, the kernel copies the file from the lower layer to the upper layer on-the-fly (Copy-on-Write). This is why spinning up 100 Docker containers takes milliseconds and consumes almost zero extra disk space.
+                </blockquote>
+            </article>
         </main>
     </div>
 
@@ -314,5 +458,6 @@
     <script src="scheduling-engine.js"></script>
     <script src="paging-engine.js"></script>
     <script src="deadlock-engine.js"></script>
+    <script src="inode-engine.js"></script>
 </body>
 </html>

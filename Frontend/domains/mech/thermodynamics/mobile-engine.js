@@ -585,6 +585,176 @@ function initCh10Mobile() {
     draw();
 }
 
+// --- CHAPTER 7: Maxwell Relations & Clapeyron Slope ---
+function initCh7Mobile() {
+    const canvas = document.getElementById('ch7-canvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+
+    const subSelect = document.getElementById('ch7-substance');
+    const tempSlider = document.getElementById('ch7-temp');
+    const tempVal = document.getElementById('ch7-temp-val');
+    const maxwellSelect = document.getElementById('ch7-maxwell-select');
+
+    const spanPsat = document.getElementById('ch7-p-sat');
+    const spanSlope = document.getElementById('ch7-slope');
+    const spanVfg = document.getElementById('ch7-vfg');
+    const spanHfg = document.getElementById('ch7-hfg');
+    const divExp = document.getElementById('ch7-maxwell-explanation');
+
+    const explanations = {
+        '1': 'Maxwell 1: (∂T/∂v)s = -(∂P/∂s)v (derived from du = T ds - P dv). Relates isentropic temperature-volume expansion to isochoric pressure-entropy response.',
+        '2': 'Maxwell 2: (∂T/∂P)s = (∂v/∂s)P (derived from dh = T ds + v dP). Bridges isentropic pressure-temperature changes directly with isobaric volume-entropy gradient.',
+        '3': 'Maxwell 3: (∂P/∂T)v = (∂s/∂v)T (derived from da = -s dT - P dv). Allows determination of entropy changes purely from measurable P-v-T equation of state relations!',
+        '4': 'Maxwell 4: (∂v/∂T)P = -(∂s/∂P)T (derived from dg = -s dT + v dP). Governs isobaric volumetric thermal expansion and isothermal entropy changes.'
+    };
+
+    function calculate(T_celsius, substance) {
+        const Tk = T_celsius + 273.15;
+        let Psat, slope, vfg, hfg;
+
+        if (substance === 'r134a') {
+            // R134a Antoine-like model
+            const A = 14.2, B = 2650;
+            Psat = Math.exp(A - B / Tk); // kPa
+            slope = Psat * (B / (Tk * Tk)); // kPa/K
+            const R = 0.08149; // kJ/kg.K
+            vfg = Math.max(0.01, (R * Tk) / Psat - 0.0008);
+            hfg = Tk * vfg * slope;
+        } else {
+            // Water model
+            const A = 16.5, B = 4980;
+            Psat = Math.exp(A - B / Tk); // kPa
+            slope = Psat * (B / (Tk * Tk)); // kPa/K
+            const R = 0.4615; // kJ/kg.K
+            vfg = Math.max(0.05, (R * Tk) / Psat - 0.001);
+            hfg = Tk * vfg * slope;
+        }
+
+        return { Tk, Psat, slope, vfg, hfg };
+    }
+
+    function draw() {
+        const width = canvas.parentElement.getBoundingClientRect().width || 320;
+        const height = 280;
+        const dpr = window.devicePixelRatio || 1;
+        canvas.width = width * dpr;
+        canvas.height = height * dpr;
+        ctx.scale(dpr, dpr);
+
+        ctx.clearRect(0, 0, width, height);
+
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        const textColor = isDark ? '#e4e4e7' : '#18181b';
+        const axisColor = isDark ? '#52525b' : '#94a3b8';
+
+        const substance = subSelect ? subSelect.value : 'water';
+        const T = tempSlider ? parseFloat(tempSlider.value) : 100;
+        if (tempVal) tempVal.innerText = `${T.toFixed(0)}°C`;
+
+        const { Tk, Psat, slope, vfg, hfg } = calculate(T, substance);
+
+        if (spanPsat) spanPsat.innerText = `${Psat < 1000 ? Psat.toFixed(1) + ' kPa' : (Psat/1000).toFixed(2) + ' MPa'}`;
+        if (spanSlope) spanSlope.innerText = `${slope.toFixed(2)} kPa/K`;
+        if (spanVfg) spanVfg.innerText = `${vfg.toFixed(3)} m³/kg`;
+        if (spanHfg) spanHfg.innerText = `${hfg.toFixed(1)} kJ/kg`;
+
+        const minT = 30, maxT = 210;
+        const minP = 5, maxP = 2200;
+
+        const padLeft = 55, padBottom = 35, padTop = 20, padRight = 20;
+        const plotW = width - padLeft - padRight;
+        const plotH = height - padBottom - padTop;
+
+        const toX = (tc) => padLeft + ((tc - minT) / (maxT - minT)) * plotW;
+        const toY = (p) => (height - padBottom) - (Math.min(maxP, p) / maxP) * plotH;
+
+        // Draw axes
+        ctx.strokeStyle = axisColor;
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(padLeft, padTop);
+        ctx.lineTo(padLeft, height - padBottom);
+        ctx.lineTo(width - padRight, height - padBottom);
+        ctx.stroke();
+
+        // Axis labels
+        ctx.fillStyle = axisColor;
+        ctx.font = '10px monospace';
+        ctx.fillText('P (kPa)', 10, padTop + 10);
+        ctx.fillText('T (°C)', width - 40, height - 10);
+
+        // Saturation Curve P(T)
+        ctx.strokeStyle = '#3b82f6';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        for (let t = minT; t <= maxT; t += 3) {
+            const pt = calculate(t, substance);
+            const px = toX(t);
+            const py = toY(pt.Psat);
+            if (t === minT) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+        }
+        ctx.stroke();
+
+        // Operating Point
+        const opX = toX(T);
+        const opY = toY(Psat);
+
+        // Tangent line (Clapeyron Slope dP/dT)
+        const dtSpan = 25;
+        const x1 = toX(T - dtSpan);
+        const y1 = toY(Psat - slope * dtSpan);
+        const x2 = toX(T + dtSpan);
+        const y2 = toY(Psat + slope * dtSpan);
+
+        ctx.strokeStyle = '#f59e0b';
+        ctx.lineWidth = 2;
+        ctx.setLineDash([4, 4]);
+        ctx.beginPath();
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x2, y2);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Highlight Operating Point
+        ctx.fillStyle = '#ec4899';
+        ctx.beginPath();
+        ctx.arc(opX, opY, 6, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Label Tangent Slope
+        ctx.fillStyle = textColor;
+        ctx.font = 'bold 11px monospace';
+        ctx.fillText(`(dP/dT) = ${slope.toFixed(2)}`, Math.min(width - 120, opX + 10), Math.max(padTop + 20, opY - 12));
+    }
+
+    if (tempSlider) {
+        tempSlider.addEventListener('input', draw);
+    }
+    if (subSelect) {
+        subSelect.addEventListener('change', () => {
+            if (subSelect.value === 'r134a') {
+                tempSlider.min = -10;
+                tempSlider.max = 70;
+                tempSlider.value = 25;
+            } else {
+                tempSlider.min = 40;
+                tempSlider.max = 200;
+                tempSlider.value = 100;
+            }
+            draw();
+        });
+    }
+    if (maxwellSelect && divExp) {
+        maxwellSelect.addEventListener('change', () => {
+            divExp.innerText = explanations[maxwellSelect.value] || '';
+        });
+    }
+
+    window.addEventListener('resize', draw);
+    draw();
+}
+
 // --- INITIALIZATION ---
 function initAll() {
     initCh1Mobile();
@@ -593,6 +763,7 @@ function initAll() {
     initCh4Mobile();
     initCh5Mobile();
     initCh6Mobile();
+    initCh7Mobile();
     initCh8Mobile();
     initCh9Mobile();
     initCh10Mobile();

@@ -24,6 +24,9 @@
                 <li><a href="#ch2">2. IP Addressing & Routing</a></li>
                 <li><a href="#ch3">3. TCP Three-Way Handshake</a></li>
                 <li><a href="#ch4">4. DNS Resolution</a></li>
+                <li><a href="#ch5">5. TCP Congestion & Flow Control</a></li>
+                <li><a href="#ch6">6. Modern Web Transport: HTTP/3 & QUIC</a></li>
+                <li><a href="#ch7">7. TLS 1.3 Cryptographic Handshake</a></li>
             </ul>
         </aside>
 
@@ -291,6 +294,122 @@
                 </div>
                 <p class="engine-caption">Recursive resolver walks the DNS tree: Root → TLD → Authoritative → cached A record.</p>
             </div>
+
+            <!-- ==========================================
+                 CHAPTER 5: TCP CONGESTION & FLOW CONTROL
+            =========================================== -->
+            <hr class="chapter-divider" id="ch5">
+
+            <header class="chapter-header">
+                <span class="chapter-badge">Chapter 5</span>
+                <h2>TCP Congestion & Flow Control Algorithms</h2>
+                <p class="chapter-subtitle">Preventing global network collapse and balancing pipeline throughput.</p>
+            </header>
+
+            <article class="deep-dive-text">
+                <p>Establishing a three-way handshake tells you that the destination host is reachable. But it tells you nothing about the health of the thousands of routers, switches, and transoceanic fiber cables between you. If sender nodes blast packets at maximum line speed without coordination, intermediate router buffers overflow, leading to widespread packet loss, cascading retransmissions, and <strong>Congestion Collapse</strong>.</p>
+
+                <h3>1. Flow Control vs. Congestion Control</h3>
+                <p>Engineers often confuse these two distinct mechanisms:</p>
+                <ul>
+                    <li><strong>Flow Control (End-to-End):</strong> Protects the <em>receiver</em> from being overwhelmed. The receiver advertises its available buffer space in every TCP ACK packet via the <code>rwnd</code> (Receive Window) field. The sender never injects more unacknowledged bytes than <code>rwnd</code>.</li>
+                    <li><strong>Congestion Control (Network-Wide):</strong> Protects the <em>shared network infrastructure</em>. The sender maintains a local variable called <code>cwnd</code> (Congestion Window). The effective sending window is always $\min(rwnd, cwnd)$.</li>
+                </ul>
+
+                <h3>2. The Four Classic Phases (TCP Reno / AIMD)</h3>
+                <p>TCP algorithms employ <strong>Additive Increase / Multiplicative Decrease (AIMD)</strong> to converge on fair network bandwidth sharing:</p>
+                <ul>
+                    <li><strong>Slow Start:</strong> The sender starts cautiously at $cwnd = 1 \text{ MSS}$ (Maximum Segment Size). For every ACK received, $cwnd$ increases by 1 MSS. Because each sent packet yields an ACK, $cwnd$ <em>doubles every Round-Trip Time (RTT)</em> exponentially ($1 \to 2 \to 4 \to 8 \to 16$).</li>
+                    <li><strong>Congestion Avoidance:</strong> When $cwnd$ hits the threshold <code>ssthresh</code> (Slow Start Threshold), the sender switches to linear growth. It increments $cwnd$ by $1/cwnd$ per ACK, effectively adding $+1 \text{ MSS}$ per RTT.</li>
+                    <li><strong>Fast Retransmit (3 Duplicate ACKs):</strong> If a packet drops while subsequent packets arrive, the receiver sends duplicate ACKs. Upon seeing 3 duplicate ACKs, the sender immediately retransmits the missing segment without waiting for the slow Retransmission Timeout (RTO) timer.</li>
+                    <li><strong>Fast Recovery:</strong> Multiplicative decrease: <code>ssthresh</code> is halved ($ssthresh = cwnd / 2$), $cwnd$ is set to $ssthresh$, and linear increase resumes immediately.</li>
+                </ul>
+
+                <blockquote>
+                    <strong>Cloud Architect's Insight: Modern Congestion (BBR vs Cubic):</strong><br>
+                    Linux defaults to <strong>CUBIC</strong>, which models window growth as a cubic function of time since last congestion, scaling well over high-bandwidth-delay products. In 2016, Google developed <strong>BBR (Bottleneck Bandwidth and RTT)</strong>. Unlike loss-based algorithms that inflate queues until buffers drop packets, BBR models the actual physical pipe size ($BtlBw \times RTprop$), achieving maximum throughput with near-zero bufferbloat latency.
+                </blockquote>
+            </article>
+
+            <!-- SIMULATOR 5: CWND ENGINE -->
+            <div id="cwnd-engine" class="interactive-container" style="background: rgba(0,0,0,0.15); border: 1px solid var(--border-color); border-radius: 8px; padding: 1.5rem; margin-top: 1.5rem;">
+                <h4 style="text-align: center; margin-top: 0; color: var(--text-main);">Interactive Engine: TCP Congestion Window (AIMD Explorer)</h4>
+                <div class="engine-controls" style="display: flex; gap: 1rem; align-items: center; justify-content: center; flex-wrap: wrap; margin-bottom: 1rem;">
+                    <button id="btn-cwnd-next" class="btn-retro success-btn">Send Next RTT Burst</button>
+                    <button id="btn-cwnd-loss" class="btn-retro" style="border-color: #f59e0b; color: #f59e0b;">Simulate 3x Dup ACKs (Fast Retransmit)</button>
+                    <button id="btn-cwnd-timeout" class="btn-retro danger-btn">Simulate RTO Timeout</button>
+                    <button id="btn-cwnd-reset" class="btn-retro">Reset</button>
+                </div>
+
+                <div style="position: relative; width: 100%; border: 1px solid var(--border-color); border-radius: 6px; overflow: hidden; background: rgba(0,0,0,0.25);">
+                    <canvas id="cwnd-canvas" style="display: block; width: 100%; height: 260px;"></canvas>
+                </div>
+
+                <div style="display: flex; justify-content: space-around; flex-wrap: wrap; gap: 1rem; margin-top: 1rem; padding: 0.75rem; background: rgba(0,0,0,0.2); border-radius: 6px; font-size: 0.85rem; font-family: monospace;">
+                    <div>Current CWND: <span id="cwnd-val" style="color: #3b82f6; font-weight: bold;">1.0 MSS</span></div>
+                    <div>ssthresh: <span id="ssthresh-val" style="color: #f59e0b; font-weight: bold;">16 MSS</span></div>
+                    <div>State: <span id="cwnd-state-val" style="color: #3b82f6; font-weight: bold;">Slow Start</span></div>
+                </div>
+            </div>
+
+            <!-- ==========================================
+                 CHAPTER 6: MODERN WEB TRANSPORT (HTTP/3 & QUIC)
+            =========================================== -->
+            <hr class="chapter-divider" id="ch6">
+
+            <header class="chapter-header">
+                <span class="chapter-badge">Chapter 6</span>
+                <h2>Modern Web Transport: HTTP/1.1 vs HTTP/2 vs HTTP/3 (QUIC)</h2>
+                <p class="chapter-subtitle">Eliminating Head-of-Line blocking and moving transport into userspace.</p>
+            </header>
+
+            <article class="deep-dive-text">
+                <p>The Application Layer (HTTP) has undergone a radical architectural evolution over the past decade. The early internet relied on simple text-based transactions over TCP. As websites grew from 5 KB text files to complex web applications fetching hundreds of resources, traditional transport bottlenecks became intolerable.</p>
+
+                <h3>1. HTTP/1.1: Head-of-Line Blocking at the Application Layer</h3>
+                <p>In HTTP/1.1, each TCP connection can only handle one request-response pair at a time. If a webpage needs 60 assets (images, scripts, CSS), the browser must serialize them sequentially or open multiple concurrent TCP connections (browsers limit this to 6 connections per domain). If request #1 hangs on a slow database query, requests #2 through #60 are blocked behind it.</p>
+
+                <h3>2. HTTP/2: Binary Framing & Multiplexing</h3>
+                <p>Standardized in 2015, HTTP/2 introduced a <strong>Binary Framing Layer</strong>. It splits HTTP messages into independent binary frames tagged with a stream ID. Multiple requests and responses can now be interleaved concurrently over a single TCP connection. It also added HPACK header compression and Server Push.</p>
+                <p>However, HTTP/2 exposed an even deeper vulnerability: <strong>TCP-level Head-of-Line Blocking</strong>. Because TCP guarantees in-order byte delivery, if a single IP packet carrying byte 1000 is lost on a spotty cellular connection, the operating system kernel will freeze delivery of bytes 1001 through 5000 across <em>all</em> multiplexed HTTP/2 streams until the missing segment is retransmitted.</p>
+
+                <h3>3. HTTP/3: QUIC over UDP</h3>
+                <p>HTTP/3 abandons TCP entirely. It runs over <strong>QUIC</strong>, a transport protocol built on top of raw <strong>UDP</strong> in userspace. QUIC implements independent stream flow control: if packet loss occurs on Stream 4, Stream 1, 2, and 3 continue streaming data to the browser with zero interruption.</p>
+                <ul>
+                    <li><strong>0-RTT Connection Establishment:</strong> QUIC integrates the cryptographic TLS 1.3 handshake directly into its initial transport packet, allowing repeat visitors to transmit encrypted HTTP requests on round-trip zero.</li>
+                    <li><strong>Connection Migration:</strong> TCP connections are bound to a 4-tuple (Source IP, Source Port, Dest IP, Dest Port). If you walk out of your house and switch from Wi-Fi to 5G cellular, your IP changes and every TCP socket drops. QUIC uses a 64-bit <em>Connection ID (CID)</em>, allowing seamless streaming without dropping active calls or downloads.</li>
+                </ul>
+            </article>
+
+            <!-- ==========================================
+                 CHAPTER 7: TLS 1.3 CRYPTOGRAPHIC HANDSHAKE
+            =========================================== -->
+            <hr class="chapter-divider" id="ch7">
+
+            <header class="chapter-header">
+                <span class="chapter-badge">Chapter 7</span>
+                <h2>Transport Layer Security (TLS 1.3)</h2>
+                <p class="chapter-subtitle">Protecting global data in transit with forward secrecy and authenticated encryption.</p>
+            </header>
+
+            <article class="deep-dive-text">
+                <p>An unencrypted packet traveling across the public internet passes through dozens of intermediate autonomous systems (AS) and ISP routers. Anyone tapping the fiber or running a compromised Wi-Fi access point can read and tamper with the payload. <strong>Transport Layer Security (TLS)</strong> sits between the Application Layer (HTTP) and Transport Layer (TCP), providing confidentiality, authentication, and data integrity.</p>
+
+                <h3>1. Symmetric vs. Asymmetric Cryptography</h3>
+                <p>Asymmetric cryptography (RSA, Elliptic Curves) uses a public/private keypair. It is mathematically brilliant because anyone can encrypt with your public key, but only you can decrypt with your private key. However, asymmetric math is computationally expensive. Symmetric cryptography (AES-GCM, ChaCha20) uses a single shared secret key and is blisteringly fast (accelerated by CPU hardware instructions like AES-NI).</p>
+                <p>TLS solves this by using asymmetric cryptography for the initial handshake to safely negotiate a session key, and then instantly switches to symmetric encryption for all subsequent application traffic.</p>
+
+                <h3>2. Ephemeral Diffie-Hellman & Perfect Forward Secrecy (PFS)</h3>
+                <p>In legacy TLS 1.2, servers often used static RSA key exchange: the client encrypted the premaster secret using the server's public certificate. If an adversary recorded encrypted internet traffic for 10 years and eventually compromised the server's private key, they could retroactively decrypt every single past session recorded.</p>
+                <p>TLS 1.3 mandates <strong>ECDHE (Elliptic Curve Diffie-Hellman Ephemeral)</strong> over Curve25519 or NIST P-256. For every single session, both client and server generate fresh, temporary keypairs that are discarded immediately after the handshake. Even if the server's long-term private key is leaked tomorrow, past sessions remain cryptographically unbreakable (Perfect Forward Secrecy).</p>
+
+                <h3>3. The TLS 1.3 1-RTT Handshake Flow</h3>
+                <ul>
+                    <li><strong>ClientHello (RTT 0):</strong> The client sends supported cipher suites AND its Diffie-Hellman public key share immediately.</li>
+                    <li><strong>ServerHello (RTT 1):</strong> The server responds with its selected cipher, its own Diffie-Hellman key share, and an X.509 certificate signed by a trusted Certificate Authority (CA). Both parties independently compute the shared symmetric secret ($K$).</li>
+                    <li><strong>Finished:</strong> All subsequent HTTP requests flow fully encrypted under Authenticated Encryption with Associated Data (AEAD).</li>
+                </ul>
+            </article>
         </main>
     </div>
 
@@ -300,5 +419,6 @@
     <script src="routing-engine.js"></script>
     <script src="tcp-engine.js"></script>
     <script src="dns-engine.js"></script>
+    <script src="congestion-engine.js"></script>
 </body>
 </html>

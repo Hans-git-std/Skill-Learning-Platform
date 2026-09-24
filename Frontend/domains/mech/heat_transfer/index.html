@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SCME | Heat Transfer</title>
     <link rel="stylesheet" href="style.css">
     
@@ -15,7 +15,6 @@
         }
       };
     </script>
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <!-- Three.js and modules for 3D Simulators -->
     <script async src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"></script>
@@ -750,45 +749,42 @@
     </div>
 
     <!-- Load 2D Mobile Engine (Extremely lightweight, zero dependencies) -->
-    <script src="mobile-engine.js?v=2"></script>
+    <script src="mobile-engine.js"></script>
     
     <!-- Load 3D Desktop Engine (Relies on CSS display:none to abort if on mobile) -->
-    <script type="module" src="heat-transfer-engine.js?v=8"></script>
+    <script type="module" src="heat-transfer-engine.js"></script>
     
+    <div id="global-footer"></div>
     <script src="../../../core.js"></script>
     <script>
-        // Basic Theme Toggle Logic
-        const themeBtn = document.getElementById('theme-toggle');
-        themeBtn.addEventListener('click', () => {
-            const html = document.documentElement;
-            if (html.getAttribute('data-theme') === 'dark') {
-                html.removeAttribute('data-theme');
-            } else {
-                html.setAttribute('data-theme', 'dark');
-            }
-        });
-        
-        // Basic Sidebar Navigation Highlight
+        // Sidebar Navigation Highlight
         const sections = document.querySelectorAll('.chapter-header');
         const navLinks = document.querySelectorAll('.chapter-list a');
+        let isTicking = false;
         
         window.addEventListener('scroll', () => {
-            let current = '';
-            sections.forEach(section => {
-                const sectionTop = section.offsetTop;
-                const sectionHeight = section.clientHeight;
-                if (scrollY >= (sectionTop - 150)) {
-                    current = section.getAttribute('id');
-                }
-            });
-            
-            navLinks.forEach(link => {
-                link.classList.remove('active');
-                if (link.getAttribute('href') === `#${current}`) {
-                    link.classList.add('active');
-                }
-            });
-        });
+            if (!isTicking) {
+                window.requestAnimationFrame(() => {
+                    let current = '';
+                    const scrollY = window.pageYOffset || window.scrollY || 0;
+                    sections.forEach(section => {
+                        const sectionTop = section.offsetTop;
+                        if (scrollY >= (sectionTop - 150)) {
+                            current = section.getAttribute('id');
+                        }
+                    });
+                    
+                    navLinks.forEach(link => {
+                        link.classList.remove('active');
+                        if (current && link.getAttribute('href') === `#${current}`) {
+                            link.classList.add('active');
+                        }
+                    });
+                    isTicking = false;
+                });
+                isTicking = true;
+            }
+        }, { passive: true });
     </script>
 </body>
 </html>

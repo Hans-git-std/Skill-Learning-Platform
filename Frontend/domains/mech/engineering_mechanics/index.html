@@ -252,6 +252,44 @@
                 $$ v = \omega r $$
             </article>
 
+            <!-- Chapter 4 Kinematics Simulator -->
+            <div id="kinematics-engine" class="interactive-container" style="background: rgba(0,0,0,0.15); border: 1px solid var(--border-color); border-radius: 8px; padding: 1.5rem; margin-top: 1.5rem;">
+                <div class="engine-controls" style="display: flex; gap: 1.5rem; align-items: center; justify-content: center; flex-wrap: wrap; margin-bottom: 1.25rem;">
+                    <div style="display: flex; flex-direction: column; align-items: center;">
+                        <label style="color: var(--text-muted); font-weight: bold; font-size: 0.85rem;">Velocity ($v_0$)</label>
+                        <input type="range" id="proj-velocity" min="10" max="60" value="35" style="width: 130px;">
+                        <span id="proj-velocity-val" style="font-family: monospace; font-weight: bold; color: #3b82f6;">35 m/s</span>
+                    </div>
+                    <div style="display: flex; flex-direction: column; align-items: center;">
+                        <label style="color: var(--text-muted); font-weight: bold; font-size: 0.85rem;">Angle ($\theta$)</label>
+                        <input type="range" id="proj-angle" min="10" max="85" value="45" style="width: 130px;">
+                        <span id="proj-angle-val" style="font-family: monospace; font-weight: bold; color: #f59e0b;">45°</span>
+                    </div>
+                    <div style="display: flex; flex-direction: column; align-items: center;">
+                        <label style="color: var(--text-muted); font-weight: bold; font-size: 0.85rem;">Gravity ($g$)</label>
+                        <select id="proj-gravity" class="btn-retro" style="padding: 0.3rem 0.6rem; font-size: 0.85rem;">
+                            <option value="9.81">Earth (9.81 m/s²)</option>
+                            <option value="1.62">Moon (1.62 m/s²)</option>
+                            <option value="3.71">Mars (3.71 m/s²)</option>
+                        </select>
+                    </div>
+                    <div style="display: flex; gap: 0.5rem; align-items: flex-end;">
+                        <button id="btn-proj-fire" class="btn-retro" style="background: #3b82f6; color: white;">Launch Arc</button>
+                        <button id="btn-proj-reset" class="btn-retro">Reset</button>
+                    </div>
+                </div>
+
+                <div style="position: relative; width: 100%; border: 1px solid var(--border-color); border-radius: 6px; overflow: hidden; background: rgba(0,0,0,0.25);">
+                    <canvas id="kinematics-canvas" style="display: block; width: 100%; height: 360px;"></canvas>
+                </div>
+
+                <div style="display: flex; justify-content: space-around; flex-wrap: wrap; gap: 1rem; margin-top: 1rem; padding: 0.75rem; background: rgba(0,0,0,0.2); border-radius: 6px; font-size: 0.85rem; font-family: monospace;">
+                    <div>Time of Flight: <span id="proj-flight-time" style="color: #3b82f6; font-weight: bold;">--</span></div>
+                    <div>Max Height ($h_{max}$): <span id="proj-max-height" style="color: #10b981; font-weight: bold;">--</span></div>
+                    <div>Total Range ($R$): <span id="proj-total-range" style="color: #f59e0b; font-weight: bold;">--</span></div>
+                </div>
+            </div>
+
 
             <!-- ==========================================
                  CHAPTER 5: KINETICS
@@ -293,6 +331,51 @@
                 
                 <p>In a closed system (like two billiard balls colliding), the total momentum before the impact is always mathematically equal to the total momentum after the impact. This is the bedrock law for analyzing mechanical collisions.</p>
             </article>
+
+            <!-- Chapter 5 Kinetics Simulator -->
+            <div id="kinetics-engine" class="interactive-container" style="background: rgba(0,0,0,0.15); border: 1px solid var(--border-color); border-radius: 8px; padding: 1.5rem; margin-top: 1.5rem;">
+                <div class="engine-controls" style="display: flex; gap: 1.5rem; align-items: center; justify-content: center; flex-wrap: wrap; margin-bottom: 1.25rem;">
+                    <div style="display: flex; flex-direction: column; align-items: center;">
+                        <label style="color: var(--text-muted); font-weight: bold; font-size: 0.85rem;">Mass 1 ($m_1$)</label>
+                        <input type="range" id="col-m1" min="1" max="10" value="4" style="width: 100px;">
+                        <span id="col-m1-val" style="font-family: monospace; font-weight: bold; color: #3b82f6;">4 kg</span>
+                    </div>
+                    <div style="display: flex; flex-direction: column; align-items: center;">
+                        <label style="color: var(--text-muted); font-weight: bold; font-size: 0.85rem;">Vel 1 ($v_1$)</label>
+                        <input type="range" id="col-v1" min="1" max="25" value="12" style="width: 100px;">
+                        <span id="col-v1-val" style="font-family: monospace; font-weight: bold; color: #3b82f6;">+12 m/s</span>
+                    </div>
+                    <div style="display: flex; flex-direction: column; align-items: center;">
+                        <label style="color: var(--text-muted); font-weight: bold; font-size: 0.85rem;">Mass 2 ($m_2$)</label>
+                        <input type="range" id="col-m2" min="1" max="10" value="6" style="width: 100px;">
+                        <span id="col-m2-val" style="font-family: monospace; font-weight: bold; color: #ef4444;">6 kg</span>
+                    </div>
+                    <div style="display: flex; flex-direction: column; align-items: center;">
+                        <label style="color: var(--text-muted); font-weight: bold; font-size: 0.85rem;">Vel 2 ($v_2$)</label>
+                        <input type="range" id="col-v2" min="-25" max="-1" value="-6" style="width: 100px;">
+                        <span id="col-v2-val" style="font-family: monospace; font-weight: bold; color: #ef4444;">-6 m/s</span>
+                    </div>
+                    <div style="display: flex; flex-direction: column; align-items: center;">
+                        <label style="color: var(--text-muted); font-weight: bold; font-size: 0.85rem;">Restitution ($e$)</label>
+                        <input type="range" id="col-e" min="0" max="1" step="0.05" value="0.8" style="width: 100px;">
+                        <span id="col-e-val" style="font-family: monospace; font-weight: bold; color: #10b981;">0.80</span>
+                    </div>
+                    <div style="display: flex; gap: 0.5rem; align-items: flex-end;">
+                        <button id="btn-col-run" class="btn-retro" style="background: #10b981; color: white;">Simulate Impact</button>
+                        <button id="btn-col-reset" class="btn-retro">Reset</button>
+                    </div>
+                </div>
+
+                <div style="position: relative; width: 100%; border: 1px solid var(--border-color); border-radius: 6px; overflow: hidden; background: rgba(0,0,0,0.25);">
+                    <canvas id="kinetics-canvas" style="display: block; width: 100%; height: 300px;"></canvas>
+                </div>
+
+                <div style="display: flex; justify-content: space-around; flex-wrap: wrap; gap: 1rem; margin-top: 1rem; padding: 0.75rem; background: rgba(0,0,0,0.2); border-radius: 6px; font-size: 0.85rem; font-family: monospace;">
+                    <div>Initial Momentum: <span id="col-p-initial" style="color: #3b82f6; font-weight: bold;">--</span></div>
+                    <div>Post-Collision Momentum: <span id="col-p-final" style="color: #10b981; font-weight: bold;">--</span></div>
+                    <div>Kinetic Energy Loss: <span id="col-ke-loss" style="color: #ef4444; font-weight: bold;">--</span></div>
+                </div>
+            </div>
         </main>
     </div>
 
@@ -301,5 +384,6 @@
     <script src="statics-engine.js"></script>
     <script src="truss-engine.js"></script>
     <script src="friction-engine.js"></script>
+    <script src="kinematics-kinetics-engine.js"></script>
 </body>
 </html>

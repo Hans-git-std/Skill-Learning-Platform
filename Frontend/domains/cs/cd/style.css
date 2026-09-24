@@ -406,3 +406,47 @@
         font-size: 1rem !important;
     }
 }
+
+/* Stack Frame & Activation Record Simulator */
+.stack-frame {
+    border: 2px solid #3b82f6;
+    border-radius: 8px;
+    margin-bottom: 0.75rem;
+    overflow: hidden;
+    background: rgba(59, 130, 246, 0.05);
+    transition: all 0.3s ease;
+}
+.stack-frame-header {
+    background: #3b82f6;
+    color: white;
+    padding: 0.4rem 0.8rem;
+    font-size: 0.85rem;
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.stack-frame-body {
+    padding: 0.6rem 0.8rem;
+    font-family: monospace;
+    font-size: 0.8rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+.stack-cell {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.25rem 0.5rem;
+    background: rgba(0,0,0,0.05);
+    border-radius: 4px;
+    border-left: 3px solid #3b82f6;
+}
+[data-theme="dark"] .stack-cell {
+    background: rgba(255,255,255,0.05);
+}
+.stack-cell.ret-addr { border-left-color: #ef4444; }
+.stack-cell.frame-ptr { border-left-color: #f59e0b; }
+.stack-cell.param { border-left-color: #10b981; }
+.stack-cell.local { border-left-color: #8b5cf6; }
+

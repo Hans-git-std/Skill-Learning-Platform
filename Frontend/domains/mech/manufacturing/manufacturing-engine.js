@@ -1503,17 +1503,4 @@ window.onload = () => {
 };
 
 
-// Theme toggling functionality (inherited standard)
-document.addEventListener('DOMContentLoaded', () => {
-    const themeBtn = document.getElementById('theme-toggle');
-    if(themeBtn) {
-        themeBtn.addEventListener('click', () => {
-            const html = document.documentElement;
-            if(html.getAttribute('data-theme') === 'dark') {
-                html.removeAttribute('data-theme');
-            } else {
-                html.setAttribute('data-theme', 'dark');
-            }
-        });
-    }
-});
+

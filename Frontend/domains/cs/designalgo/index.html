@@ -281,37 +281,34 @@
     </div>
 
     <script>
-        // Simple Theme Toggle Logic matching the existing UI behavior
-        const themeBtn = document.getElementById('theme-toggle');
-        themeBtn.addEventListener('click', () => {
-            const current = document.documentElement.getAttribute('data-theme');
-            if(current === 'dark') {
-                document.documentElement.removeAttribute('data-theme');
-            } else {
-                document.documentElement.setAttribute('data-theme', 'dark');
-            }
-        });
-
-        // Simple smooth scroll and active state management for sidebar
+        // Smooth scroll and active state management for sidebar
         const chapters = document.querySelectorAll('.chapter-header');
         const navLinks = document.querySelectorAll('.chapter-list a');
+        let isTicking = false;
 
         window.addEventListener('scroll', () => {
-            let current = '';
-            chapters.forEach(chapter => {
-                const chapterTop = chapter.offsetTop;
-                if (pageYOffset >= chapterTop - 150) {
-                    current = chapter.getAttribute('id');
-                }
-            });
+            if (!isTicking) {
+                window.requestAnimationFrame(() => {
+                    let current = '';
+                    const scrollY = window.pageYOffset || window.scrollY || 0;
+                    chapters.forEach(chapter => {
+                        const chapterTop = chapter.offsetTop;
+                        if (scrollY >= chapterTop - 150) {
+                            current = chapter.getAttribute('id');
+                        }
+                    });
 
-            navLinks.forEach(link => {
-                link.classList.remove('active');
-                if (link.getAttribute('href').includes(current)) {
-                    link.classList.add('active');
-                }
-            });
-        });
+                    navLinks.forEach(link => {
+                        link.classList.remove('active');
+                        if (current && link.getAttribute('href').includes(current)) {
+                            link.classList.add('active');
+                        }
+                    });
+                    isTicking = false;
+                });
+                isTicking = true;
+            }
+        }, { passive: true });
     </script>
     <script src="daa-engine.js"></script>
     <script src="../../../core.js"></script>

@@ -576,4 +576,419 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // ==========================================
+    // SIMULATOR 6: RUN-TIME ENVIRONMENT (CALL STACK & ACTIVATION RECORDS)
+    // ==========================================
+    const btnStackMain = document.getElementById('btn-stack-main');
+    const btnStackCallA = document.getElementById('btn-stack-call-a');
+    const btnStackCallB = document.getElementById('btn-stack-call-b');
+    const btnStackRecurse = document.getElementById('btn-stack-recurse');
+    const btnStackPop = document.getElementById('btn-stack-pop');
+    const btnStackReset = document.getElementById('btn-stack-reset');
+
+    const stackFramesBox = document.getElementById('stack-frames-box');
+    const regEsp = document.getElementById('reg-esp');
+    const regEbp = document.getElementById('reg-ebp');
+    const stackDepthVal = document.getElementById('stack-depth-val');
+    const stackAsmLog = document.getElementById('stack-asm-log');
+
+    let callStack = [];
+    const BASE_ADDR = 0x7FFF0000;
+    const MAX_STACK_DEPTH = 5;
+
+    function renderCallStack() {
+        if (!stackFramesBox) return;
+        stackFramesBox.innerHTML = '';
+
+        if (callStack.length === 0) {
+            stackFramesBox.innerHTML = '<span class="placeholder-text">Stack Empty. Click main() to initialize.</span>';
+            if (regEsp) regEsp.innerText = '0x7FFF0000';
+            if (regEbp) regEbp.innerText = '0x7FFF0000';
+            if (stackDepthVal) stackDepthVal.innerText = '0 / 5';
+            return;
+        }
+
+        const currentESP = BASE_ADDR - (callStack.length * 32);
+        const currentEBP = BASE_ADDR - ((callStack.length - 1) * 32);
+
+        if (regEsp) regEsp.innerText = `0x${currentESP.toString(16).toUpperCase()}`;
+        if (regEbp) regEbp.innerText = `0x${currentEBP.toString(16).toUpperCase()}`;
+        if (stackDepthVal) stackDepthVal.innerText = `${callStack.length} / ${MAX_STACK_DEPTH}`;
+
+        // Render from top of stack (most recent) down to bottom
+        for (let i = callStack.length - 1; i >= 0; i--) {
+            const frame = callStack[i];
+            const frameDiv = document.createElement('div');
+            frameDiv.className = 'stack-frame';
+            if (i === callStack.length - 1) {
+                frameDiv.style.borderColor = '#10b981';
+                frameDiv.style.boxShadow = '0 0 10px rgba(16, 185, 129, 0.25)';
+            }
+
+            let paramsHtml = frame.params.map(p => 
+                `<div class="stack-cell param"><span>Param [ebp+${p.offset}]: <strong>${p.name}</strong></span><span>= ${p.val}</span></div>`
+            ).join('');
+
+            let localsHtml = frame.locals.map(l => 
+                `<div class="stack-cell local"><span>Local [ebp-${l.offset}]: <strong>${l.name}</strong></span><span>= ${l.val}</span></div>`
+            ).join('');
+
+            frameDiv.innerHTML = `
+                <div class="stack-frame-header" style="${i === callStack.length - 1 ? 'background: #10b981;' : ''}">
+                    <span>${frame.name} [Frame #${i + 1}]</span>
+                    <span style="font-family: monospace; font-size: 0.75rem;">EBP: 0x${(BASE_ADDR - (i * 32)).toString(16).toUpperCase()}</span>
+                </div>
+                <div class="stack-frame-body">
+                    ${paramsHtml}
+                    <div class="stack-cell ret-addr"><span>Return Address:</span><span>${frame.retAddr}</span></div>
+                    <div class="stack-cell frame-ptr"><span>Saved Frame Pointer:</span><span>${frame.savedEBP}</span></div>
+                    ${localsHtml}
+                </div>
+            `;
+            stackFramesBox.appendChild(frameDiv);
+        }
+    }
+
+    function logStackAsm(lines) {
+        if (!stackAsmLog) return;
+        stackAsmLog.innerHTML = '';
+        lines.forEach(line => {
+            const div = document.createElement('div');
+            div.className = 'code-line';
+            div.innerHTML = line;
+            stackAsmLog.appendChild(div);
+        });
+    }
+
+    function pushFrame(frame) {
+        if (callStack.length >= MAX_STACK_DEPTH) {
+            logStackAsm([
+                `<span style="color: #ef4444; font-weight: bold;">⚠️ STACK OVERFLOW!</span>`,
+                `<span style="color: #ef4444;">SIGSEGV: Maximum call stack limit reached.</span>`,
+                `<span>Process terminated by OS memory guard.</span>`
+            ]);
+            return;
+        }
+
+        callStack.push(frame);
+        renderCallStack();
+        logStackAsm([
+            `<span class="highlight">; --- Function Prologue: ${frame.name} ---</span>`,
+            `<span>push    ebp            ; Save caller frame pointer</span>`,
+            `<span>mov     ebp, esp       ; Set new base pointer</span>`,
+            `<span>sub     esp, ${frame.locals.length * 4 + 8}       ; Allocate stack frame</span>`,
+            `<span style="color: #10b981;">; Activated Frame at 0x${(BASE_ADDR - ((callStack.length - 1) * 32)).toString(16).toUpperCase()}</span>`
+        ]);
+    }
+
+    if (btnStackMain) btnStackMain.addEventListener('click', () => {
+        callStack = [];
+        pushFrame({
+            name: 'main()',
+            retAddr: '0x00401010 (__libc_start)',
+            savedEBP: '0x00000000',
+            params: [
+                { name: 'argc', val: '1', offset: 8 },
+                { name: 'argv', val: '0x7FFF1200', offset: 12 }
+            ],
+            locals: [
+                { name: 'statusCode', val: '0', offset: 4 }
+            ]
+        });
+    });
+
+    if (btnStackCallA) btnStackCallA.addEventListener('click', () => {
+        if (callStack.length === 0) {
+            btnStackMain.click();
+        }
+        pushFrame({
+            name: 'computeSum(a, b)',
+            retAddr: '0x004014F8',
+            savedEBP: `0x${(BASE_ADDR - ((callStack.length - 1) * 32)).toString(16).toUpperCase()}`,
+            params: [
+                { name: 'a', val: '15', offset: 8 },
+                { name: 'b', val: '27', offset: 12 }
+            ],
+            locals: [
+                { name: 'sum', val: '42', offset: 4 }
+            ]
+        });
+    });
+
+    if (btnStackCallB) btnStackCallB.addEventListener('click', () => {
+        if (callStack.length === 0) btnStackMain.click();
+        pushFrame({
+            name: 'helperHash(key)',
+            retAddr: '0x004018A2',
+            savedEBP: `0x${(BASE_ADDR - ((callStack.length - 1) * 32)).toString(16).toUpperCase()}`,
+            params: [
+                { name: 'key', val: '42', offset: 8 }
+            ],
+            locals: [
+                { name: 'salt', val: '0x9E37', offset: 4 },
+                { name: 'hash', val: '98231', offset: 8 }
+            ]
+        });
+    });
+
+    let factN = 4;
+    if (btnStackRecurse) btnStackRecurse.addEventListener('click', () => {
+        if (callStack.length === 0) btnStackMain.click();
+        factN = Math.max(1, factN - 1);
+        pushFrame({
+            name: `fact(n = ${factN})`,
+            retAddr: '0x0040209C',
+            savedEBP: `0x${(BASE_ADDR - ((callStack.length - 1) * 32)).toString(16).toUpperCase()}`,
+            params: [
+                { name: 'n', val: `${factN}`, offset: 8 }
+            ],
+            locals: [
+                { name: 'subResult', val: factN <= 1 ? '1' : '?', offset: 4 }
+            ]
+        });
+    });
+
+    if (btnStackPop) btnStackPop.addEventListener('click', () => {
+        if (callStack.length === 0) return;
+        const popped = callStack.pop();
+        renderCallStack();
+        logStackAsm([
+            `<span class="highlight">; --- Function Epilogue: ${popped.name} ---</span>`,
+            `<span>mov     esp, ebp       ; Collapse local stack frame</span>`,
+            `<span>pop     ebp            ; Restore caller frame pointer</span>`,
+            `<span>ret                    ; Pop return address into EIP</span>`,
+            `<span style="color: #3b82f6;">; Returned control to caller. Frame deallocated.</span>`
+        ]);
+    });
+
+    if (btnStackReset) btnStackReset.addEventListener('click', () => {
+        callStack = [];
+        factN = 4;
+        renderCallStack();
+        logStackAsm([`<span class="placeholder-text">Stack cleared. Ready.</span>`]);
+    });
+
+
+    // ==========================================
+    // SIMULATOR 7: REGISTER ALLOCATION & GRAPH COLORING (Back-End)
+    // ==========================================
+    const regCanvas = document.getElementById('reg-alloc-canvas');
+    const regKSelect = document.getElementById('reg-k-select');
+    const btnRegBuild = document.getElementById('btn-reg-build');
+    const btnRegColor = document.getElementById('btn-reg-color');
+    const btnRegReset = document.getElementById('btn-reg-reset');
+    const regAsmBox = document.getElementById('reg-asm-box');
+
+    let graphNodes = [
+        { id: 't1', label: 't1', x: 0.25, y: 0.28, color: null, reg: null },
+        { id: 't2', label: 't2', x: 0.75, y: 0.28, color: null, reg: null },
+        { id: 't3', label: 't3', x: 0.50, y: 0.52, color: null, reg: null },
+        { id: 't4', label: 't4', x: 0.28, y: 0.82, color: null, reg: null },
+        { id: 't5', label: 't5', x: 0.72, y: 0.82, color: null, reg: null }
+    ];
+
+    // Adjacency edges (interference: simultaneously live variables)
+    const graphEdges = [
+        ['t1', 't2'],
+        ['t1', 't3'],
+        ['t2', 't3'],
+        ['t2', 't4'],
+        ['t3', 't4'],
+        ['t3', 't5'],
+        ['t4', 't5']
+    ];
+
+    let graphBuilt = false;
+    let graphColored = false;
+
+    function drawInterferenceGraph() {
+        if (!regCanvas) return;
+        const ctx = regCanvas.getContext('2d');
+        const w = regCanvas.parentElement.clientWidth || 320;
+        const h = 260;
+        regCanvas.width = w;
+        regCanvas.height = h;
+
+        ctx.clearRect(0, 0, w, h);
+
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+
+        if (!graphBuilt) {
+            ctx.fillStyle = isDark ? '#71717a' : '#94a3b8';
+            ctx.font = '14px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('Click "1. Build Interference Graph" to construct live ranges', w / 2, h / 2);
+            return;
+        }
+
+        // Draw edges
+        ctx.strokeStyle = isDark ? '#52525b' : '#cbd5e1';
+        ctx.lineWidth = 2;
+        graphEdges.forEach(([srcId, dstId]) => {
+            const src = graphNodes.find(n => n.id === srcId);
+            const dst = graphNodes.find(n => n.id === dstId);
+            if (src && dst) {
+                ctx.beginPath();
+                ctx.moveTo(src.x * w, src.y * h);
+                ctx.lineTo(dst.x * w, dst.y * h);
+                ctx.stroke();
+            }
+        });
+
+        // Draw nodes
+        graphNodes.forEach(node => {
+            const nx = node.x * w;
+            const ny = node.y * h;
+            const radius = 22;
+
+            ctx.beginPath();
+            ctx.arc(nx, ny, radius, 0, Math.PI * 2);
+
+            if (node.color) {
+                ctx.fillStyle = node.color;
+            } else {
+                ctx.fillStyle = isDark ? '#27272a' : '#f1f5f9';
+            }
+            ctx.fill();
+
+            ctx.strokeStyle = isDark ? '#a1a1aa' : '#475569';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // Label
+            ctx.fillStyle = node.color ? '#ffffff' : (isDark ? '#fafafa' : '#0f172a');
+            ctx.font = 'bold 12px monospace';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            const displayLabel = node.reg ? `${node.label}:${node.reg}` : node.label;
+            ctx.fillText(displayLabel, nx, ny);
+        });
+    }
+
+    if (btnRegBuild) btnRegBuild.addEventListener('click', () => {
+        graphBuilt = true;
+        graphColored = false;
+        graphNodes.forEach(n => { n.color = null; n.reg = null; });
+        drawInterferenceGraph();
+
+        if (regAsmBox) {
+            regAsmBox.innerHTML = `
+                <div class="code-line"><span class="highlight">; Intermediate Representation (3-Address Code):</span></div>
+                <div class="code-line">t1 = read_sensor()       ; live: t1</div>
+                <div class="code-line">t2 = get_threshold()      ; live: t1, t2</div>
+                <div class="code-line">t3 = t1 + t2              ; live: t2, t3</div>
+                <div class="code-line">t4 = t3 * 2               ; live: t3, t4</div>
+                <div class="code-line">t5 = t3 - t4              ; live: t4, t5</div>
+                <div class="code-line">write_out(t5)             ; live: none</div>
+                <div class="code-line" style="color: #3b82f6; margin-top: 0.5rem;">[Graph Built]: 5 nodes, 7 interference edges. Ready for Chaitin K-coloring.</div>
+            `;
+        }
+    });
+
+    if (btnRegColor) btnRegColor.addEventListener('click', () => {
+        if (!graphBuilt) {
+            btnRegBuild.click();
+        }
+        const K = parseInt(regKSelect ? regKSelect.value : '3', 10);
+        graphColored = true;
+
+        if (K === 3) {
+            // 3-Colorable: chromatic number is 3
+            // t1 -> R0, t2 -> R1, t3 -> R2, t4 -> R0, t5 -> R1
+            graphNodes.find(n => n.id === 't1').color = '#3b82f6';
+            graphNodes.find(n => n.id === 't1').reg = 'R0';
+
+            graphNodes.find(n => n.id === 't2').color = '#10b981';
+            graphNodes.find(n => n.id === 't2').reg = 'R1';
+
+            graphNodes.find(n => n.id === 't3').color = '#f59e0b';
+            graphNodes.find(n => n.id === 't3').reg = 'R2';
+
+            graphNodes.find(n => n.id === 't4').color = '#3b82f6';
+            graphNodes.find(n => n.id === 't4').reg = 'R0';
+
+            graphNodes.find(n => n.id === 't5').color = '#10b981';
+            graphNodes.find(n => n.id === 't5').reg = 'R1';
+
+            drawInterferenceGraph();
+
+            if (regAsmBox) {
+                regAsmBox.innerHTML = `
+                    <div class="code-line" style="color: #10b981; font-weight: bold;">✔ K=3 Graph Successfully Colored (0 Spills to RAM!):</div>
+                    <div class="code-line"><span style="color: #3b82f6;">t1, t4 → EAX (R0)</span> | <span style="color: #10b981;">t2, t5 → EBX (R1)</span> | <span style="color: #f59e0b;">t3 → ECX (R2)</span></div>
+                    <hr style="border: 0; border-top: 1px solid var(--card-border); margin: 0.5rem 0;">
+                    <div class="code-line"><span class="highlight">; Emitted x86 Target Assembly (Pure Register Speed):</span></div>
+                    <div class="code-line">call   read_sensor</div>
+                    <div class="code-line">mov    eax, edx          ; eax = t1</div>
+                    <div class="code-line">call   get_threshold</div>
+                    <div class="code-line">mov    ebx, edx          ; ebx = t2</div>
+                    <div class="code-line">mov    ecx, eax</div>
+                    <div class="code-line">add    ecx, ebx          ; ecx (t3) = t1 + t2</div>
+                    <div class="code-line">mov    eax, ecx</div>
+                    <div class="code-line">shl    eax, 1            ; eax (t4) = t3 * 2 (reused EAX!)</div>
+                    <div class="code-line">mov    ebx, ecx</div>
+                    <div class="code-line">sub    ebx, eax          ; ebx (t5) = t3 - t4 (reused EBX!)</div>
+                    <div class="code-line">mov    edi, ebx</div>
+                    <div class="code-line">call   write_out</div>
+                `;
+            }
+        } else {
+            // K = 2: Chromatic number > 2. Chaitin heuristic spills node t3 (highest degree)
+            graphNodes.find(n => n.id === 't1').color = '#3b82f6';
+            graphNodes.find(n => n.id === 't1').reg = 'R0';
+
+            graphNodes.find(n => n.id === 't2').color = '#10b981';
+            graphNodes.find(n => n.id === 't2').reg = 'R1';
+
+            // Spilled!
+            graphNodes.find(n => n.id === 't3').color = '#ef4444';
+            graphNodes.find(n => n.id === 't3').reg = 'RAM';
+
+            graphNodes.find(n => n.id === 't4').color = '#3b82f6';
+            graphNodes.find(n => n.id === 't4').reg = 'R0';
+
+            graphNodes.find(n => n.id === 't5').color = '#10b981';
+            graphNodes.find(n => n.id === 't5').reg = 'R1';
+
+            drawInterferenceGraph();
+
+            if (regAsmBox) {
+                regAsmBox.innerHTML = `
+                    <div class="code-line" style="color: #ef4444; font-weight: bold;">⚠️ K=2 Insufficient! Chromatic degree exceeds hardware limit:</div>
+                    <div class="code-line"><span style="color: #ef4444;">[SPILL OCCURRED]: Variable t3 forced into Stack RAM [ebp-4]</span></div>
+                    <hr style="border: 0; border-top: 1px solid var(--card-border); margin: 0.5rem 0;">
+                    <div class="code-line"><span class="highlight">; Emitted Assembly with Memory Spill Penalties:</span></div>
+                    <div class="code-line">call   read_sensor</div>
+                    <div class="code-line">mov    eax, edx          ; eax = t1</div>
+                    <div class="code-line">call   get_threshold</div>
+                    <div class="code-line">mov    ebx, edx          ; ebx = t2</div>
+                    <div class="code-line">add    eax, ebx          ; eax = t1 + t2</div>
+                    <div class="code-line" style="color: #ef4444; font-weight: bold;">mov    [ebp-4], eax      ; SPILL: store t3 in RAM (+100 cycles)</div>
+                    <div class="code-line">shl    eax, 1            ; eax = t4</div>
+                    <div class="code-line" style="color: #ef4444; font-weight: bold;">mov    ebx, [ebp-4]      ; RELOAD: fetch t3 from RAM (+100 cycles)</div>
+                    <div class="code-line">sub    ebx, eax          ; ebx = t5</div>
+                    <div class="code-line">mov    edi, ebx</div>
+                    <div class="code-line">call   write_out</div>
+                `;
+            }
+        }
+    });
+
+    if (btnRegReset) btnRegReset.addEventListener('click', () => {
+        graphBuilt = false;
+        graphColored = false;
+        graphNodes.forEach(n => { n.color = null; n.reg = null; });
+        drawInterferenceGraph();
+        if (regAsmBox) {
+            regAsmBox.innerHTML = '<span class="placeholder-text">Click "Build Interference Graph" then "Run Chaitin K-Coloring" to see assembly code generation.</span>';
+        }
+    });
+
+    window.addEventListener('resize', () => {
+        if (graphBuilt) drawInterferenceGraph();
+    });
+
+    // Auto-draw placeholder
+    setTimeout(drawInterferenceGraph, 100);
+
 });

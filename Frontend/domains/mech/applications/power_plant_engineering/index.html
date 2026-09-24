@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SCME | Power Plant Engineering</title>
     <link rel="stylesheet" href="style.css">
     
@@ -15,7 +15,6 @@
         }
       };
     </script>
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     
     <!-- Three.js and modules for 3D Simulators -->
@@ -139,11 +138,29 @@
                 <div class="math-formula">
                     $$ \eta_{th} = \frac{W_{turbine} - W_{pump}}{Q_{in}} $$
                 </div>
-            </article>
-
-            <!-- No Simulator for Chapter 2 -->
-
-            <hr class="chapter-divider">
+            <!-- SIMULATOR CH 2 -->
+            <div id="sim-ch2" class="interactive-container">
+                <div class="sim-overlay">
+                    <h4>Rankine Cycle Simulator (T-s Diagram & Flow)</h4>
+                    <div class="sim-controls">
+                        <label>Boiler Press: <span id="ch2-p-val">60</span> bar
+                            <input type="range" id="ch2-boiler-p" min="20" max="150" step="5" value="60">
+                        </label>
+                        <label>Superheat Temp: <span id="ch2-t-val">500</span> &deg;C
+                            <input type="range" id="ch2-temp" min="300" max="600" step="10" value="500">
+                        </label>
+                        <label>Condenser Press: <span id="ch2-pc-val">0.08</span> bar
+                            <input type="range" id="ch2-cond-p" min="0.04" max="0.2" step="0.02" value="0.08">
+                        </label>
+                    </div>
+                    <div class="sim-stats">
+                        Turbine Work ($W_t$): <span id="ch2-wt">1120</span> kJ/kg | 
+                        Heat Input ($Q_{in}$): <span id="ch2-qin">2850</span> kJ/kg | 
+                        Efficiency ($\eta_{th}$): <span id="ch2-eta" style="color:var(--accent-primary); font-weight:bold;">39.3%</span>
+                    </div>
+                </div>
+                <canvas id="ch2-canvas" class="webgl-canvas" style="display:block; width:100%; height:320px;"></canvas>
+            </div>
 
             <!-- CHAPTER 3 -->
             <header class="chapter-header" id="ch3">
@@ -374,11 +391,26 @@
                     <li><strong>Lubrication System:</strong> Includes oil pumps, strainers, centrifuges (to remove carbon soot), and oil coolers.</li>
                     <li><strong>Fuel System:</strong> Bulk storage tanks, transfer pumps, day tanks, filters, and high-pressure injection pumps.</li>
                 </ul>
-            </article>
-
-            <!-- No Simulator for Chapter 7 -->
-
-            <hr class="chapter-divider">
+            <!-- SIMULATOR CH 7 -->
+            <div id="sim-ch7" class="interactive-container">
+                <div class="sim-overlay">
+                    <h4>Diesel Generator Load & Governor Simulator</h4>
+                    <div class="sim-controls">
+                        <label>Electrical Load: <span id="ch7-load-val">75</span>%
+                            <input type="range" id="ch7-load" min="10" max="110" step="5" value="75">
+                        </label>
+                        <label>Compression Ratio ($r$): <span id="ch7-cr-val">17</span>:1
+                            <input type="range" id="ch7-cr" min="14" max="22" step="1" value="17">
+                        </label>
+                    </div>
+                    <div class="sim-stats">
+                        Fuel Rate (BSFC): <span id="ch7-bsfc">212</span> g/kWh | 
+                        Output Freq: <span id="ch7-freq">50.0</span> Hz | 
+                        Thermal Efficiency: <span id="ch7-eff" style="color:var(--accent-primary); font-weight:bold;">41.8%</span>
+                    </div>
+                </div>
+                <canvas id="ch7-canvas" class="webgl-canvas" style="display:block; width:100%; height:320px;"></canvas>
+            </div>
 
             <!-- CHAPTER 8 -->
             <header class="chapter-header" id="ch8">
@@ -544,13 +576,7 @@
     <script type="module" src="power-plant-3d.js"></script>
     <!-- Link to our Mobile Simulation Engine -->
     <script src="power-plant-2d.js"></script>
-    <script>
-        // Simple Theme Toggle
-        document.getElementById('theme-toggle').addEventListener('click', () => {
-            const html = document.documentElement;
-            const currentTheme = html.getAttribute('data-theme');
-            html.setAttribute('data-theme', currentTheme === 'dark' ? 'light' : 'dark');
-        });
-    </script>
+    <div id="global-footer"></div>
+    <script src="../../../../core.js"></script>
 </body>
 </html>

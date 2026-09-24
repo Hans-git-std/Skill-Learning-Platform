@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,7 +15,6 @@
         }
       };
     </script>
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
@@ -38,15 +37,24 @@
             <div class="theory-section">
                 <div class="chapter-header">
                     <span class="chapter-num">CH 01</span>
-                    <h2>CAD Geometric Modeling</h2>
+                    <h2>CAD Geometric Modeling & Freeform Curves</h2>
                 </div>
                 <div class="theory-content">
-                    <p>Computer-Aided Design (CAD) relies on mathematical representations of curves and surfaces. Bezier curves are foundational in modeling.</p>
+                    <p>Computer-Aided Design (CAD) forms the digital foundation of modern manufacturing, transitioning from primitive 2D drafting to analytical solid modeling (CSG: Constructive Solid Geometry and B-Rep: Boundary Representation). In freeform surface generation (aerospace airfoils, automotive sheet metal, and turbine blades), parametric curves eliminate the coordinate-system dependence of explicit Cartesian equations.</p>
+                    
+                    <p>The <strong>Bézier curve</strong>, developed by Pierre Bézier for Renault car body design, expresses an $n$-th degree parametric polynomial via a linear combination of Bernstein basis polynomials and $n+1$ control vertices:</p>
+                    
                     <div class="formula-box">
-                        <p><strong>Parametric Bezier Curve:</strong></p>
-                        $$ P(t) = \sum_{i=0}^{n} \binom{n}{i} (1-t)^{n-i} t^i P_i $$
+                        <p><strong>Parametric Bézier Curve & Bernstein Basis:</strong></p>
+                        $$ P(t) = \sum_{i=0}^{n} B_{i,n}(t) P_i, \quad B_{i,n}(t) = \binom{n}{i} (1-t)^{n-i} t^i, \quad t \in [0, 1] $$
                     </div>
-                    <p>Where $P_i$ are the control points and $t \in [0, 1]$. Adjust the control points in the simulator to see how the mathematical blending functions instantly alter the geometric shape.</p>
+                    
+                    <p><strong>Fundamental Geometric Properties:</strong></p>
+                    <ul>
+                        <li><strong>Convex Hull Property:</strong> The generated curve is guaranteed to lie entirely within the convex hull of its control polygon, providing vital bounding-box predictability for toolpath collision avoidance.</li>
+                        <li><strong>Affine Invariance:</strong> Translating or rotating the control polygon transforms the entire curve identically without point-by-point re-evaluation.</li>
+                        <li><strong>Global Influence:</strong> Moving any single control point $P_i$ alters the entire curve. To achieve local control, industry standardized on <em>B-Splines</em> and <em>NURBS</em> (Non-Uniform Rational B-Splines), which introduce knot vectors and rational weights to represent conic sections (circles and cylinders) with zero mathematical error.</li>
+                    </ul>
                 </div>
                 <div class="interactive-controls">
                     <div class="control-group">
@@ -71,16 +79,21 @@
             <div class="theory-section">
                 <div class="chapter-header">
                     <span class="chapter-num">CH 02</span>
-                    <h2>CNC Interpolation Algorithms</h2>
+                    <h2>CNC Interpolation & Motion Generation</h2>
                 </div>
                 <div class="theory-content">
-                    <p>CNC controllers use interpolation to move tools along smooth paths using discrete stepper motor pulses. Digital Differential Analyzer (DDA) is a classic line algorithm.</p>
+                    <p>Computer Numerical Control (CNC) machine tools execute high-level G-code commands (e.g., <code>G01 X80 Y60 F300</code>) by translating geometric toolpath vectors into synchronized pulse trains for lead-screw servomotors. Because hardware drives operate in discrete digital steps (Basic Length Units, BLU, typically $1 \mu\text{m}$), the CNC interpolator must approximate continuous geometry at millisecond clock rates.</p>
+                    
+                    <p>The <strong>Digital Differential Analyzer (DDA)</strong> algorithm integrates differential equations in real-time, calculating intermediate coordinates at each sampling interval $\Delta t$ without costly floating-point divisions:</p>
+                    
                     <div class="formula-box">
-                        <p><strong>DDA Algorithm:</strong></p>
+                        <p><strong>DDA Line Algorithm & Sampling Step:</strong></p>
                         $$ \Delta = \max(|dx|, |dy|) $$
-                        $$ x_{new} = x_{old} + \frac{dx}{\Delta}, \quad y_{new} = y_{old} + \frac{dy}{\Delta} $$
+                        $$ x_{k+1} = x_k + \frac{dx}{\Delta}, \quad y_{k+1} = y_k + \frac{dy}{\Delta} $$
                     </div>
-                    <p>Observe the staircase effect (quantization error) when generating a toolpath with low resolution stepper motors.</p>
+                    
+                    <p><strong>Chord Error & Kinematic Profiling:</strong></p>
+                    <p>In circular interpolation (<code>G02/G03</code>), approximating an arc with linear chords introduces a chordal deviation $h = R(1 - \cos(\Delta\theta/2))$. High-speed CNC controllers utilize look-ahead buffers to evaluate curvature changes and apply bell-shaped (S-curve) acceleration/deceleration profiles, preventing machine jerk ($\dot{a}$) and structural resonance during rapid direction changes.</p>
                 </div>
                 <div class="interactive-controls">
                     <div class="control-group">
@@ -108,15 +121,19 @@
             <div class="theory-section">
                 <div class="chapter-header">
                     <span class="chapter-num">CH 03</span>
-                    <h2>Robotic Kinematics</h2>
+                    <h2>Robotic Manipulator Kinematics</h2>
                 </div>
                 <div class="theory-content">
-                    <p>Industrial robotic arms require Inverse Kinematics (IK) to calculate joint angles $(\theta_1, \theta_2)$ to reach a specific $(x, y)$ coordinate.</p>
+                    <p>Industrial robots (articulated 6-DOF arms, SCARA, and parallel Delta robots) form the muscle of CIM automation. While <em>Forward Kinematics (FK)</em> maps given joint angles $(\theta_1, \dots, \theta_n)$ to the end-effector cartesian pose using Denavit-Hartenberg (D-H) $4 \times 4$ homogeneous transformation matrices, CNC workcell programming requires solving the far more difficult <strong>Inverse Kinematics (IK)</strong> problem: finding actuator angles for a specified workpiece target $(X, Y, Z, \alpha, \beta, \gamma)$.</p>
+                    
                     <div class="formula-box">
-                        <p><strong>2R Planar Arm IK:</strong></p>
+                        <p><strong>Analytical 2R Planar Inverse Kinematics:</strong></p>
                         $$ \cos(\theta_2) = \frac{x^2 + y^2 - L_1^2 - L_2^2}{2 L_1 L_2} $$
+                        $$ \theta_1 = \arctan2(y, x) - \arctan2(L_2 \sin\theta_2, L_1 + L_2 \cos\theta_2) $$
                     </div>
-                    <p>Move the target coordinate. If the target is within the workspace envelope, the IK solver will compute the exact joint angles required.</p>
+                    
+                    <p><strong>Singularities & Joint Limits:</strong></p>
+                    <p>Manipulators encounter kinematic singularities when the Jacobian matrix loses rank ($\det(J(\vec{\theta})) = 0$). In a fully outstretched or folded arm, motion along the radial direction becomes physically impossible, requiring infinite joint velocity ($\dot{\theta} \to \infty$) for finite end-effector speeds. Motion planners must detect and bypass singular configurations in real-time.</p>
                 </div>
                 <div class="interactive-controls">
                     <div class="control-group">
@@ -141,15 +158,21 @@
             <div class="theory-section">
                 <div class="chapter-header">
                     <span class="chapter-num">CH 04</span>
-                    <h2>AGV Path Planning</h2>
+                    <h2>AGV Path Planning & Fleet Traffic Control</h2>
                 </div>
                 <div class="theory-content">
-                    <p>Automated Guided Vehicles (AGVs) navigate factory floors avoiding obstacles. The A* (A-star) algorithm is a common pathfinding technique.</p>
+                    <p>Automated Guided Vehicles (AGVs) and Autonomous Mobile Robots (AMRs) decouple material handling from fixed conveyor belts, enabling dynamic routing on agile shop floors. Contemporary fleets transition from inductive floor wires to LiDAR-based SLAM (Simultaneous Localization and Mapping) and optical ceiling landmark navigation.</p>
+                    
+                    <p>For obstacle-rich plant layouts, graph-search algorithms like <strong>$A^*$ (A-Star)</strong> compute collision-free, minimum-distance toolpaths across discrete grid networks:</p>
+                    
                     <div class="formula-box">
-                        <p><strong>A* Heuristic Cost:</strong></p>
+                        <p><strong>A* Evaluation Function & Admissible Heuristic:</strong></p>
                         $$ f(n) = g(n) + h(n) $$
+                        $$ h(n) = |x_{goal} - x_n| + |y_{goal} - y_n| \quad (\text{Manhattan Distance}) $$
                     </div>
-                    <p>Where $g(n)$ is the cost from start to node $n$, and $h(n)$ is the estimated cost (Manhattan distance) to the goal. Add obstacles and watch the AGV recalculate.</p>
+                    
+                    <p><strong>Fleet Coordination & Deadlock Prevention:</strong></p>
+                    <p>When multiple AGVs traverse shared intersections, naive pathfinding causes mutual gridlock. Fleet managers utilize <em>time-space reservations</em> and dynamic zone blocking to guarantee that two vehicles never occupy the same topological node at overlapping time intervals $[t_{entry}, t_{exit}]$.</p>
                 </div>
                 <div class="interactive-controls">
                     <button id="sim4-obs" class="btn-retro">Randomize Obstacles</button>
@@ -170,15 +193,20 @@
             <div class="theory-section">
                 <div class="chapter-header">
                     <span class="chapter-num">CH 05</span>
-                    <h2>Automated Storage (AS/RS)</h2>
+                    <h2>Automated Storage & Retrieval Systems (AS/RS)</h2>
                 </div>
                 <div class="theory-content">
-                    <p>Automated Storage and Retrieval Systems (AS/RS) optimize warehouse operations. The S/R machine travels in X (aisle) and Y (height) simultaneously to minimize cycle time.</p>
+                    <p>An Automated Storage and Retrieval System (AS/RS) provides high-density buffer storage for raw stock, work-in-progress (WIP), and finished inventory. Storage/Retrieval (S/R) cranes move down narrow racking aisles, actuating horizontal travel ($X$), vertical hoist ($Y$), and shuttle extension ($Z$) concurrently.</p>
+                    
+                    <p>Because the carriage drives both axes independently, travel between the input/output station $(0,0)$ and an arbitrary storage bin $(x, y)$ follows <strong>Chebyshev (L-infinity) metric</strong> dynamics:</p>
+                    
                     <div class="formula-box">
-                        <p><strong>Chebyshev Travel Time:</strong></p>
-                        $$ T = \max\left(\frac{\Delta x}{v_x}, \frac{\Delta y}{v_y}\right) $$
+                        <p><strong>Single-Command Chebyshev Travel Time:</strong></p>
+                        $$ T = \max\left(\frac{x}{v_x}, \frac{y}{v_y}\right) + 2 T_{shuttle} $$
                     </div>
-                    <p>Request a bin retrieval. Observe how diagonal travel is achieved by maximizing simultaneous axis movement.</p>
+                    
+                    <p><strong>Throughput Maximization & Dual-Command Cycles:</strong></p>
+                    <p>Warehouse Management Systems (WMS) maximize crane throughput by scheduling <em>dual-command cycles</em>: depositing an incoming pallet into an open rack slot and retrieving a downstream bin on the return trip, eliminating up to $40\%$ of empty travel overhead compared to simple single-command shuttling.</p>
                 </div>
                 <div class="interactive-controls">
                     <div class="control-group">
@@ -203,15 +231,21 @@
             <div class="theory-section">
                 <div class="chapter-header">
                     <span class="chapter-num">CH 06</span>
-                    <h2>Cellular Manufacturing (GT)</h2>
+                    <h2>Cellular Manufacturing & Group Technology</h2>
                 </div>
                 <div class="theory-content">
-                    <p>Group Technology (GT) groups dissimilar machines into cells to process part families. Rank Order Clustering (ROC) is used to sort the Machine-Part incidence matrix.</p>
+                    <p>Group Technology (GT) restructures high-mix, low-volume job shops into high-efficiency manufacturing cells. By clustering parts with similar geometries and processing steps into <em>Part Families</em> and grouping the required machine tools together, setup times and WIP queue delays drop precipitously.</p>
+                    
+                    <p>King's <strong>Rank Order Clustering (ROC)</strong> algorithm transforms an unorganized binary Machine-Part incidence matrix into block-diagonal manufacturing cells:</p>
+                    
                     <div class="formula-box">
-                        <p><strong>Binary Weighting:</strong></p>
-                        $$ W = \sum_{j=1}^{n} a_{ij} 2^{n-j} $$
+                        <p><strong>Binary Decimal Weighting (Rows & Columns):</strong></p>
+                        $$ W_i = \sum_{j=1}^{n} a_{ij} 2^{n-j} \quad (\text{Row Rank}) $$
+                        $$ W_j = \sum_{i=1}^{m} a_{ij} 2^{m-i} \quad (\text{Column Rank}) $$
                     </div>
-                    <p>Toggle the algorithm to sort the disorganized matrix into distinct manufacturing cells, minimizing inter-cell material handling.</p>
+                    
+                    <p><strong>Handling Exceptional Elements & Bottleneck Machines:</strong></p>
+                    <p>When a part requires operations on machines belonging to different cells (represented by an entry $a_{ij}=1$ outside the block diagonals), production engineers resolve the conflict by duplicating low-cost tooling, redesigning part routing, or outsourcing the bottleneck operation.</p>
                 </div>
                 <div class="interactive-controls">
                     <button id="sim6-scramble" class="btn-retro">Scramble Matrix</button>
@@ -232,15 +266,18 @@
             <div class="theory-section">
                 <div class="chapter-header">
                     <span class="chapter-num">CH 07</span>
-                    <h2>Coordinate Measuring Machine</h2>
+                    <h2>Coordinate Measuring Machines (CMM) & Metrology</h2>
                 </div>
                 <div class="theory-content">
-                    <p>A CMM uses a touch trigger probe to capture discrete points on a part's surface. Software algorithms then fit these points to ideal geometries using Least Squares.</p>
+                    <p>Quality assurance in automated production relies on Coordinate Measuring Machines (CMMs) equipped with ruby-tipped touch-trigger probes to verify Geometric Dimensioning and Tolerancing (GD&T per ASME Y14.5). The machine samples discrete surface coordinates $(x_i, y_i, z_i)$ and fits them to nominal mathematical geometries.</p>
+                    
                     <div class="formula-box">
-                        <p><strong>Least Squares Circle Fit:</strong></p>
-                        $$ \min \sum (R_i - R)^2 $$
+                        <p><strong>Gaussian Least-Squares Circle Fit Objective:</strong></p>
+                        $$ \min_{x_c, y_c, R} \sum_{i=1}^{N} \left( \sqrt{(x_i - x_c)^2 + (y_i - y_c)^2} - R \right)^2 $$
                     </div>
-                    <p>Click on the canvas to simulate probe hits around the part. Once enough points are captured, the system calculates the geometric center and form error.</p>
+                    
+                    <p><strong>Form Error & Abbe Error Principle:</strong></p>
+                    <p>Circularity (roundness) is evaluated as the radial distance between the minimum circumscribed and maximum inscribed circles (Chebyshev minimum zone). High-precision CMM designs adhere strictly to <em>Abbe's Principle</em>: the measurement axis must be collinear with the dimensional displacement axis to eliminate angular pitch/yaw error amplification ($E = L \cdot \tan\theta$).</p>
                 </div>
                 <div class="interactive-controls">
                     <button id="sim7-fit" class="btn-retro">Calculate Best Fit</button>
@@ -261,15 +298,20 @@
             <div class="theory-section">
                 <div class="chapter-header">
                     <span class="chapter-num">CH 08</span>
-                    <h2>Flexible Manufacturing System</h2>
+                    <h2>Flexible Manufacturing Systems (FMS) & Queuing Theory</h2>
                 </div>
                 <div class="theory-content">
-                    <p>An FMS adapts to changing production schedules. We use queuing theory and state machines to manage a central buffer routing parts to available CNC machines.</p>
+                    <p>A Flexible Manufacturing System (FMS) integrates identical or complementary CNC machining centers, automated tool changers (ATC) with high-capacity tool magazines, automated guided vehicles or pallet carousels, and central supervisory Direct Numerical Control (DNC). Unlike rigid transfer lines, an FMS handles variable product mixes without line stoppages for changeover.</p>
+                    
+                    <p>System capacity and buffer sizing are governed by <strong>Jackson Queuing Networks</strong> and Little's Law ($L = \lambda W$). The utilization $U_i$ of each machine station depends on the part arrival rate and aggregate service rate:</p>
+                    
                     <div class="formula-box">
-                        <p><strong>Utilization ($U$):</strong></p>
-                        $$ U = \frac{\lambda}{c \mu} $$
+                        <p><strong>Station Utilization & Little's Law:</strong></p>
+                        $$ U_i = \frac{\lambda_i}{c_i \mu_i}, \quad L_{WIP} = \lambda \cdot W_{flow} $$
                     </div>
-                    <p>Increase the arrival rate $\lambda$. If it exceeds the combined service rate $\mu$ of the CNCs, the central buffer will rapidly overflow.</p>
+                    
+                    <p><strong>Bottleneck Machine Dynamics:</strong></p>
+                    <p>When arrival rate approaches the capacity of the bottleneck station ($U_{max} \to 1.0$), queue lengths explode asymptotically towards infinity. FMS dispatch schedulers dynamically reroute pallet carriers to alternative workcells possessing identical tooling (routing flexibility) to prevent machine starvation and downstream buffer blocking.</p>
                 </div>
                 <div class="interactive-controls">
                     <div class="control-group">
@@ -293,15 +335,22 @@
             <div class="theory-section">
                 <div class="chapter-header">
                     <span class="chapter-num">CH 09</span>
-                    <h2>PID Control for Servo Drives</h2>
+                    <h2>Closed-Loop Servo Drives & PID Tuning</h2>
                 </div>
                 <div class="theory-content">
-                    <p>Precise CNC axis positioning relies on closed-loop PID (Proportional-Integral-Derivative) controllers to minimize position error $e(t)$.</p>
+                    <p>High-precision multi-axis CNC machines and robotic joints rely on closed-loop brushless AC servomotors coupled to precision ball screws with optical rotary or linear glass scale encoders. The servo controller continuously compares commanded interpolation positions $r(t)$ against encoder feedback $y(t)$ to minimize tracking error $e(t) = r(t) - y(t)$.</p>
+                    
                     <div class="formula-box">
-                        <p><strong>PID Control Law:</strong></p>
-                        $$ u(t) = K_p e(t) + K_i \int e(t) dt + K_d \frac{de}{dt} $$
+                        <p><strong>Continuous-Time PID Control Law with Anti-Windup:</strong></p>
+                        $$ u(t) = K_p e(t) + K_i \int_{0}^{t} e(\tau) d\tau + K_d \frac{de(t)}{dt} $$
                     </div>
-                    <p>Tune the gains. Too much $K_p$ causes oscillation. $K_d$ dampens the response. $K_i$ eliminates steady-state error.</p>
+                    
+                    <p><strong>Tuning Parameters & Dynamic Response:</strong></p>
+                    <ul>
+                        <li><strong>Proportional Gain ($K_p$):</strong> Establishes drive stiffness and reduces rise time; excessive $K_p$ triggers aggressive hunting and mechanical chatter.</li>
+                        <li><strong>Integral Gain ($K_i$):</strong> Eliminates steady-state following error caused by friction or cutting tool resistance; requires anti-windup clamping to prevent integrator saturation.</li>
+                        <li><strong>Derivative Gain ($K_d$):</strong> Predicts trajectory deviations and adds viscous damping to suppress overshoot. High-performance CNC drives supplement PID with <em>Velocity Feed-Forward ($K_{vff}$)</em> to eliminate following error ($e = v / K_v$) entirely during high-speed profiling.</li>
+                    </ul>
                 </div>
                 <div class="interactive-controls">
                     <div class="control-group">
@@ -329,15 +378,19 @@
             <div class="theory-section">
                 <div class="chapter-header">
                     <span class="chapter-num">CH 10</span>
-                    <h2>Industry 4.0 IoT Dashboard</h2>
+                    <h2>Industry 4.0, Industrial IoT (IIoT) & Smart Factory CPS</h2>
                 </div>
                 <div class="theory-content">
-                    <p>Modern CIM heavily integrates the Internet of Things (IoT) for predictive maintenance. Sensors monitor machine vibrations and temperatures in real-time.</p>
+                    <p>Industry 4.0 transforms static manufacturing facilities into interconnected Cyber-Physical Systems (CPS). Edge IoT nodes tap directly into CNC PLCs and piezoelectric accelerometer sensors via standardized industrial communication protocols (OPC-UA and MQTT over TLS), streaming high-frequency telemetry to plant-wide supervisory analytics.</p>
+                    
                     <div class="formula-box">
-                        <p><strong>Overall Equipment Effectiveness:</strong></p>
-                        $$ OEE = \text{Availability} \times \text{Performance} \times \text{Quality} $$
+                        <p><strong>Overall Equipment Effectiveness (OEE) Metric:</strong></p>
+                        $$ \text{OEE} = \text{Availability} \times \text{Performance} \times \text{Quality} $$
+                        $$ A = \frac{T_{actual}}{T_{planned}}, \quad P = \frac{N_{total} \times T_{cycle}}{T_{actual}}, \quad Q = \frac{N_{good}}{N_{total}} $$
                     </div>
-                    <p>Watch the real-time telemetry. If temperature or vibration exceeds the critical threshold, an automated maintenance halt is triggered.</p>
+                    
+                    <p><strong>Predictive Maintenance (PdM) & Vibration Diagnostics:</strong></p>
+                    <p>Rather than relying on reactive breakdown repairs or arbitrary scheduled preventive maintenance, automated edge processors compute Fast Fourier Transforms (FFT) on spindle bearing vibration streams in real-time. By tracking harmonic signature spikes at Ball Pass Frequencies (BPFO/BPFI), maintenance systems forecast bearing cage fatigue weeks prior to catastrophic spindle seizure.</p>
                 </div>
                 <div class="interactive-controls">
                     <button id="sim10-fault" class="btn-retro" style="border-color: #ef4444; color: #ef4444;">Inject Fault</button>
@@ -353,7 +406,8 @@
             </div>
         </section>
         
-    </main>
+    <div id="global-footer"></div>
     <script src="cim-engine.js"></script>
+    <script src="../../../core.js"></script>
 </body>
 </html>
