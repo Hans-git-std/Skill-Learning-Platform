@@ -6,6 +6,12 @@
     <title>SCME | IC Engines</title>
     <link rel="stylesheet" href="style.css">
     
+    <!-- DNS prefetch & Preconnect for accelerated external asset loading -->
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+    <link rel="preconnect" href="https://unpkg.com" crossorigin>
+    <link rel="dns-prefetch" href="https://unpkg.com">
+    
     <!-- MathJax for rendering formulas -->
     <script>
       MathJax = {
@@ -18,7 +24,14 @@
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     
     <!-- Three.js and modules for 3D Simulators -->
-    <script async src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"></script>
+    <script>
+      if (!HTMLScriptElement.supports || !HTMLScriptElement.supports('importmap')) {
+        const shim = document.createElement('script');
+        shim.async = true;
+        shim.src = 'https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js';
+        document.head.appendChild(shim);
+      }
+    </script>
     <script type="importmap">
       {
         "imports": {
